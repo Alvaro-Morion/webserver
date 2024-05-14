@@ -6,11 +6,11 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 19:13:58                                            */
-/*   Updated:  2024/05/09 04:29:47                                            */
+/*   Updated:  2024/05/14 04:07:46                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config.hpp"
+#include "../config.hpp"
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
@@ -38,13 +38,13 @@ static std::vector<t_c_individual_server_config> ungroup(std::vector<t_c_server_
 
 	for (t_c_server_config const &server_confing : servers)
 	{
-		for (std::string const &host_name : server_confing.get_host_names())
+		for (std::string const &host_name : *server_confing.get_host_names())
 		{
 			for (uint16_t port : server_confing.get_ports())
 			{
 				t_c_individual_server_config new_server(
 					&host_name, port, server_confing.get_router(), server_confing.get_default_error_pages(),
-					server_confing.get_file_is_a_directory_page(), server_confing.get_client_body_size_limit());
+					server_confing.get_resource_is_a_directory_page(), server_confing.get_client_body_size_limit());
 				ungrouped.push_back(new_server);
 			}
 		}

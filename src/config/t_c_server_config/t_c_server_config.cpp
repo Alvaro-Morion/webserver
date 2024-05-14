@@ -6,11 +6,11 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:19:46                                            */
-/*   Updated:  2024/05/08 04:53:35                                            */
+/*   Updated:  2024/05/14 04:09:12                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config.hpp"
+#include "../config.hpp"
 #include <algorithm>
 #include <arpa/inet.h>
 #include <cctype>
@@ -77,21 +77,21 @@ static bool is_valid_hostname(std::string const &host_name)
 	return (true);
 }
 
-t_c_server_config::t_c_server_config(std::vector<std::string> const &host_names_param,
+t_c_server_config::t_c_server_config(std::vector<std::string>    *host_names_param,
 									 std::vector<uint16_t> const &ports_param, t_c_router const *router_param,
 									 t_c_default_error_pages const *default_error_pages_param,
-									 std::string const             *file_is_a_directory_page_param,
+									 std::string const             *resource_is_a_directory_page_param,
 									 uint64_t                       client_body_size_limit_param)
 	: host_names(host_names_param), ports(ports_param), router(router_param),
-	  default_error_pages(default_error_pages_param), file_is_a_directory_page(file_is_a_directory_page_param),
+	  default_error_pages(default_error_pages_param), resource_is_a_directory_page(resource_is_a_directory_page_param),
 	  client_body_size_limit(client_body_size_limit_param)
 {
-	if (host_names.empty() == true || ports.empty() == true)
+	if (host_names->empty() == true || ports.empty() == true)
 	{
 		throw(
 			std::invalid_argument("atleast a host name and port musts be provided for a server")); // parameters invalid
 	}
-	for (std::string &host_name : host_names)
+	for (std::string &host_name : *host_names)
 	{
 		std::transform(host_name.begin(), host_name.end(), host_name.begin(),
 					   [](unsigned char c)
@@ -103,15 +103,16 @@ t_c_server_config::t_c_server_config(std::vector<std::string> const &host_names_
 			throw(std::invalid_argument(host_name + " is not a valid host_name")); // parameters invalid
 		}
 	}
-	if ((file_is_a_directory_page->empty() == false) && access(file_is_a_directory_page->c_str(), R_OK) == -1)
+	if ((resource_is_a_directory_page->empty() == false) && access(resource_is_a_directory_page->c_str(), R_OK) == -1)
 	{
-		throw(*file_is_a_directory_page_param + " cannot be open for reading or does not exits"); // parameters invalid
+		throw(*resource_is_a_directory_page_param +
+			  " cannot be open for reading or does not exits"); // parameters invalid
 	}
 }
 
 t_c_server_config::t_c_server_config(t_c_server_config const &copy)
 	: host_names(copy.host_names), ports(copy.ports), router(copy.router),
-	  default_error_pages(copy.default_error_pages), file_is_a_directory_page(copy.file_is_a_directory_page),
+	  default_error_pages(copy.default_error_pages), resource_is_a_directory_page(copy.resource_is_a_directory_page),
 	  client_body_size_limit(copy.client_body_size_limit)
 {
 }
@@ -120,7 +121,7 @@ t_c_server_config::~t_c_server_config(void)
 {
 }
 
-std::vector<std::string> const &t_c_server_config::get_host_names(void) const
+std::vector<std::string> const *t_c_server_config::get_host_names(void) const
 {
 	return (host_names);
 }
@@ -140,9 +141,9 @@ t_c_default_error_pages const *t_c_server_config::get_default_error_pages(void) 
 	return (default_error_pages);
 }
 
-std::string const *t_c_server_config::get_file_is_a_directory_page(void) const
+std::string const *t_c_server_config::get_resource_is_a_directory_page(void) const
 {
-	return (file_is_a_directory_page);
+	return (resource_is_a_directory_page);
 }
 
 uint64_t t_c_server_config::get_client_body_size_limit(void) const

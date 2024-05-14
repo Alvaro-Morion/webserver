@@ -6,11 +6,11 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 18:30:24                                            */
-/*   Updated:  2024/05/09 04:38:08                                            */
+/*   Updated:  2024/05/14 04:06:36                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config.hpp"
+#include "../config.hpp"
 #include <stdexcept>
 #include <string>
 
@@ -38,6 +38,10 @@ t_c_resource::t_c_resource(std::string const &root_param, std::string const &red
 	if (root.empty() == redirect.empty())
 	{
 		throw(std::invalid_argument("a resource must either be a redirection or a path too a directory or file"));
+	}
+	if (post_allowed == true && is_cgi == false)
+	{
+		throw(std::invalid_argument("A resource whit a post method must be a cgi"));
 	}
 	// todo: test if redirect is a valid uri, throw if not
 	// todo: test if root is a syntatcically valid path, throw if not

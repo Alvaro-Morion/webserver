@@ -6,11 +6,11 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 17:41:28                                            */
-/*   Updated:  2024/05/09 04:34:16                                            */
+/*   Updated:  2024/05/14 04:08:04                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config.hpp"
+#include "../config.hpp"
 #include <cstdio>
 #include <stdexcept>
 #include <string>
@@ -34,13 +34,15 @@
 
 t_c_default_error_pages::t_c_default_error_pages(
 	std::string const &http_version_not_supported_param, std::string const &not_implemeted_param,
-	std::string const &uri_too_long_param, std::string const &content_too_large_param,
-	std::string const &length_requiered_param, std::string const &request_timeout_param,
-	std::string const &not_found_param, std::string const &forbidden_param, std::string const &bad_request_param)
+	std::string const &internal_server_error_param, std::string const &uri_too_long_param,
+	std::string const &content_too_large_param, std::string const &length_requiered_param,
+	std::string const &request_timeout_param, std::string const &not_found_param, std::string const &forbidden_param,
+	std::string const &bad_request_param)
 	: http_version_not_supported(http_version_not_supported_param), not_implemeted(not_implemeted_param),
-	  uri_too_long(uri_too_long_param), content_too_large(content_too_large_param),
-	  length_requiered(length_requiered_param), request_timeout(request_timeout_param), not_found(not_found_param),
-	  forbidden(forbidden_param), bad_request(bad_request_param)
+	  internal_server_error(internal_server_error_param), uri_too_long(uri_too_long_param),
+	  content_too_large(content_too_large_param), length_requiered(length_requiered_param),
+	  request_timeout(request_timeout_param), not_found(not_found_param), forbidden(forbidden_param),
+	  bad_request(bad_request_param)
 {
 	if (access(http_version_not_supported.c_str(), R_OK) == -1)
 	{

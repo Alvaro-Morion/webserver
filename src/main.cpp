@@ -6,12 +6,13 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:18:55                                            */
-/*   Updated:  2024/05/09 04:24:54                                            */
+/*   Updated:  2024/05/14 03:52:20                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config.hpp"
+#include "config/config.hpp"
 #include <cstdint>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -32,37 +33,25 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-int main(void)
+static void print_usage(void)
 {
+	char usage[] = "Usage:\n"
+				   "\t./webserver CONFIGURATION_FILE\n";
 
-	std::vector<std::string>  paths1{std::string("")};
-	std::vector<std::string>  paths2{std::string("")};
-	std::vector<t_c_resource> resources1{t_c_resource("/", "", true, true, true, true)};
-	std::vector<t_c_resource> resources2{t_c_resource("/", "", true, true, true, true)};
-	t_c_router                router1(paths1, resources1);
-	t_c_router                router2(paths2, resources2);
-	std::string               file_is_a_directory_page1;
-	std::string               file_is_a_directory_page2;
-	t_c_default_error_pages   error_pages1;
-	t_c_default_error_pages   error_pages2;
-	std::vector<std::string>  host_names1{"test.com", "2.test.com", "test.com"};
-	std::vector<std::string>  host_names2{"new.com"};
-	std::vector<uint16_t>     ports1{
-        89,
-        69,
-    };
-	std::vector<uint16_t> ports2{
-		1,
-		89,
-	};
-	t_c_server_config server_config1(host_names1, ports1, &router1, &error_pages1, &file_is_a_directory_page1,
-									 UINT64_MAX);
-	t_c_server_config server_config2(host_names1, ports1, &router1, &error_pages1, &file_is_a_directory_page1,
-									 UINT64_MAX);
-	std::vector<t_c_server_config> server_configs({server_config1, server_config2});
-	t_c_global_config              config(server_configs);
+	std::cout << usage;
+}
 
-	std::cout << config.to_string();
+int main(int argc, char **argv)
+{
+	t_c_global_config *config;
+
+	if (argc != 2)
+	{
+		print_usage();
+		return (EXIT_FAILURE);
+	}
+	config = get_config(argv[1]);
+	return (EXIT_FAILURE);
 }
 
 #pragma GCC diagnostic pop

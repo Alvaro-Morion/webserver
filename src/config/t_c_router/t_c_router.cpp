@@ -6,11 +6,11 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 18:17:27                                            */
-/*   Updated:  2024/05/09 04:35:43                                            */
+/*   Updated:  2024/05/14 04:01:05                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config.hpp"
+#include "../config.hpp"
 #include <stdexcept>
 #include <string>
 

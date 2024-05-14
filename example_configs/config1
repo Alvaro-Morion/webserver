@@ -1,0 +1,33 @@
+server
+{
+	ports 100, 80, 90; //can be ommited 80 by default
+	hosts localhost, 127.0.0.1, test.com, sub.test.com;
+	error_page_http_version_not_supported "default_error_pages/505"; // can be ommited defaults exist
+	error_page_not_implemeted "default_error_pages/501";
+	error_internal_server_error "default_error_pages/500";
+	error_page_uri_too_long "default_error_pages/414";
+	error_page_content_too_large "default_error_pages/413";
+	error_page_length_requiered "default_error_pages/411";
+	error_page_request_timeout "default_error_pages/408";
+	error_page_not_found "default_error_pages/404";
+	error_page_forbidden "default_error_pages/403";
+	error_page_bad_request "default_error_pages/400";
+	directory_traversal off; //on by default
+	resource_is_a_directory_page "default_error_pages/403"; // can be ommited default exists
+	client_body_size_limit 1024; // in bytes, can be ommited for no limit
+	router
+	{
+		rout
+		{
+			path "/";   //if this rersource is requested or any request is in the directory path if path is a  paht to
+    	                //a directory resource will be replied, can be ommited and it can be left empty for a catch all
+			resource
+			{
+				root "/www";
+				//redirect "any_uri"; //a resource can be conofigured as a redirection or as a cgi or file, meaning
+    	                              //that root and redirect may not be present at the same time
+				methods GET, POST, DELETE; // can be ommited, GET by default
+			}
+		}
+	}
+}
