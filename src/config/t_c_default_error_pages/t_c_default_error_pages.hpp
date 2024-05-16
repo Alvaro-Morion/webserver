@@ -6,13 +6,13 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 03:56:06                                            */
-/*   Updated:  2024/05/14 04:25:44                                            */
+/*   Updated:  2024/05/14 06:39:54                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "../t_c_router/t_c_router.hpp" // here to add types in the include chain of config.hpp dont remove
+#include <string>
 
 ;
 #pragma GCC diagnostic push

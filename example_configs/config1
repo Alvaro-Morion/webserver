@@ -17,16 +17,20 @@ server
 	client_body_size_limit 1024; // in bytes, can be ommited for no limit
 	router
 	{
-		rout
+		route
 		{
-			path "/";   //if this rersource is requested or any request is in the directory path if path is a  paht to
-    	                //a directory resource will be replied, can be ommited and it can be left empty for a catch all
+			path "/";   //if path is a file, resource may be a redirect or root may be a file, but not a directory
+						//if path is a directory, resouce may be redirect or root may be a file or a directory
+						//if paht is a directory and resource is not a redirect and root is a directory the requested
+						//file will in the root directory will be replyed whiti (e.g. if path is "/" and root "/www"
+						//"/index.html" will be routed to "/www/index.html"
 			resource
 			{
 				root "/www";
 				//redirect "any_uri"; //a resource can be conofigured as a redirection or as a cgi or file, meaning
     	                              //that root and redirect may not be present at the same time
 				methods GET, POST, DELETE; // can be ommited, GET by default
+				is_cgi false;
 			}
 		}
 	}

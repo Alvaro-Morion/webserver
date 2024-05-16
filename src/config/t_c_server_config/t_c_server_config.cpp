@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:19:46                                            */
-/*   Updated:  2024/05/14 04:09:12                                            */
+/*   Updated:  2024/05/15 06:20:25                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@
 #pragma GCC diagnostic ignored "-Wc99-extensions"
 ;
 
-static bool is_valid_hostname(std::string const &host_name)
+bool is_valid_hostname(std::string const &host_name)
 {
 	size_t          dot_pos;
 	size_t          lable_begin;
@@ -51,7 +51,8 @@ static bool is_valid_hostname(std::string const &host_name)
 		return (true);
 	}
 	if ((host_name.size() > 253) ||
-		(host_name.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789-.") != std::string::npos))
+		(host_name.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789-.") != std::string::npos) ||
+		host_name.empty() == true)
 	{
 		return (false);
 	}

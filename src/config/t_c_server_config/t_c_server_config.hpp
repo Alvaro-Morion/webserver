@@ -6,13 +6,14 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 03:58:30                                            */
-/*   Updated:  2024/05/14 04:27:04                                            */
+/*   Updated:  2024/05/14 09:16:10                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "../t_c_default_error_pages/t_c_default_error_pages.hpp"
+#include "../t_c_router/t_c_router.hpp"
 
 ;
 #pragma GCC diagnostic push
@@ -57,5 +58,7 @@ class t_c_server_config // binds to objects recived in construction
 		std::string const              *get_resource_is_a_directory_page(void) const;
 		uint64_t                        get_client_body_size_limit(void) const;
 };
+
+bool                   is_valid_hostname(std::string const &host_name);
 
 #pragma GCC diagnostic pop

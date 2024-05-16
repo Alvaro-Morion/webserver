@@ -1,21 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                                            */
-/*   Filename: t_c_router.hpp                                                 */
+/*   Filename: t_c_route.cpp                                                  */
 /*   Author:   Peru Riezu <riezumunozperu@gmail.com>                          */
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
-/*   Created:  2024/05/14 03:53:52                                            */
-/*   Updated:  2024/05/16 16:23:04                                            */
+/*   Created:  2024/05/16 16:25:01                                            */
+/*   Updated:  2024/05/16 16:27:34                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-
-#include "../t_c_route/t_c_route.hpp"
-
-#include <string>
-#include <vector>
+#include "t_c_route.hpp"
 
 ;
 #pragma GCC diagnostic push
@@ -33,19 +28,13 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-class t_c_router
+t_c_route::t_c_route(std::string const &path_param, t_c_resource const &resource_param)
+	: path(path_param), resource(resource_param)
 {
-	private:
-		std::vector<t_c_route>  routes; // only paths will be considered valid uris
-
-	public:
-		explicit t_c_router(std::vector<t_c_route> const  &routes_param);
-		t_c_router(t_c_router const &copy);
-		~t_c_router(void);
-		bool                             operator==(t_c_router const &comparator) const;
-
-		std::vector<t_c_route> const  &get_routes(void) const;
-		std::string                      to_string(void) const;
-};
+	if (path[i] != '/')
+	{
+		
+	}
+}
 
 #pragma GCC diagnostic pop

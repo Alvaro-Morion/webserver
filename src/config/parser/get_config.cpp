@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/09 17:09:37                                            */
-/*   Updated:  2024/05/14 04:08:49                                            */
+/*   Updated:  2024/05/15 03:59:54                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,13 +65,41 @@ static std::string get_file_content(char *path)
 	return (content);
 }
 
+bool is_double_quote(std::string &content, size_t i)
+{
+	size_t count;
+
+	if (content[i] != '\"')
+	{
+		return (false);
+	}
+	count = 0;
+	while (i != 0)
+	{
+		i--;
+		if (content[i] == '\\')
+		{
+			count++;
+		}
+		else
+		{
+			break;
+		}
+	}
+	if (count % 2 == 0)
+	{
+		return (false);
+	}
+	return (true);
+}
+
 static void remove_comments(std::string &content)
 {
 	bool in_quotations = false;
 
 	for (size_t i = 0; i < content.size(); i++)
 	{
-		if (content[i] == '\"')
+		if (is_double_quote(content, i) == true)
 		{
 			in_quotations = !in_quotations;
 		}
