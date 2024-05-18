@@ -6,11 +6,12 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/15 06:41:37                                            */
-/*   Updated:  2024/05/15 07:45:08                                            */
+/*   Updated:  2024/05/18 19:30:06                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../parser.hpp"
+#include <execution>
 #include <stdexcept>
 #include <string.h>
 
@@ -30,7 +31,18 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-
+static t_c_route get_route(std::string &server_config, size_t &i, size_t &line, size_t &colum)
+{
+	skip_spaces(server_config, i, line, colum);
+	if (server_config[i] != '{')
+	{
+		throw(std::invalid_argument(std::string("error: on line: ") + std::to_string(line) + ", colum: " +
+									std::to_string(colum) + ", '" + server_config[i] + "', found when expecting '{'"));
+	}
+	i++;
+	colum++;
+	
+}
 
 static void get_element(s_t_c_server_config_params &params, std::string &server_config, size_t &i, size_t &line,
 						size_t &colum)
@@ -47,22 +59,23 @@ static void get_element(s_t_c_server_config_params &params, std::string &server_
 		skip_spaces(server_config, i, line, colum);
 		if (strncmp(server_config.c_str() + i, "route", 5) != 0)
 		{
-			throw(std::invalid_argument(std::string("error: on line: ") + std::to_string(line) + ", colum: " +
-										std::to_string(colum) + ", unrecognized token found while expecting \"route\""));
+			throw(std::invalid_argument(std::string("error: on line: ") + std::to_string(line) +
+										", colum: " + std::to_string(colum) +
+										", unrecognized token found while expecting \"route\""));
 		}
-		insert_route(params.router_params, get_route(server_config, i, line, colum));
+		i += 5;
+		colum += 5;
+		params.router_params.push_back(get_route(server_config, i, line, colum));
 		skip_spaces(server_config, i, line, colum);
 	}
 }
 
-void get_router(s_t_c_server_config_params &params, std::string &server_config, size_t &line,
-								size_t &colum, size_t &i)
+void get_router(s_t_c_server_config_params &params, std::string &server_config, size_t &line, size_t &colum, size_t &i)
 {
 	if (params.router != nullptr)
 	{
 		throw(std::invalid_argument(std::string("error: on line: ") + std::to_string(line) +
-									", colum: " + std::to_string(colum) +
-									", redefinition of the router attribute"));
+									", colum: " + std::to_string(colum) + ", redefinition of the router attribute"));
 	}
 	i += std::string("router").size();
 	colum += std::string("router").size();
@@ -77,4 +90,5 @@ void get_router(s_t_c_server_config_params &params, std::string &server_config, 
 	i++;
 	colum++;
 }
+
 #pragma GCC diagnostic pop

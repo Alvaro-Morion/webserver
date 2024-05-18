@@ -6,13 +6,15 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 04:03:54                                            */
-/*   Updated:  2024/05/14 04:27:47                                            */
+/*   Updated:  2024/05/18 17:46:33                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "../t_c_individual_server_config/t_c_individual_server_config.hpp"
+#include <cstdint>
+#include <set>
 
 ;
 #pragma GCC diagnostic push
@@ -35,6 +37,7 @@ class t_c_global_config
 	private:
 		std::vector<t_c_individual_server_config> servers; // alfabetically sorted whit reagrds to the host names
 														   // no duplicated responsabilityes are allowed
+		std::set<uint16_t>						  ports;
 
 	public:
 		explicit t_c_global_config(std::vector<t_c_server_config> const &servers_param);

@@ -63,14 +63,14 @@ static void get_element(s_t_c_server_config_params &params, std::string &server_
 	}
 	params.client_body_size_limit = res;
 }
+
 void get_client_body_size_limit(s_t_c_server_config_params &params, std::string &server_config, size_t &line,
 								size_t &colum, size_t &i)
 {
 	if (params.client_body_size_limit_set == true)
 	{
-		throw(std::invalid_argument(std::string("error: on line: ") + std::to_string(line) +
-									", colum: " + std::to_string(colum) +
-									", redefinition of client_body_size_limit attribute"));
+		throw(std::invalid_argument(std::string("error: on line: ") + std::to_string(line) + ", colum: " +
+									std::to_string(colum) + ", redefinition of client_body_size_limit attribute"));
 	}
 	params.client_body_size_limit_set = true;
 	i += std::string("client_body_size_limit").size();

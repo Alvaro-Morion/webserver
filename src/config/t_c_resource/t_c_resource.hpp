@@ -48,17 +48,17 @@ class t_c_resource
 							  bool delet_allowed_param, bool get_allowed_param, bool is_cgi_param);
 		t_c_resource(t_c_resource const &copy);
 		~t_c_resource(void);
-		bool               operator==(t_c_resource const &comparator) const;
-		t_c_resource               const &operator=(t_c_resource const &copy);
+		bool                operator==(t_c_resource const &comparator) const;
+		t_c_resource const &operator=(t_c_resource const &copy);
 
-		std::string const &get_root(void) const;
-		std::string const &get_redirect(void) const; // empty string for no redirect
-		bool               get_post_allowed(void) const;
-		bool               get_delet_allowed(void) const;
-		bool               get_get_allowed(void) const;
-		bool               get_is_cgi(void) const;
+		std::string const  &get_root(void) const;
+		std::string const  &get_redirect(void) const; // empty string for no redirect
+		bool                get_post_allowed(void) const;
+		bool                get_delet_allowed(void) const;
+		bool                get_get_allowed(void) const;
+		bool                get_is_cgi(void) const;
 
-		std::string        to_string(void) const;
+		std::string         to_string(void) const;
 };
 
 #pragma GCC diagnostic pop

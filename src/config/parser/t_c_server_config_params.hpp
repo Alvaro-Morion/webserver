@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 04:38:06                                            */
-/*   Updated:  2024/05/14 04:40:04                                            */
+/*   Updated:  2024/05/18 18:22:20                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,7 @@ struct s_t_c_server_config_params // NOLINT
 		std::string              *resource_is_a_directory_page = new std::string("default_error_pages/403");
 		t_c_default_error_pages  *default_error_pages = new t_c_default_error_pages();
 		std::vector<uint16_t>     ports_val;
-
-		struct s_t_c_router_parms
-		{
-				std::vector<std::string>  paths;
-				std::vector<t_c_resource> resources;
-		} router_params;
+		std::vector<t_c_route>    router_params;
 
 		struct s_t_c_default_error_pages_params // NOLINT
 		{

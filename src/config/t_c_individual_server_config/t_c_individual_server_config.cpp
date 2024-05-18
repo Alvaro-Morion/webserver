@@ -6,12 +6,12 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/08 03:01:06                                            */
-/*   Updated:  2024/05/18 02:45:12                                            */
+/*   Updated:  2024/05/18 16:32:54                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../config.hpp"
 #include "t_c_individual_server_config.hpp"
+#include "../config.hpp"
 #include <cstdint>
 #include <string>
 
@@ -112,10 +112,27 @@ bool t_c_individual_server_config::operator==(t_c_individual_server_config const
 	{
 		return (true);
 	}
-	if	((default_error_pages == comparator.default_error_pages) &&
-	   (client_body_size_limit == comparator.client_body_size_limit) &&
-	   (file_is_a_directory_page == comparator.file_is_a_directory_page) &&
-	   (router == comparator.router))
+	if ((default_error_pages == comparator.default_error_pages) &&
+		(client_body_size_limit == comparator.client_body_size_limit) &&
+		(file_is_a_directory_page == comparator.file_is_a_directory_page) && (router == comparator.router))
+	{
+		return (true);
+	}
+	return (false);
+}
+
+bool t_c_individual_server_config::operator>(t_c_individual_server_config const &comparator) const
+{
+	if ((*host_name > *comparator.host_name) || ((*host_name == *comparator.host_name) && (port > comparator.port)))
+	{
+		return (true);
+	}
+	return (false);
+}
+
+bool t_c_individual_server_config::operator<(t_c_individual_server_config const &comparator) const
+{
+	if ((*host_name < *comparator.host_name) || ((*host_name == *comparator.host_name) && (port < comparator.port)))
 	{
 		return (true);
 	}

@@ -110,7 +110,7 @@ std::string t_c_resource::to_string() const
 			((get_allowed == true) ? "true" : "fasle") + ", is cgi: " + ((is_cgi == true) ? "true}" : "fasle}"));
 }
 
-t_c_resource               const &t_c_resource::operator=(t_c_resource const &copy)
+t_c_resource const &t_c_resource::operator=(t_c_resource const &copy)
 {
 	root = copy.root;
 	redirect = copy.redirect;

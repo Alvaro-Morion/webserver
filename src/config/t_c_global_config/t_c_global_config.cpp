@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 19:13:58                                            */
-/*   Updated:  2024/05/18 02:47:00                                            */
+/*   Updated:  2024/05/18 17:48:32                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+
 ;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpragmas"
@@ -52,28 +53,6 @@ static std::vector<t_c_individual_server_config> ungroup(std::vector<t_c_server_
 	return (ungrouped);
 }
 
-static bool is_smaller(t_c_individual_server_config const &comparand, t_c_individual_server_config const &comparator)
-{
-
-	if ((*comparand.get_host_name() < *comparator.get_host_name()) ||
-		((*comparand.get_host_name() == *comparator.get_host_name()) && (comparand.get_port() < comparator.get_port())))
-	{
-		return (true);
-	}
-	return (false);
-}
-
-static bool is_bigger(t_c_individual_server_config const &comparand, t_c_individual_server_config const &comparator)
-{
-
-	if ((*comparand.get_host_name() > *comparator.get_host_name()) ||
-		((*comparand.get_host_name() == *comparator.get_host_name()) && (comparand.get_port() > comparator.get_port())))
-	{
-		return (true);
-	}
-	return (false);
-}
-
 static void sort(std::vector<t_c_individual_server_config> &servers)
 {
 	size_t i = 1;
@@ -90,7 +69,7 @@ static void sort(std::vector<t_c_individual_server_config> &servers)
 		while (min < max)
 		{
 			mid = (min + max) / 2;
-			if (is_smaller(servers[i], servers[mid]))
+			if (servers[i] < servers[mid])
 			{
 				if (max == mid)
 				{
@@ -101,7 +80,7 @@ static void sort(std::vector<t_c_individual_server_config> &servers)
 					max = mid;
 				}
 			}
-			else if (is_bigger(servers[i], servers[mid]))
+			else if (servers[i] > servers[mid])
 			{
 				if (min == mid)
 				{
@@ -118,11 +97,11 @@ static void sort(std::vector<t_c_individual_server_config> &servers)
 				break;
 			}
 		}
-		if (is_smaller(servers[i], servers[min]))
+		if (servers[i] < servers[min])
 		{
 			insert_in_place = 0;
 		}
-		else if (is_bigger(servers[i], servers[min]))
+		else if (servers[i] > servers[min])
 		{
 			insert_in_place = 1;
 		}
@@ -148,6 +127,10 @@ t_c_global_config::t_c_global_config(std::vector<t_c_server_config> const &serve
 {
 	servers = ungroup(servers_param);
 	sort(servers);
+	for (t_c_individual_server_config const &config : servers)
+	{
+		ports.insert(config.get_port());
+	}
 }
 
 t_c_global_config::~t_c_global_config(void)
