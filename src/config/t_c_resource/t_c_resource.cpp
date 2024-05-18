@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 18:30:24                                            */
-/*   Updated:  2024/05/14 04:06:36                                            */
+/*   Updated:  2024/05/18 02:20:14                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,17 @@ std::string t_c_resource::to_string() const
 			",\n\t\t\t post allowed: " + ((post_allowed == true) ? "true" : "fasle") +
 			", delet allowed: " + ((delet_allowed == true) ? "true" : "fasle") + ", get allowed: " +
 			((get_allowed == true) ? "true" : "fasle") + ", is cgi: " + ((is_cgi == true) ? "true}" : "fasle}"));
+}
+
+t_c_resource               const &t_c_resource::operator=(t_c_resource const &copy)
+{
+	root = copy.root;
+	redirect = copy.redirect;
+	post_allowed = copy.post_allowed;
+	delet_allowed = copy.delet_allowed;
+	get_allowed = copy.get_allowed;
+	is_cgi = copy.is_cgi;
+	return (*this);
 }
 
 #pragma GCC diagnostic pop

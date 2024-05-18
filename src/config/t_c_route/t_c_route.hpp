@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/16 16:22:19                                            */
-/*   Updated:  2024/05/16 16:26:01                                            */
+/*   Updated:  2024/05/18 02:54:37                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,14 @@ class t_c_route
 
 	public:
 		t_c_route(std::string const &path_param, t_c_resource const &resource_param);
-		t_c_route(t_c_route const &t_c_route);
+		t_c_route(t_c_route const &copy);
 		~t_c_route(void);
-		t_c_route const                              &operator=(t_c_route &copy);
+		t_c_route const                              &operator=(t_c_route const &copy);
 		bool                             operator==(t_c_route const &comparator) const;
 
 		std::string	const &get_path(void) const;
 		t_c_resource const &get_resource(void) const;
+		std::string                      to_string(void) const;
 };
 
 #pragma GCC diagnostic pop

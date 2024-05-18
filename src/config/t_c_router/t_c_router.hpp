@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 03:53:52                                            */
-/*   Updated:  2024/05/16 16:23:04                                            */
+/*   Updated:  2024/05/18 02:59:30                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include "../t_c_route/t_c_route.hpp"
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -36,7 +37,7 @@
 class t_c_router
 {
 	private:
-		std::vector<t_c_route>  routes; // only paths will be considered valid uris
+		std::vector<t_c_route>  routes;
 
 	public:
 		explicit t_c_router(std::vector<t_c_route> const  &routes_param);

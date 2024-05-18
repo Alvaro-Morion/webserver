@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 18:17:27                                            */
-/*   Updated:  2024/05/16 16:19:50                                            */
+/*   Updated:  2024/05/18 03:00:41                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,96 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
+//todo overload
+static bool is_smaller(t_c_router const &comparand, t_c_router const &comparator)
+{
+
+	if ((*comparand.get_host_name() < *comparator.get_host_name()) ||
+		((*comparand.get_host_name() == *comparator.get_host_name()) && (comparand.get_port() < comparator.get_port())))
+	{
+		return (true);
+	}
+	return (false);
+}
+
+static bool is_bigger(t_c_router const &comparand, t_c_router const &comparator)
+{
+
+	if ((*comparand.get_host_name() > *comparator.get_host_name()) ||
+		((*comparand.get_host_name() == *comparator.get_host_name()) && (comparand.get_port() > comparator.get_port())))
+	{
+		return (true);
+	}
+	return (false);
+}
 t_c_router::t_c_router(std::vector<t_c_route> const  &routes_param)
 	: routes(routes_param)
 {
-	//todo: sort and validate
+	size_t i = 1;
+	size_t min;
+	size_t max;
+	size_t mid;
+	size_t insert_in_place;
+
+	while (i < routes.size())
+	{
+		min = 0;
+		max = i - 1;
+		mid = 0;
+		while (min < max)
+		{
+			mid = (min + max) / 2;
+			if (is_smaller(routes[i], routes[mid]))
+			{
+				if (max == mid)
+				{
+					max--;
+				}
+				else
+				{
+					max = mid;
+				}
+			}
+			else if (is_bigger(routes[i], routes[mid]))
+			{
+				if (min == mid)
+				{
+					min++;
+				}
+				else
+				{
+					min = mid;
+				}
+			}
+			else
+			{
+				min = mid;
+				break;
+			}
+		}
+		if (is_smaller(routes[i], routes[min]))
+		{
+			insert_in_place = 0;
+		}
+		else if (is_bigger(routes[i], routes[min]))
+		{
+			insert_in_place = 1;
+		}
+		else if (routes[min] == routes[i])
+		{
+			//throw duplicated
+		}
+		else
+		{
+			routes.erase(routes.begin() + static_cast<std::vector<t_c_individual_server_config>::difference_type>(i));
+			continue;
+		}
+		routes.insert(routes.begin() + static_cast<std::vector<t_c_individual_server_config>::difference_type>(
+											 min + insert_in_place),
+					   routes[i]);
+		routes.erase(routes.begin() + static_cast<std::vector<t_c_individual_server_config>::difference_type>(i + 1));
+		i++;
+	}
 }
 
 t_c_router::t_c_router(t_c_router const &copy)
@@ -70,9 +156,7 @@ std::string t_c_router::to_string(void) const
 
 	for (size_t i = 0; i < routes.size(); i++)
 	{
-		//todo: use t_c_route::to_string() to tidy below code
-		string += "\n\t\t[" + std::to_string(i) + "]: {" + "path: " + routes[i].get_path() +
-				  ", resource: " + routes[i].get_resource().to_string() + "} ";
+		string += "\n\t\t[" + std::to_string(i) + "]: {" + routes[i].to_string() + "} ";
 	}
 	return (string);
 }

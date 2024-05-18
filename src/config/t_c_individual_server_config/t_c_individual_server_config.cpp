@@ -6,11 +6,12 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/08 03:01:06                                            */
-/*   Updated:  2024/05/14 04:01:34                                            */
+/*   Updated:  2024/05/18 02:45:12                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../config.hpp"
+#include "t_c_individual_server_config.hpp"
 #include <cstdint>
 #include <string>
 
@@ -103,6 +104,22 @@ std::string t_c_individual_server_config::to_string(void) const
 			"\n\tdefault error pages:\n" + default_error_pages->to_string() +
 			"\n\tfile is a directory page: " + *file_is_a_directory_page + "\n\tclient body size limit: " +
 			((client_body_size_limit == UINT64_MAX) ? "no limit" : std::to_string(client_body_size_limit)) + '\n');
+}
+
+bool t_c_individual_server_config::operator==(t_c_individual_server_config const &comparator) const
+{
+	if (this == &comparator)
+	{
+		return (true);
+	}
+	if	((default_error_pages == comparator.default_error_pages) &&
+	   (client_body_size_limit == comparator.client_body_size_limit) &&
+	   (file_is_a_directory_page == comparator.file_is_a_directory_page) &&
+	   (router == comparator.router))
+	{
+		return (true);
+	}
+	return (false);
 }
 
 #pragma GCC diagnostic pop

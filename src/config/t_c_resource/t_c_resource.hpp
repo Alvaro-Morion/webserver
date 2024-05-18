@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 03:52:48                                            */
-/*   Updated:  2024/05/14 04:23:35                                            */
+/*   Updated:  2024/05/18 02:18:01                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ class t_c_resource
 		t_c_resource(t_c_resource const &copy);
 		~t_c_resource(void);
 		bool               operator==(t_c_resource const &comparator) const;
+		t_c_resource               const &operator=(t_c_resource const &copy);
 
 		std::string const &get_root(void) const;
 		std::string const &get_redirect(void) const; // empty string for no redirect

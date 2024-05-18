@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 19:13:58                                            */
-/*   Updated:  2024/05/14 04:07:46                                            */
+/*   Updated:  2024/05/18 02:47:00                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,10 +126,7 @@ static void sort(std::vector<t_c_individual_server_config> &servers)
 		{
 			insert_in_place = 1;
 		}
-		else if (!((*servers[min].get_default_error_pages() == *servers[i].get_default_error_pages()) &&
-				   (servers[min].get_client_body_size_limit() == servers[i].get_client_body_size_limit()) &&
-				   (*servers[min].get_file_is_a_directory_page() == *servers[i].get_file_is_a_directory_page()) &&
-				   (*servers[min].get_router() == *servers[i].get_router())))
+		else if (servers[min] == servers[i])
 		{
 			throw(std::invalid_argument(*servers[min].get_host_name() + ":" + std::to_string(servers[min].get_port()) +
 										" is duplicated"));

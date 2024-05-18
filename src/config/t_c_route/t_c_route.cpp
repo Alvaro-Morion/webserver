@@ -6,11 +6,13 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/16 16:25:01                                            */
-/*   Updated:  2024/05/16 16:27:34                                            */
+/*   Updated:  2024/05/18 02:54:48                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "t_c_route.hpp"
+#include <stdexcept>
+#include <iostream>
 
 ;
 #pragma GCC diagnostic push
@@ -31,10 +33,53 @@
 t_c_route::t_c_route(std::string const &path_param, t_c_resource const &resource_param)
 	: path(path_param), resource(resource_param)
 {
-	if (path[i] != '/')
+	if (path[0] != '/')
 	{
-		
+		throw (std::invalid_argument("redirected path must begin whit a '/'"));
 	}
+}
+
+t_c_route::t_c_route(t_c_route const &copy)
+	: path(copy.path), resource(copy.resource)
+{
+
+}
+
+t_c_route::~t_c_route(void)
+{
+
+}
+
+t_c_route const                              &t_c_route::operator=(t_c_route const &copy)
+{
+	path = copy.path;
+	resource = copy.resource;
+	return (*this);
+}
+
+bool                             t_c_route::operator==(t_c_route const &comparator) const
+{
+	if (path == comparator.path && resource == comparator.get_resource())
+	{
+		return (true);
+	}
+	return (false);
+}
+
+
+std::string	const  &t_c_route::get_path(void) const
+{
+	return (path);
+}
+
+t_c_resource const &t_c_route::get_resource(void) const
+{
+	return (resource);
+}
+
+std::string                      t_c_route::to_string(void) const
+{
+	return (std::string("path: ") + path + ", resource: " + resource.to_string());
 }
 
 #pragma GCC diagnostic pop

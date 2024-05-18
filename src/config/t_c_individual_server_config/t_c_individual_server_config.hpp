@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 04:00:48                                            */
-/*   Updated:  2024/05/14 04:27:28                                            */
+/*   Updated:  2024/05/18 02:45:24                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ class t_c_individual_server_config // perfoms no validity checks on construction
 		t_c_individual_server_config(t_c_individual_server_config const &copy);
 		~t_c_individual_server_config(void);
 		t_c_individual_server_config const &operator=(t_c_individual_server_config const &copy);
+		bool operator==(t_c_individual_server_config const &comparator) const;
 
 		std::string const                  *get_host_name(void) const;
 		uint16_t                            get_port(void) const;
