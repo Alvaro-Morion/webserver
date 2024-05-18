@@ -2,7 +2,11 @@
 
 #include "../io.hpp"
 #include <cstring>
+#include <stdio.h>
+#include <cstdlib>
+#include <errno.h>
 #include <iostream>
+#include <sstream>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -13,6 +17,7 @@ class MySocket
     private:
         int sockfd;
         struct addrinfo *address;
+        t_c_individual_server_config *config;
     public:
         
         MySocket(t_c_individual_server_config config);
@@ -23,6 +28,7 @@ class MySocket
 
         int getSockfd();
         struct addrinfo *getAddress();
+        t_c_individual_server_config *getConfig();
 
         void setAddress(int domain, int type, int protocol, int port, std::string host);
 };

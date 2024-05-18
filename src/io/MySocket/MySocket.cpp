@@ -2,6 +2,7 @@
 
 MySocket::MySocket(t_c_individual_server_config config)
 {
+    this->config = &config;
     this->sockfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_TCP);
     test_connection(this->sockfd, "Socket: ");
     setAddress(AF_INET, SOCK_STREAM, IPPROTO_TCP, config.get_port(), *config.get_host_name());
@@ -51,9 +52,15 @@ struct addrinfo *MySocket::getAddress()
     return this->address;
 }
 
+t_c_individual_server_config *MySocket::getConfig()
+{
+    return this->config;
+}
+
 void MySocket::setAddress(int domain, int type, int protocol, int port, std::string host)
 {
     struct addrinfo hint, *res;
+    std::stringstream ostream;
     int status;
 
     memset(&hint, 0, sizeof(hint));
@@ -61,7 +68,9 @@ void MySocket::setAddress(int domain, int type, int protocol, int port, std::str
     hint.ai_socktype = type;
     hint.ai_protocol = protocol;
 
-    if((status = getaddrinfo(host.c_str(), std::to_string(port).c_str(), &hint, &res)) != 0)
+    ostream << port;
+
+    if((status = getaddrinfo(host.c_str(), ostream.str().c_str(), &hint, &res)) != 0)
     {
         std::cerr << gai_strerror(status) << std::endl;
         exit(EXIT_FAILURE);
