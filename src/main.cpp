@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "config/config.hpp"
+#include "io/io.hpp"
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
@@ -51,6 +52,7 @@ int main(int argc, char **argv)
 		return (EXIT_FAILURE);
 	}
 	config = get_config(argv[1]);
+	gestor_io(*config);
 	return (EXIT_FAILURE);
 }
 

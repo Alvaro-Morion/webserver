@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../io.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <errno.h>
@@ -11,24 +10,24 @@
 #include <stdio.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include "unistd.h"
 
 class MySocket
 {
 	private:
-		int                           sockfd;
-		struct addrinfo              *address;
-		t_c_individual_server_config *config;
-
+		int 		sockfd;
+		uint16_t	port;
+		sockaddr_in	address;
 	public:
-		MySocket(t_c_individual_server_config config);
+		MySocket(uint16_t port);
 		~MySocket();
 
-		void                          bind_socket();
-		void                          test_connection(int value, std::string error); // perror y exit
+		void		bind_socket(uint16_t port);
+		void		test_connection(int value, std::string error);
 
-		int                           getSockfd();
-		struct addrinfo              *getAddress();
-		t_c_individual_server_config *getConfig();
+		int			getSockfd(void);
+		uint16_t	getPort(void);
+		sockaddr_in getAddress(void);
 
-		void                          setAddress(int domain, int type, int protocol, int port, std::string host);
+		void		setAddress(uint16_t port);
 };

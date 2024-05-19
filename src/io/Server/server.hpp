@@ -2,13 +2,7 @@
 
 #include "../../config/config.hpp"
 #include "../MySocket/MySocket.hpp"
-
-#include <cstdlib>
-#include <cstring>
-#include <error.h>
 #include <map>
-#include <sstream>
-#include <stdio.h>
 #include <string>
 #include <sys/epoll.h>
 #include <vector>
@@ -22,17 +16,20 @@ class Server
 		t_c_global_config        *global_config;
 		int                       epollfd;
 		struct epoll_event        events[MAX_EVENTS];
-		std::map<int, MySocket *> socket_map;    // Listado de sockets abieros.
-		std::map<int, int>        conn_sock_map; // Tabla conexión-socket.
+		std::map<int, MySocket *> socket_map;    		// Openned sockets with their fds.
+		std::map<int, int>        conn_sock_map; 		// Connection-socket file descriptor table.
 	public:
 		Server(t_c_global_config config);
+		~Server();
 
-		void                config_epoll(t_c_global_config config); // Crea la epoll, añade todos los sockets y wait.
-		void                epoll_add(int fd);                      // Añade el fd a e epoll.
-		void                server_loop();          // Espera peticiones y las redirige hacia el servidor o el cliente.
-		void                manage_request(int fd); // Gestiona la petición una vez que se sale de epollwait.*/
+		void                		config_epoll(std::set<uint16_t> ports); // Epoll creation
+		void                		epoll_add(int fd);                      // Adds fd to epoll.
+		void                		server_loop(void);          			//Waits for requets and accept new clients,
+		void                		manage_request(int fd); 				// Manages pending request.
 
-		t_c_global_config  *getGlobalConfig();
-		int                 getEpoll();
-		struct epoll_event *getEvents();
+		t_c_global_config  			*getGlobalConfig(void);
+		int                 		getEpoll(void);
+		struct epoll_event 			*getEvents(void);
+		std::map<int, MySocket *>	&getSocket_Map(void);
+		std::map<int, int>			&getConn_Sock_Map(void);
 };

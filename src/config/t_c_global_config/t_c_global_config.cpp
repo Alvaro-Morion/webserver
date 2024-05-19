@@ -142,6 +142,11 @@ std::vector<t_c_individual_server_config> const &t_c_global_config::get_servers(
 	return (servers);
 }
 
+std::set<uint16_t> const &t_c_global_config::get_ports() const
+{
+	return (ports);
+}
+
 std::string t_c_global_config::to_string() const
 {
 	std::string string;
@@ -152,5 +157,7 @@ std::string t_c_global_config::to_string() const
 	}
 	return (string);
 }
+
+
 
 #pragma GCC diagnostic pop

@@ -1,38 +1,24 @@
 #include "MySocket.hpp"
 
-MySocket::MySocket(t_c_individual_server_config config)
+MySocket::MySocket(uint16_t port)
 {
-	this->config = &config;
 	this->sockfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_TCP);
+	this->port = htons(port);
 	test_connection(this->sockfd, "Socket: ");
-	setAddress(AF_INET, SOCK_STREAM, IPPROTO_TCP, config.get_port(), *config.get_host_name());
-	bind_socket();
+	bind_socket(port);
 	test_connection(listen(this->sockfd, 1000), "Listen: "); // no sé que número poner aquí.
 }
 
 MySocket::~MySocket()
 {
-	freeaddrinfo(address);
+	if (sockfd > 0)
+		close(sockfd);
 }
 
-void MySocket::bind_socket()
+void MySocket::bind_socket(uint16_t port)
 {
-	struct addrinfo *lp;
-	char            *error;
-
-	for (lp = this->address; lp != NULL; lp = lp->ai_next)
-	{
-		if (bind(this->sockfd, lp->ai_addr, lp->ai_addrlen) == 0)
-		{
-			break;
-		}
-		error = strerror(errno);
-	}
-	if (lp == NULL)
-	{
-		std::cerr << "Bind: " << error << std::endl;
-		exit(EXIT_FAILURE);
-	}
+	setAddress(port);
+	test_connection(bind(this->sockfd, (sockaddr *)&address, sizeof(address)), "Bind: ");
 }
 
 void MySocket::test_connection(int value, std::string error)
@@ -44,39 +30,25 @@ void MySocket::test_connection(int value, std::string error)
 	}
 }
 
-int MySocket::getSockfd()
+int MySocket::getSockfd(void)
 {
 	return this->sockfd;
 }
 
-struct addrinfo *MySocket::getAddress()
+uint16_t MySocket::getPort(void)
+{
+	return this->port;
+}
+
+sockaddr_in	MySocket::getAddress(void)
 {
 	return this->address;
 }
 
-t_c_individual_server_config *MySocket::getConfig()
+void MySocket::setAddress(uint16_t port)
 {
-	return this->config;
-}
-
-void MySocket::setAddress(int domain, int type, int protocol, int port, std::string host)
-{
-	struct addrinfo   hint, *res;
-	std::stringstream ostream;
-	int               status;
-
-	memset(&hint, 0, sizeof(hint));
-	hint.ai_family = domain;
-	hint.ai_socktype = type;
-	hint.ai_protocol = protocol;
-
-	ostream << port;
-
-	if ((status = getaddrinfo(host.c_str(), ostream.str().c_str(), &hint, &res)) != 0)
-	{
-		std::cerr << gai_strerror(status) << std::endl;
-		exit(EXIT_FAILURE);
-	}
-
-	this->address = res;
+	memset(&address, 0, sizeof(address));
+	address.sin_family = AF_INET;
+	address.sin_port = port;
+	address.sin_addr.s_addr = INADDR_ANY;
 }

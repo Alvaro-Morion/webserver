@@ -44,7 +44,7 @@ class t_c_global_config
 		~t_c_global_config(void);
 
 		std::vector<t_c_individual_server_config> const &get_servers(void) const;
-
+		std::set<uint16_t>	const						&get_ports(void) const;
 		std::string                                      to_string(void) const;
 };
 
