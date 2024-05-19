@@ -41,7 +41,6 @@ static t_c_route get_route(std::string &server_config, size_t &i, size_t &line, 
 	}
 	i++;
 	colum++;
-	
 }
 
 static void get_element(s_t_c_server_config_params &params, std::string &server_config, size_t &i, size_t &line,

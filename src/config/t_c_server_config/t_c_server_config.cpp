@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:19:46                                            */
-/*   Updated:  2024/05/15 06:20:25                                            */
+/*   Updated:  2024/05/19 21:06:48                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,15 +41,9 @@
 
 bool is_valid_hostname(std::string const &host_name)
 {
-	size_t          dot_pos;
-	size_t          lable_begin;
-	struct in_addr  addr;
-	struct in6_addr addr6;
+	size_t dot_pos;
+	size_t lable_begin;
 
-	if (inet_pton(AF_INET, host_name.c_str(), &addr) == 1 || inet_pton(AF_INET6, host_name.c_str(), &addr6) == 1)
-	{
-		return (true);
-	}
 	if ((host_name.size() > 253) ||
 		(host_name.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789-.") != std::string::npos) ||
 		host_name.empty() == true)

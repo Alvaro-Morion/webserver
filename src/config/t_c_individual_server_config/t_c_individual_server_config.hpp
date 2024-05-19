@@ -6,13 +6,14 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 04:00:48                                            */
-/*   Updated:  2024/05/18 16:28:20                                            */
+/*   Updated:  2024/05/19 22:40:45                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "../t_c_server_config/t_c_server_config.hpp"
+#include <cstdint>
 
 ;
 #pragma GCC diagnostic push
@@ -43,6 +44,7 @@ class t_c_individual_server_config // perfoms no validity checks on construction
 		uint64_t client_body_size_limit = UINT64_MAX; // UINT64_MAX to disable
 
 	public:
+		class t_c_light_key;
 		explicit t_c_individual_server_config(std::string const *host_name_param, uint16_t port_param,
 											  t_c_router const              *router_param,
 											  t_c_default_error_pages const *default_error_pages_param,
@@ -63,6 +65,24 @@ class t_c_individual_server_config // perfoms no validity checks on construction
 		uint64_t                            get_client_body_size_limit(void) const;
 
 		std::string                         to_string(void) const;
+};
+
+class t_c_individual_server_config::t_c_light_key
+{
+	private:
+		std::string const *host_name;
+		uint16_t           port;
+
+	public:
+		t_c_light_key(std::string const *host_name_param, uint16_t port_param);
+		~t_c_light_key(void);
+
+		std::string const *get_host_name(void) const;
+		uint16_t           get_port(void) const;
+
+		bool               operator==(t_c_individual_server_config const &comparator) const;
+		bool               operator>(t_c_individual_server_config const &comparator) const;
+		bool               operator<(t_c_individual_server_config const &comparator) const;
 };
 
 #pragma GCC diagnostic pop

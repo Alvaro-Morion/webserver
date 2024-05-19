@@ -6,13 +6,14 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/08 03:01:06                                            */
-/*   Updated:  2024/05/18 16:32:54                                            */
+/*   Updated:  2024/05/19 22:41:48                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "t_c_individual_server_config.hpp"
 #include "../config.hpp"
 #include <cstdint>
+#include <stdexcept>
 #include <string>
 
 ;
@@ -40,6 +41,10 @@ t_c_individual_server_config::t_c_individual_server_config(std::string const *ho
 	  default_error_pages(default_error_pages_param), file_is_a_directory_page(file_is_a_directory_page_param),
 	  client_body_size_limit(client_body_size_limit_param)
 {
+	if (is_valid_hostname(*host_name) == false)
+	{
+		throw(std::invalid_argument(*host_name + " is not a valid host_name")); // parameters invalid
+	}
 }
 
 t_c_individual_server_config::t_c_individual_server_config(t_c_individual_server_config const &copy)
@@ -112,7 +117,8 @@ bool t_c_individual_server_config::operator==(t_c_individual_server_config const
 	{
 		return (true);
 	}
-	if ((default_error_pages == comparator.default_error_pages) &&
+	if ((*host_name == *comparator.host_name) && (port == comparator.port) &&
+		(default_error_pages == comparator.default_error_pages) &&
 		(client_body_size_limit == comparator.client_body_size_limit) &&
 		(file_is_a_directory_page == comparator.file_is_a_directory_page) && (router == comparator.router))
 	{
@@ -137,6 +143,25 @@ bool t_c_individual_server_config::operator<(t_c_individual_server_config const 
 		return (true);
 	}
 	return (false);
+}
+
+t_c_individual_server_config::t_c_light_key::t_c_light_key(std::string const *host_name_param, uint16_t port_param)
+	: host_name(host_name_param), port(port_param)
+{
+	if (is_valid_hostname(*host_name) == false)
+	{
+		throw(std::invalid_argument(*host_name + " is not a valid host_name")); // parameters invalid
+	}
+}
+
+std::string const *t_c_individual_server_config::t_c_light_key::get_host_name(void) const
+{
+	return (host_name);
+}
+
+uint16_t t_c_individual_server_config::t_c_light_key::get_port(void) const
+{
+	return (port);
 }
 
 #pragma GCC diagnostic pop

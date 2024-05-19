@@ -12,7 +12,9 @@ MySocket::MySocket(uint16_t port)
 MySocket::~MySocket()
 {
 	if (sockfd > 0)
+	{
 		close(sockfd);
+	}
 }
 
 void MySocket::bind_socket(uint16_t port)
@@ -40,7 +42,7 @@ uint16_t MySocket::getPort(void)
 	return this->port;
 }
 
-sockaddr_in	MySocket::getAddress(void)
+sockaddr_in MySocket::getAddress(void)
 {
 	return this->address;
 }

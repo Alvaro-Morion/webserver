@@ -9,12 +9,16 @@ Server::Server(t_c_global_config config)
 
 Server::~Server()
 {
-	//Closes accepted connections and deletes sockets.
-	for(std::map<int, int>::iterator iter = conn_sock_map.begin(); iter != conn_sock_map.end(); iter++)
+	// Closes accepted connections and deletes sockets.
+	for (std::map<int, int>::iterator iter = conn_sock_map.begin(); iter != conn_sock_map.end(); iter++)
+	{
 		close(iter->first);
+	}
 	close(epollfd);
-	for(std::map<int, MySocket *>::iterator iter = socket_map.begin(); iter != socket_map.end(); iter++)
+	for (std::map<int, MySocket *>::iterator iter = socket_map.begin(); iter != socket_map.end(); iter++)
+	{
 		delete iter->second;
+	}
 }
 
 void Server::config_epoll(std::set<uint16_t> ports)

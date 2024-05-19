@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 04:03:54                                            */
-/*   Updated:  2024/05/18 17:46:33                                            */
+/*   Updated:  2024/05/20 00:09:20                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include "../t_c_individual_server_config/t_c_individual_server_config.hpp"
 #include <cstdint>
+#include <functional>
 #include <set>
 
 ;
@@ -35,17 +36,17 @@
 class t_c_global_config
 {
 	private:
-		std::vector<t_c_individual_server_config> servers; // alfabetically sorted whit reagrds to the host names
-														   // no duplicated responsabilityes are allowed
-		std::set<uint16_t>						  ports;
+		std::set<t_c_individual_server_config, std::less<>> servers; // alfabetically sorted whit reagrds to the host
+																	 // names no duplicated responsabilityes are allowed
+		std::set<uint16_t> ports;
 
 	public:
-		explicit t_c_global_config(std::vector<t_c_server_config> const &servers_param);
+		explicit t_c_global_config(std::set<t_c_individual_server_config, std::less<>> const &servers_param);
 		~t_c_global_config(void);
 
-		std::vector<t_c_individual_server_config> const &get_servers(void) const;
-		std::set<uint16_t>	const						&get_ports(void) const;
-		std::string                                      to_string(void) const;
+		std::set<t_c_individual_server_config, std::less<>> const &get_servers(void) const;
+		std::set<uint16_t> const                                  &get_ports(void) const;
+		std::string                                                to_string(void) const;
 };
 
 #pragma GCC diagnostic pop

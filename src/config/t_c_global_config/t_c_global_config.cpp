@@ -6,15 +6,18 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 19:13:58                                            */
-/*   Updated:  2024/05/18 17:48:32                                            */
+/*   Updated:  2024/05/20 00:11:16                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../config.hpp"
 #include <cstddef>
 #include <cstdint>
+#include <functional>
+#include <set>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 ;
@@ -33,11 +36,9 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-static std::vector<t_c_individual_server_config> ungroup(std::vector<t_c_server_config> const &servers)
+static void ungroup_and_add(std::set<t_c_individual_server_config, std::less<>> &servers, std::vector<t_c_server_config> const &new_servers)
 {
-	std::vector<t_c_individual_server_config> ungrouped;
-
-	for (t_c_server_config const &server_confing : servers)
+	for (t_c_server_config const &server_confing : new_servers)
 	{
 		for (std::string const &host_name : *server_confing.get_host_names())
 		{
@@ -46,87 +47,29 @@ static std::vector<t_c_individual_server_config> ungroup(std::vector<t_c_server_
 				t_c_individual_server_config new_server(
 					&host_name, port, server_confing.get_router(), server_confing.get_default_error_pages(),
 					server_confing.get_resource_is_a_directory_page(), server_confing.get_client_body_size_limit());
-				ungrouped.push_back(new_server);
-			}
-		}
-	}
-	return (ungrouped);
-}
 
-static void sort(std::vector<t_c_individual_server_config> &servers)
-{
-	size_t i = 1;
-	size_t min;
-	size_t max;
-	size_t mid;
-	size_t insert_in_place;
-
-	while (i < servers.size())
-	{
-		min = 0;
-		max = i - 1;
-		mid = 0;
-		while (min < max)
-		{
-			mid = (min + max) / 2;
-			if (servers[i] < servers[mid])
-			{
-				if (max == mid)
+				std::set<t_c_individual_server_config, std::less<>>::iterator it =
+					servers.find(t_c_individual_server_config::t_c_light_key(&host_name, port));
+				if (it == servers.end())
 				{
-					max--;
+					servers.insert(new_server);
 				}
 				else
 				{
-					max = mid;
-				}
-			}
-			else if (servers[i] > servers[mid])
-			{
-				if (min == mid)
-				{
-					min++;
-				}
-				else
-				{
-					min = mid;
-				}
-			}
-			else
-			{
-				min = mid;
-				break;
-			}
-		}
-		if (servers[i] < servers[min])
-		{
-			insert_in_place = 0;
-		}
-		else if (servers[i] > servers[min])
-		{
-			insert_in_place = 1;
-		}
-		else if (servers[min] == servers[i])
-		{
-			throw(std::invalid_argument(*servers[min].get_host_name() + ":" + std::to_string(servers[min].get_port()) +
+					if (*it != new_server)
+					{
+						throw(std::invalid_argument(*it->get_host_name() + ":" + std::to_string(it->get_port()) +
 										" is duplicated"));
+					}
+				}
+			}
 		}
-		else
-		{
-			servers.erase(servers.begin() + static_cast<std::vector<t_c_individual_server_config>::difference_type>(i));
-			continue;
-		}
-		servers.insert(servers.begin() + static_cast<std::vector<t_c_individual_server_config>::difference_type>(
-											 min + insert_in_place),
-					   servers[i]);
-		servers.erase(servers.begin() + static_cast<std::vector<t_c_individual_server_config>::difference_type>(i + 1));
-		i++;
 	}
 }
 
-t_c_global_config::t_c_global_config(std::vector<t_c_server_config> const &servers_param)
+t_c_global_config::t_c_global_config(std::set<t_c_individual_server_config, std::less<>> const &servers_param)
+	: servers(servers_param)
 {
-	servers = ungroup(servers_param);
-	sort(servers);
 	for (t_c_individual_server_config const &config : servers)
 	{
 		ports.insert(config.get_port());
@@ -137,7 +80,7 @@ t_c_global_config::~t_c_global_config(void)
 {
 }
 
-std::vector<t_c_individual_server_config> const &t_c_global_config::get_servers(void) const
+std::set<t_c_individual_server_config, std::less<>> const &t_c_global_config::get_servers(void) const
 {
 	return (servers);
 }
@@ -150,14 +93,15 @@ std::set<uint16_t> const &t_c_global_config::get_ports() const
 std::string t_c_global_config::to_string() const
 {
 	std::string string;
+	size_t i;
 
-	for (size_t i = 0; i < servers.size(); i++)
+	i = 1;
+	for (t_c_individual_server_config const &server : servers)
 	{
-		string += '[' + std::to_string(i) + "]:\n" + servers[i].to_string() + '\n';
+		string += '[' + std::to_string(i) + "]:\n" + server.to_string() + '\n';
+		i++;
 	}
 	return (string);
 }
-
-
 
 #pragma GCC diagnostic pop
