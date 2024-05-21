@@ -1,4 +1,5 @@
 .*\.un~
 .*\.swp
-.*\.vscode\*
-.*\.vscode\
+.vscode
+*.out
+test.cpp
