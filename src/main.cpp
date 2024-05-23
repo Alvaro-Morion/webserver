@@ -17,6 +17,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <csignal>
 
 ;
 #pragma GCC diagnostic push
@@ -42,6 +43,11 @@ static void print_usage(void)
 	std::cout << usage;
 }
 
+static void sigint_handler(int signal)
+{
+	exit(EXIT_SUCCESS);
+}
+
 int main(int argc, char **argv)
 {
 	t_c_global_config *config;
@@ -51,8 +57,9 @@ int main(int argc, char **argv)
 		print_usage();
 		return (EXIT_FAILURE);
 	}
+	std::signal(SIGINT, sigint_handler);
 	config = get_config(argv[1]);
-	gestor_io(*config);
+	gestor_io(config);
 	return (EXIT_FAILURE);
 }
 

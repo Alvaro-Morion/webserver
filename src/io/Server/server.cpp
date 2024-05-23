@@ -1,11 +1,11 @@
 #include "./server.hpp"
 
-// Server::Server(t_c_global_config config)
-// {
-// 	this->global_config = &config;
-// 	config_epoll(config.get_ports());
-// 	server_loop();
-// }
+Server::Server(t_c_global_config *config)
+{
+	this->global_config = config;
+	config_epoll(config->get_ports());
+	server_loop();
+}
 
 Server::Server(std::set<uint16_t> ports)
 {
@@ -18,6 +18,7 @@ Server::~Server()
 	close(epollfd);
 	for (std::map<int, MySocket *>::iterator iter = socket_map.begin(); iter != socket_map.end(); iter++)
 		delete iter->second;
+	free(global_config);
 }
 
 void Server::config_epoll(std::set<uint16_t> ports)
@@ -32,7 +33,7 @@ void Server::config_epoll(std::set<uint16_t> ports)
 	{
 		MySocket *socket = new MySocket(*iter);
 		std::cout << "Socket for port: " << *iter << " created with fd " << socket->getSockfd() << std::endl;
-		epoll_add(socket->getSockfd(), EPOLLIN | EPOLLET);
+		epoll_add(socket->getSockfd(), EPOLLIN | EPOLLOUT);
 		socket_map[socket->getSockfd()] = socket;
 	}
 }
@@ -73,7 +74,7 @@ void Server::server_loop(void)
 		{
 			sockfd = events[n].data.fd;
 			std::cout << sockfd << std::endl;
-			std::cout << "event in: " << sockfd << std::endl;
+			std::cout << "event " << events[n].events << " in: " << sockfd << std::endl;
 			if (socket_map.find(sockfd) != socket_map.end())
 			{
 				int size = 1;
@@ -85,7 +86,6 @@ void Server::server_loop(void)
 					exit(EXIT_FAILURE);
 				}
 				setsockopt(confd, SOL_SOCKET, SOCK_NONBLOCK, &size, sizeof(int));
-				std::cout << confd << std::endl;
 				epoll_add(confd, EPOLLIN | EPOLLET);
 				client_port_map[confd] = socket_map[sockfd]->getPort();
 				std::cout << "New client: " << confd << " Accepted in port " << socket_map[sockfd]->getPort() << std::endl;
@@ -113,14 +113,25 @@ void Server::manage_request(int fd)
 		recv_str += buffer;
 	}
 	std::cout << nbytes << std::endl;
-	if (nbytes == -1) // EWOULDBLOCK o se ha terminado de leer.
+	if (nbytes == -1 && recv_str.length() > 0) // EWOULDBLOCK o se ha terminado de leer.
 	{
 		std::cout << recv_str << std::endl;
-		select_config(fd, recv_str);
-		std::string str; // Send (standard message so far).
+		try 
+		{
+			t_c_individual_server_config server_config = select_config(fd, recv_str);
+			// HTTPEngine(server_config, request)
+		}
+		catch (int &error_code)
+		{
+			// Return corresponding error 400/421 (Los por defecto) y 413 el del server específico.
+			// send_error(int code, t_c_individual_server_config *config)
+			std::cout << "This is really bad" << std::endl;
+		}
+		std::string str;
 		str = "HTTP/1.1 200 OK\r\n\r\n<html><body>Hello</body></html>\r\n\r\n";
 		send(fd, str.c_str(), str.length(), 0);
 		std::cout << "Message sent\n";
+		std::cout << str << std::endl;
 	}
 	else
 		perror("recv");
@@ -128,45 +139,54 @@ void Server::manage_request(int fd)
 	close(fd);
 }
 
-std::vector<std::string> split_request(std::string str, std::string delimiter)
+static std::string get_header_value(std::string name, std::string request) // Gets the trimmed value of a header.
 {
-	std::vector<std::string> result;
-	std::string::size_type start = 0;
-	std::string::size_type end;
+	size_t start, end;
+	std::string value;
 
-	while((end = str.find(delimiter, start) != str.npos))
+	if((start = request.find(name + ":")) == std::string::npos)
+		return("");
+	start += std::string(name + ":").length();
+	end = request.find("\r\n", start);
+	value = request.substr(start, end - start);
+	while(isspace(value.front()))
+		value.erase(0,1);
+	while(isspace(value.back()))
+		value.erase(value.length()-1, 1);
+	return(value);
+}
+
+t_c_individual_server_config const &Server::select_config(int fd, std::string request)
+{
+	int port = client_port_map[fd];
+	std::string hostname;
+	size_t start, end;
+
+	if((hostname = get_header_value("Host", request)) == "") 
+		throw 400; // Bad request (No host)
+	hostname = hostname.substr(0, hostname.find(":"));
+	std::cout << "Parsing request. Port: " << port << " Hostname: " << hostname << std::endl;
+	std::set<t_c_individual_server_config, std::less<void>> servers = global_config->get_servers();
+	for (std::set<t_c_individual_server_config, std::less<void>>::iterator iter = servers.begin(); iter != servers.end(); iter++)
 	{
-		result.push_back(str.substr(start, end - start));
-		start = end + 2;
-	}
-	result.push_back(str.substr(start));
-	return(result);
+		if(iter->get_port() == port && *(iter->get_host_name()) == hostname)
+		{
+			if(get_header_value("Content-length", request) != "")
+			{
+				size_t content_length = std::atoll(get_header_value("Content-length", request).c_str());
+				if (content_length > iter->get_client_body_size_limit())
+					throw 413; //Request too large
+				return (*iter);
+			}
+		}
+	}	
+	throw -1; //No host:port coincidence ¿Do we have an error for this, maybe 421?.
 }
 
-void	Server::select_config(int fd, std::string request)
+t_c_global_config *Server::getGlobalConfig(void)
 {
-	uint16_t port = client_port_map[fd];
-	std::string host_name;
-
-	//std::vector<std::string> tokens = split_request(request, "\r\n");
-	// for(std::vector<std::string>::iterator iter = tokens.begin(); iter != tokens.end(); iter++)
-	// {
-	// 	if (iter->find("Host: ", strlen("Host: ")) == 0)
-	// 	{
-	// 		host_name = iter->substr(6, iter->find(':', 6));
-	// 		break;
-	// 	}
-	// 	std::cout << host_name << std::endl;
-	// 	std::cout << port << std::endl;
-	// }
-	//Buscar en global config.
-
+	return this->global_config;
 }
-
-// t_c_global_config *Server::getGlobalConfig(void)
-// {
-// 	return this->global_config;
-// }
 
 int Server::getEpoll(void)
 {
