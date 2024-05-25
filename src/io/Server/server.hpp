@@ -8,6 +8,10 @@
 #include <sys/epoll.h>
 #include <vector>
 #include <iostream>
+#include <fstream>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #define MAX_EVENTS  500
 #define BUFFER_SIZE 30000
@@ -24,14 +28,15 @@ class Server
 		Server(std::set<uint16_t> ports);			//For testing purposes.
 		~Server();
 
-		void								config_epoll(std::set<uint16_t> ports); // Epoll creation
-		void								epoll_add(int fd, uint32_t mask);       // Adds fd to epoll.
-		void								server_loop(void);                      // Waits for requets and accept new clients,
-		void								manage_request(int fd);                 // Manages pending request.
+		void								config_epoll(std::set<uint16_t> ports);
+		void								epoll_add(int fd, uint32_t mask);       
+		void								server_loop(void);                      
+		void								manage_request(int fd);                 
 		t_c_individual_server_config const	&select_config(int fd, std::string request);
+		void								send_response(int response_fd, int socketfd);
 
 		t_c_global_config         			*getGlobalConfig(void);
 		int                        			getEpoll(void);
-		struct epoll_event        			*getEvents(void);
 		std::map<int, MySocket *> 			&getSocket_Map(void);
+		std::map<int, uint16_t>				&getClientPortMap(void);
 };

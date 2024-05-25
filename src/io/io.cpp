@@ -1,6 +1,6 @@
 #include "io.hpp"
 
-void gestor_io(t_c_global_config *global_config)
+/*void gestor_io(t_c_global_config *global_config)
 {
 	// open all listening sockets and bind to all ports (ipv4 is enough) OK
 	// wait for conections and accept OK
@@ -11,7 +11,5 @@ void gestor_io(t_c_global_config *global_config)
 	// t_c_individual_server_config &server) reads or splices the returned fd to the connection fd when all contents of
 	// returned fd are writen to connection fd closes conection fd and rips c_pid if not 0 (non blocking) dont forget
 	// SIGPIPE OK
-	// Gracefully exiting with SIGINT (En el main).
-	signal(SIGPIPE, SIG_IGN);
-	Server server(global_config);
-}
+	// Gracefully exiting with SIGINT (En el main).	
+}*/

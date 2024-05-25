@@ -94,6 +94,8 @@ void Server::server_loop(void)
 			{
 				std::cout << "A request has been received...\n";
 				manage_request(sockfd);
+				socket_map.erase(sockfd);
+				close(sockfd);
 			}
 			std::cout << "end of the loop" << std::endl;
 		}
@@ -105,6 +107,7 @@ void Server::manage_request(int fd)
 	std::string recv_str;
 	char        buffer[BUFFER_SIZE];
 	int         nbytes;
+	std::string line;
 
 	recv_str.clear();
 	while ((nbytes = recv(fd, buffer, BUFFER_SIZE - 1, MSG_DONTWAIT)) > 0)
@@ -116,27 +119,21 @@ void Server::manage_request(int fd)
 	if (nbytes == -1 && recv_str.length() > 0) // EWOULDBLOCK o se ha terminado de leer.
 	{
 		std::cout << recv_str << std::endl;
-		try 
+		try
 		{
 			t_c_individual_server_config server_config = select_config(fd, recv_str);
-			// HTTPEngine(server_config, request)
+			//{response, pid}engine(request, config)
+			//send_response(response, fd);
 		}
-		catch (int &error_code)
+		catch (std::string &error_file)
 		{
-			// Return corresponding error 400/421 (Los por defecto) y 413 el del server específico.
-			// send_error(int code, t_c_individual_server_config *config)
-			std::cout << "This is really bad" << std::endl;
-		}
-		std::string str;
-		str = "HTTP/1.1 200 OK\r\n\r\n<html><body>Hello</body></html>\r\n\r\n";
-		send(fd, str.c_str(), str.length(), 0);
-		std::cout << "Message sent\n";
-		std::cout << str << std::endl;
+			send_response(open(error_file.c_str(), O_RDONLY), fd);
+			std::cout << "Error message sent\n";
+			return;
+		}	
 	}
 	else
 		perror("recv");
-	socket_map.erase(fd);
-	close(fd);
 }
 
 static std::string get_header_value(std::string name, std::string request) // Gets the trimmed value of a header.
@@ -160,27 +157,52 @@ t_c_individual_server_config const &Server::select_config(int fd, std::string re
 {
 	int port = client_port_map[fd];
 	std::string hostname;
-	size_t start, end;
-
+	
 	if((hostname = get_header_value("Host", request)) == "") 
-		throw 400; // Bad request (No host)
+	{
+		t_c_default_error_pages ep;
+		throw ep.get_bad_request();
+	}
 	hostname = hostname.substr(0, hostname.find(":"));
 	std::cout << "Parsing request. Port: " << port << " Hostname: " << hostname << std::endl;
-	std::set<t_c_individual_server_config, std::less<void>> servers = global_config->get_servers();
-	for (std::set<t_c_individual_server_config, std::less<void>>::iterator iter = servers.begin(); iter != servers.end(); iter++)
+	
+	std::set<t_c_individual_server_config, std::less<>> servers = global_config->get_servers();
+	t_c_individual_server_config::t_c_light_key key(&hostname, port);
+	std::set<t_c_individual_server_config, std::less<>>::iterator config = servers.find(key);
+	
+	if (config != servers.end())
 	{
-		if(iter->get_port() == port && *(iter->get_host_name()) == hostname)
+		if(get_header_value("Content-length", request) != "")
 		{
-			if(get_header_value("Content-length", request) != "")
-			{
-				size_t content_length = std::atoll(get_header_value("Content-length", request).c_str());
-				if (content_length > iter->get_client_body_size_limit())
-					throw 413; //Request too large
-				return (*iter);
-			}
+			size_t content_length = std::atoll(get_header_value("Content-length", request).c_str());
+			if (content_length > config->get_client_body_size_limit())
+				throw config->get_default_error_pages()->get_content_too_large();
+			return (*config);
 		}
 	}	
-	throw -1; //No host:port coincidence ¿Do we have an error for this, maybe 421?.
+	
+	t_c_default_error_pages ep;
+	throw ep.get_bad_request(); // No host::port in the available configurations. Shouldn't this be misdirected request (421)?
+}
+
+void Server::send_response(int response_fd, int socketfd)
+{
+	std::string response = "";
+	size_t nbytes;
+	char buf[BUFFER_SIZE];
+
+	while((nbytes = read(response_fd, buf, BUFFER_SIZE)) > 0)
+	{
+		buf[nbytes] = 0;
+		response += buf;
+	}
+	if (nbytes != 0)
+	{
+		perror("Response file");
+		return;
+	}
+	if(send(socketfd, &response, response.length(), MSG_DONTWAIT) == -1)
+		perror("Write");
 }
 
 t_c_global_config *Server::getGlobalConfig(void)
@@ -196,4 +218,9 @@ int Server::getEpoll(void)
 std::map<int, MySocket *> &Server::getSocket_Map(void)
 {
 	return this->socket_map;
+}
+
+std::map<int, uint16_t> &Server::getClientPortMap(void)
+{
+	return client_port_map;
 }

@@ -59,7 +59,8 @@ int main(int argc, char **argv)
 	}
 	std::signal(SIGINT, sigint_handler);
 	config = get_config(argv[1]);
-	gestor_io(config);
+	signal(SIGPIPE, SIG_IGN);
+	Server server(config);
 	return (EXIT_FAILURE);
 }
 
