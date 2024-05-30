@@ -18,7 +18,6 @@ Server::~Server()
 	close(epollfd);
 	for (std::map<int, MySocket *>::iterator iter = socket_map.begin(); iter != socket_map.end(); iter++)
 		delete iter->second;
-	free(global_config);
 }
 
 void Server::config_epoll(std::set<uint16_t> ports)
@@ -122,7 +121,7 @@ void Server::manage_request(int fd)
 		try
 		{
 			t_c_individual_server_config server_config = select_config(fd, recv_str);
-			//{response, pid}engine(request, config)
+			//ReturnType engine(request, config)
 			//send_response(response, fd);
 		}
 		catch (std::string &error_file)
@@ -159,10 +158,7 @@ t_c_individual_server_config const &Server::select_config(int fd, std::string re
 	std::string hostname;
 	
 	if((hostname = get_header_value("Host", request)) == "") 
-	{
-		t_c_default_error_pages ep;
-		throw ep.get_bad_request();
-	}
+		throw 400;
 	hostname = hostname.substr(0, hostname.find(":"));
 	std::cout << "Parsing request. Port: " << port << " Hostname: " << hostname << std::endl;
 	
@@ -176,13 +172,11 @@ t_c_individual_server_config const &Server::select_config(int fd, std::string re
 		{
 			size_t content_length = std::atoll(get_header_value("Content-length", request).c_str());
 			if (content_length > config->get_client_body_size_limit())
-				throw config->get_default_error_pages()->get_content_too_large();
+				throw 413;//handle_error(413, *config);
 			return (*config);
 		}
-	}	
-	
-	t_c_default_error_pages ep;
-	throw ep.get_bad_request(); // No host::port in the available configurations. Shouldn't this be misdirected request (421)?
+	}
+	throw 400;//handle_invalid_request();
 }
 
 void Server::send_response(int response_fd, int socketfd)

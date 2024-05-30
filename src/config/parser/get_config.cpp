@@ -76,7 +76,6 @@ static uint64_t get_value(t_c_token const &token, char const *config_file, int &
 	}
 	return (res);
 }
-}
 
 static void get_client_body_size(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
 		char const *config_file, int &error_count)

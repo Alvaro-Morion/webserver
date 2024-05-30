@@ -127,9 +127,27 @@ bool t_c_individual_server_config::operator==(t_c_individual_server_config const
 	return (false);
 }
 
+bool t_c_individual_server_config::operator==(t_c_individual_server_config::t_c_light_key const &comparator) const
+{
+	if ((*host_name == *comparator.get_host_name()) && (port == comparator.get_port()))
+	{
+		return (true);
+	}
+	return (false);
+}
+
 bool t_c_individual_server_config::operator>(t_c_individual_server_config const &comparator) const
 {
 	if ((*host_name > *comparator.host_name) || ((*host_name == *comparator.host_name) && (port > comparator.port)))
+	{
+		return (true);
+	}
+	return (false);
+}
+
+bool t_c_individual_server_config::operator>(t_c_individual_server_config::t_c_light_key const &comparator) const
+{
+	if ((*host_name > *comparator.get_host_name()) || ((*host_name == *comparator.get_host_name()) && (port > comparator.get_port())))
 	{
 		return (true);
 	}
@@ -145,6 +163,15 @@ bool t_c_individual_server_config::operator<(t_c_individual_server_config const 
 	return (false);
 }
 
+bool t_c_individual_server_config::operator<(t_c_individual_server_config::t_c_light_key const &comparator) const
+{
+	if ((*host_name < *comparator.get_host_name()) || ((*host_name == *comparator.get_host_name()) && (port < comparator.get_port())))
+	{
+		return (true);
+	}
+	return (false);
+}
+
 t_c_individual_server_config::t_c_light_key::t_c_light_key(std::string const *host_name_param, uint16_t port_param)
 	: host_name(host_name_param), port(port_param)
 {
@@ -154,6 +181,9 @@ t_c_individual_server_config::t_c_light_key::t_c_light_key(std::string const *ho
 	}
 }
 
+t_c_individual_server_config::t_c_light_key::~t_c_light_key(void)
+{}
+
 std::string const *t_c_individual_server_config::t_c_light_key::get_host_name(void) const
 {
 	return (host_name);
@@ -162,6 +192,33 @@ std::string const *t_c_individual_server_config::t_c_light_key::get_host_name(vo
 uint16_t t_c_individual_server_config::t_c_light_key::get_port(void) const
 {
 	return (port);
+}
+
+bool t_c_individual_server_config::t_c_light_key::operator==(t_c_individual_server_config const &comparator) const
+{
+	if(*host_name == *comparator.get_host_name() && port == comparator.get_port())
+	{
+		return (true);
+	}
+	return (false);
+}
+
+bool t_c_individual_server_config::t_c_light_key::operator>(t_c_individual_server_config const &comparator) const
+{
+	if(*host_name > *comparator.get_host_name() || ( *host_name == *comparator.get_host_name() && port > comparator.get_port()))
+	{
+		return (true);
+	}
+	return (false);
+}
+
+bool t_c_individual_server_config::t_c_light_key::operator<(t_c_individual_server_config const &comparator) const
+{
+	if(*host_name < *comparator.get_host_name() || ( *host_name == *comparator.get_host_name() && port < comparator.get_port()))
+	{
+		return (true);
+	}
+	return (false);
 }
 
 #pragma GCC diagnostic pop

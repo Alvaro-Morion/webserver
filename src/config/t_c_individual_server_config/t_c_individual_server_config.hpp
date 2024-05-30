@@ -54,8 +54,11 @@ class t_c_individual_server_config // perfoms no validity checks on construction
 		~t_c_individual_server_config(void);
 		t_c_individual_server_config const &operator=(t_c_individual_server_config const &copy);
 		bool                                operator==(t_c_individual_server_config const &comparator) const;
+		bool                                operator==(t_c_individual_server_config::t_c_light_key const &comparator) const;
 		bool                                operator>(t_c_individual_server_config const &comparator) const;
+		bool                                operator>(t_c_individual_server_config::t_c_light_key const &comparator) const;
 		bool                                operator<(t_c_individual_server_config const &comparator) const;
+		bool                                operator<(t_c_individual_server_config::t_c_light_key const &comparator) const;
 
 		std::string const                  *get_host_name(void) const;
 		uint16_t                            get_port(void) const;

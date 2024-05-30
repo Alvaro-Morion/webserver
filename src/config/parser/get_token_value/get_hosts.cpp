@@ -54,7 +54,7 @@ static bool was_not_parsed(std::vector<t_c_token> const &tokens, size_t &i, t_c_
 	return (false);
 }
 
-		if (tokens[i].get_token()[0] == '\"')
+/*		if (tokens[i].get_token()[0] == '\"')
 		{
 			tokens[i].get_token_non_const().erase(0, 1);
 			tokens[i].get_position_non_const().add_one_to_colum();
@@ -67,7 +67,7 @@ static bool was_not_parsed(std::vector<t_c_token> const &tokens, size_t &i, t_c_
 			{
 				tokens[i].get_token_non_const().erase(tokens[i].get_token().size() - 1, 1);
 			}
-		}
+		}*/
 
 void get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
 		char const *config_file, int &error_count)
