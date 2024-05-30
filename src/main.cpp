@@ -12,12 +12,12 @@
 
 #include "config/config.hpp"
 #include "io/io.hpp"
+#include <csignal>
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
 #include <string>
 #include <vector>
-#include <csignal>
 
 ;
 #pragma GCC diagnostic push

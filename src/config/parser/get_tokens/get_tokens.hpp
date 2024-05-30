@@ -1,21 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                                            */
-/*   Filename: t_c_global_config.hpp                                          */
+/*   Filename: get_tokens.hpp                                                 */
 /*   Author:   Peru Riezu <riezumunozperu@gmail.com>                          */
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
-/*   Created:  2024/05/14 04:03:54                                            */
-/*   Updated:  2024/05/24 18:29:20                                            */
+/*   Created:  2024/05/27 08:00:02                                            */
+/*   Updated:  2024/05/28 18:23:27                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "../t_c_individual_server_config/t_c_individual_server_config.hpp"
-#include <cstdint>
-#include <functional>
-#include <set>
+#include "../parser.hpp"
 
 ;
 #pragma GCC diagnostic push
@@ -32,21 +29,20 @@
 #pragma GCC diagnostic ignored "-Wc++20-designator"
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
-
-class t_c_global_config
+enum class e_token_type
 {
-	private:
-		std::set<t_c_individual_server_config, std::less<>> servers; // alfabetically sorted whit reagrds to the host
-																	 // names no duplicated responsabilityes are allowed
-		std::set<uint16_t> ports;
-
-	public:
-		explicit t_c_global_config(std::set<t_c_individual_server_config, std::less<>> const &servers_param);
-		~t_c_global_config(void);
-
-		std::set<t_c_individual_server_config, std::less<>> const &get_servers(void) const;
-		std::set<uint16_t> const                                  &get_ports(void) const;
-		std::string                                                to_string(void) const;
+	quoted,
+	comment,
+	normal,
+	separator,
+	none
 };
+
+e_token_type get_token_type(char const *buffer);
+size_t find_token_end(char const *str, e_token_type token_type, size_t &colum, size_t &row);
+size_t find_first_non_space(char const *str, size_t &colum, size_t &row);
+size_t find_space_unscaped_quote_pound_or_separator(char const *str, size_t &colum, size_t &row);
+size_t find_nl(char const *str, size_t &colum, __attribute((unused)) size_t &row);
+size_t find_char_after_unscaped_quotation(char const *str, size_t &colum, size_t &row);
 
 #pragma GCC diagnostic pop

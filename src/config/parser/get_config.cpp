@@ -5,21 +5,20 @@
 /*   Author:   Peru Riezu <riezumunozperu@gmail.com>                          */
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
-/*   Created:  2024/05/09 17:09:37                                            */
-/*   Updated:  2024/05/15 03:59:54                                            */
+/*   Created:  2024/05/26 00:53:43                                            */
+/*   Updated:  2024/05/29 20:56:57                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.hpp"
-#include <cctype>
 #include <cstddef>
-#include <cstring>
-#include <fcntl.h>
+#include <cstdint>
 #include <stdexcept>
 #include <string>
-#include <system_error>
-#include <unistd.h>
+#include <utility>
 #include <vector>
+#include <iostream>
+#include <unistd.h>
 
 ;
 #pragma GCC diagnostic push
@@ -37,193 +36,176 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-static std::string get_file_content(char *path)
+static void find_next_server_token(std::vector<t_c_token> const &tokens, size_t &i)
 {
-	std::string content;
-	char        buffer[1025];
-	ssize_t     return_val;
-	int         filedes = open(path, O_RDONLY);
-
-	if (filedes == -1)
+	i++;
+	while (i < tokens.size())
 	{
-		throw(std::system_error(std::error_code{errno, std::system_category()},
-								std::string("when triying to open file ") + path + " for reading"));
+		if (tokens[i].get_token() == "server")
+		{
+			return;
+		}
+		i++;
 	}
-	return_val = read(filedes, buffer, sizeof(buffer));
-	buffer[return_val] = '\0';
-	while (return_val != 0)
-	{
-		content.append(buffer);
-		return_val = read(filedes, buffer, sizeof(buffer));
-		buffer[return_val] = '\0';
-	}
-	if (return_val == -1)
-	{
-		throw(std::system_error(std::error_code{errno, std::system_category()},
-								std::string("when triying to read from file ") + path));
-	}
-	return (content);
 }
 
-bool is_double_quote(std::string &content, size_t i)
+static uint64_t get_value(t_c_token const &token, char const *config_file, int &error_count)
 {
-	size_t count;
+	uint64_t res;
+	size_t   i;
 
-	if (content[i] != '\"')
+	res = 0;
+	i = 0;
+	while (token.get_token()[i] != '\0')
 	{
-		return (false);
-	}
-	count = 0;
-	while (i != 0)
-	{
-		i--;
-		if (content[i] == '\\')
+		if (isdigit(token.get_token()[i]) == 0)
 		{
-			count++;
+			std::cout << std::string(config_file) + ": " + token.get_position().to_string() +
+						" : error: expected number, found: " + token.get_token() + '\n';
+			error_count++;
+			throw (std::invalid_argument(""));
+		}
+		if ((UINT64_MAX / 10 < res) || ((UINT64_MAX - static_cast<unsigned>(token.get_token()[i] - '0')) < res * 10))
+		{
+			error_count++;
+			throw (std::invalid_argument(""));
+		}
+		res *= 10;
+		res += static_cast<unsigned>(token.get_token()[i] - '0');
+		i++;
+	}
+	return (res);
+}
+}
+
+static void get_client_body_size(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
+		char const *config_file, int &error_count)
+{
+	const t_c_position position = tokens[i].get_position();
+	uint64_t           res;
+
+	i++;
+	if (i == tokens.size())
+	{
+		std::cout << std::string(config_file) + ": error, expected a number, to give value to the client_body_size_limit"
+			" attribute at " + position.to_string() + ", but found end of file\n";
+		error_count++;
+		return;
+	}
+	res = get_value(tokens[i], config_file, error_count);
+
+	i++;
+}
+
+static t_c_server_config_token get_server_config(std::vector<t_c_token> const &tokens, size_t &i, const char *config_file,
+		int &error_count)
+{
+	t_c_server_constructor_params params;
+	const int                     original_error_count = error_count;
+	const t_c_position            server_token_position = tokens[i].get_position();
+	const t_c_position            opening_key_position = tokens[i + 1].get_position();
+
+	i += 2;
+	while (i < tokens.size() && tokens[i].get_token() != "}" && error_count < 30)
+	{
+		if (tokens[i].get_token() == "ports")
+		{
+			get_ports(params, tokens, i, config_file, error_count);
+		}
+		else if (tokens[i].get_token() == "hosts")
+		{
+			get_hosts(params, tokens, i, config_file, error_count);
+		}
+		else if ((tokens[i].get_token() == "error_page_http_version_not_supported")
+		|| (tokens[i].get_token() == "error_page_not_implemeted")
+		|| (tokens[i].get_token() == "error_internal_server_error")
+		|| (tokens[i].get_token() == "error_page_uri_too_long")
+		|| (tokens[i].get_token() == "error_page_content_too_large")
+		|| (tokens[i].get_token() == "error_page_length_requiered")
+		|| (tokens[i].get_token() == "error_page_request_timeout")
+		|| (tokens[i].get_token() == "error_page_not_found")
+		|| (tokens[i].get_token() == "error_page_forbidden")
+		|| (tokens[i].get_token() == "error_page_bad_request"))
+		{
+			get_error_page(params, tokens, i, config_file, error_count);
+		}
+		else if(tokens[i].get_token() == "client_body_size_limit")
+		{
+			get_client_body_size(params, tokens, i, config_file, error_count);
+		}
+		else if (tokens[i].get_token() == "router")
+		{
+
 		}
 		else
 		{
-			break;
+
 		}
+
+		i++;
 	}
-	if (count % 2 == 0)
+	if (i == tokens.size())
 	{
-		return (false);
+		std::cout << std::string(config_file) + ": error, expected }, to match { at " + opening_key_position.to_string()
+		   + ", but found end of file\n";
+		throw (std::invalid_argument(""));
 	}
-	return (true);
-}
-
-static void remove_comments(std::string &content)
-{
-	bool in_quotations = false;
-
-	for (size_t i = 0; i < content.size(); i++)
+	if (original_error_count != error_count)
 	{
-		if (is_double_quote(content, i) == true)
-		{
-			in_quotations = !in_quotations;
-		}
-		else if ((content[i] == '/' && in_quotations == false) &&
-				 ((i != content.size() - 1) && (content[i + 1] == '/')))
-		{
-			size_t j;
-
-			j = content.find('\n', i + 2);
-			if (j == std::string::npos)
-			{
-				j = content.size() - 1;
-			}
-			content.erase(i, j - i);
-			i -= j - i;
-		}
+		throw (std::invalid_argument(""));
 	}
 }
 
-static size_t get_last_key(std::string &content, size_t i)
+t_c_global_config *get_config(char const *config_file)
 {
-	size_t open_keys = 1;
-	bool   in_quotations = false;
-
-	for (i++; i < content.size() && open_keys != 0; i++)
-	{
-		if (content[i] == '}' && in_quotations == false)
-		{
-			open_keys--;
-		}
-		else if (content[i] == '{' && in_quotations == false)
-		{
-			open_keys++;
-		}
-		else if (content[i] == '\"')
-		{
-			in_quotations = !in_quotations;
-		}
-	}
-	if (open_keys != 0)
-	{
-		throw(std::invalid_argument("unexpected end of file while triying to match previusly opened \"{\""));
-	}
-	return (i - 1);
-}
-
-static std::string get_next_server_config(std::string &content, size_t &line, size_t &colum)
-{
-	size_t      i;
-	size_t      first_key;
-	size_t      last_key;
-	std::string server_config;
+	int                                  error_count = 0;
+	std::vector<t_c_token> const         tokens = get_tokens(config_file, error_count);
+	std::vector<t_c_server_config_token> server_configs;
+	size_t                               i;
 
 	i = 0;
-	while (std::isspace(content[i]) != 0)
+	while (i < tokens.size() && error_count < 30)
 	{
-		if (content[i] == '\n')
+		if (tokens[i].get_token() != "server")
 		{
-			line++;
-			colum = 0;
+			std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
+						" : error: expected server, found: " + tokens[i].get_token() + '\n';
+			error_count++;
+			find_next_server_token(tokens, i);
+			continue;
 		}
-		else
+		if (i + 1 == tokens.size())
 		{
-			colum++;
+			std::cout << std::string(config_file) + ": error, after: " + tokens[i - 1].get_position().to_string() + " " +
+				tokens[i - 1].get_token() + ", expected {, but found end of file\n";
+			error_count++;
+			break;
 		}
-		i++;
-	}
-	if (strncmp(&content.c_str()[i], "server", 6) != 0)
-	{
-		throw(std::invalid_argument(std::string("error: on line: ") + std::to_string(line) +
-									", colum: " + std::to_string(colum) + ",expected \"server\""));
-	}
-	i += 6;
-	colum += 6;
-	while (std::isspace(content[i]) != 0)
-	{
-		if (content[i] == '\n')
+		if (tokens[i + 1].get_token() != "{")
 		{
-			line++;
-			colum = 0;
+			std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
+						" : error: expected '{', found: " + tokens[i].get_token() + '\n';
+			error_count++;
+			find_next_server_token(tokens, i);
+			continue;
 		}
-		else
+		try 
 		{
-			colum++;
+			server_configs.push_back(get_server_config(tokens, i, config_file, error_count)); // will update i to refer
+																							  // to the closing }
 		}
-		i++;
+		catch (std::invalid_argument const &)
+		{
+		}
 	}
-	if (content[i] != '{')
+	if (error_count == 30)
 	{
-		throw(std::invalid_argument(std::string("error: on line: ") + std::to_string(line) +
-									", colum: " + std::to_string(colum) + ",expected \"{\""));
+			std::cout << "too many errors emited stoping\n";
 	}
-	first_key = i;
-	i++;
-	colum++;
-	last_key = get_last_key(content, i);
-	server_config.append(content.begin() + static_cast<std::string::difference_type>(first_key),
-						 content.begin() + static_cast<std::string::difference_type>(last_key));
-	content.erase(content.begin(), content.begin() + static_cast<std::string::difference_type>(last_key));
-	return (server_config);
-}
-
-t_c_global_config *get_config(char *path)
-{
-	std::string                    content;
-	std::string                    server_config;
-	std::vector<t_c_server_config> server_configs;
-	size_t                         line;
-	size_t                         colum;
-
-	content = get_file_content(path);
-	remove_comments(content);
-	line = 1;
-	colum = 1;
-	server_config = get_next_server_config(content, line, colum);
-	while (server_config.empty() == false)
+	if (error_count != 0)
 	{
-		server_configs.push_back(parse_server_config(server_config, line, colum));
+		throw (std::invalid_argument("invalid configuration file"));
 	}
-	if (server_configs.empty() == true)
-	{
-		throw(std::invalid_argument("configuation file configures nothing"));
-	}
-	return (new t_c_global_config(server_configs));
 }
 
 #pragma GCC diagnostic pop

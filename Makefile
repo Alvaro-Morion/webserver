@@ -6,7 +6,7 @@
 #    github:   https://github.com/priezu-m                                     #
 #    Licence:  GPLv3                                                           #
 #    Created:  2023/09/27 18:57:07                                             #
-#    Updated:  2024/05/14 04:34:36                                             #
+#    Updated:  2024/05/27 19:43:29                                             #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,13 +19,13 @@ CC :=				gcc
 CXX :=				g++
 CFLAGS :=			-O2 -flto -Wall -Wextra
 CXXFLAGS :=			-O2 -flto -Wall -Wextra -std=c++20
-CDEBUG_FLAGS :=		-O0 -fsanitize=address,undefined,leak -glldb
-CXXDEBUG_FLAGS :=	-O0 -fsanitize=address,undefined,leak -glldb
-LDFLAGS :=			-luring
+CDEBUG_FLAGS :=		-O0 -fsanitize=address,undefined,leak -g3
+CXXDEBUG_FLAGS :=	-O0 -fsanitize=address,undefined,leak -g3
+LDFLAGS :=			
 
 ################################################################################
 
-NAME :=				mbz
+NAME :=				webserver
 
 DEP_PATH :=			./DEP
 DEP_PATH_MAKE :=	DEP/
@@ -120,7 +120,7 @@ re: fclean
 	@make --no-print-directory
 
 pull:
-	@git pull
+	@git pull --rebase
 
 push: fclean
 	@git add .

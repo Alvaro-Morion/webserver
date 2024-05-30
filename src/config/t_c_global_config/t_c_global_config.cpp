@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 19:13:58                                            */
-/*   Updated:  2024/05/20 00:11:16                                            */
+/*   Updated:  2024/05/27 05:16:04                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-static void ungroup_and_add(std::set<t_c_individual_server_config, std::less<>> &servers, std::vector<t_c_server_config> const &new_servers)
+/*static void ungroup_and_add(std::set<t_c_individual_server_config, std::less<>> &servers,
+							std::vector<t_c_server_config> const                &new_servers)
 {
 	for (t_c_server_config const &server_confing : new_servers)
 	{
@@ -59,17 +60,21 @@ static void ungroup_and_add(std::set<t_c_individual_server_config, std::less<>> 
 					if (*it != new_server)
 					{
 						throw(std::invalid_argument(*it->get_host_name() + ":" + std::to_string(it->get_port()) +
-										" is duplicated"));
+													" is duplicated"));
 					}
 				}
 			}
 		}
 	}
-}
+}*/
 
 t_c_global_config::t_c_global_config(std::set<t_c_individual_server_config, std::less<>> const &servers_param)
 	: servers(servers_param)
 {
+	if (servers.empty() == true)
+	{
+		throw(std::invalid_argument("set of configured servers may not be empty"));
+	}
 	for (t_c_individual_server_config const &config : servers)
 	{
 		ports.insert(config.get_port());
@@ -93,7 +98,7 @@ std::set<uint16_t> const &t_c_global_config::get_ports() const
 std::string t_c_global_config::to_string() const
 {
 	std::string string;
-	size_t i;
+	size_t      i;
 
 	i = 1;
 	for (t_c_individual_server_config const &server : servers)
