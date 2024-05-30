@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/28 03:29:23                                            */
-/*   Updated:  2024/05/30 14:32:07                                            */
+/*   Updated:  2024/05/30 18:50:12                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ static bool was_not_parsed(std::vector<t_c_token> const &tokens, size_t &i, t_c_
 	return (false);
 }
 
+<<<<<<< HEAD
 /*		if (tokens[i].get_token()[0] == '\"')
 		{
 			tokens[i].get_token_non_const().erase(0, 1);
@@ -69,6 +70,8 @@ static bool was_not_parsed(std::vector<t_c_token> const &tokens, size_t &i, t_c_
 			}
 		}*/
 
+=======
+>>>>>>> 6cdcf88 (added clang-format file)
 void get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
 		char const *config_file, int &error_count)
 {

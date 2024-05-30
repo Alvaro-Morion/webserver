@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/24 18:43:50                                            */
-/*   Updated:  2024/05/29 20:27:08                                            */
+/*   Updated:  2024/05/30 20:48:34                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,7 +209,11 @@ void get_ports(t_c_server_constructor_params &params, std::vector<t_c_token> con
 		char const *config_file, int &error_count);
 void get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
 		char const *config_file, int &error_count);
-void get_error_page(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
+void get_error_page(t_c_server_constructor_params &params, std::vector<t_c_token> &tokens, size_t &i,
+		char const *config_file, int &error_count);
+void get_client_body_size(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
+		char const *config_file, int &error_count);
+void get_router(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
 		char const *config_file, int &error_count);
 
 #pragma GCC diagnostic pop

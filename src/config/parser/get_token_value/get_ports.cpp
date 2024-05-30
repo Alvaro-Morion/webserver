@@ -6,13 +6,14 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/28 03:27:38                                            */
-/*   Updated:  2024/05/29 20:55:12                                            */
+/*   Updated:  2024/05/30 19:45:58                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../parser.hpp"
 #include <iostream>
 #include <arpa/inet.h>
+#include <stdexcept>
 
 ;
 #pragma GCC diagnostic push
@@ -44,14 +45,14 @@ static uint16_t get_port(t_c_token const &token, char const *config_file, int &e
 			std::cout << std::string(config_file) + ": " + token.get_position().to_string() +
 						" : error: expected number, found: " + token.get_token() + '\n';
 			error_count++;
-			return (0);
+			throw (std::invalid_argument(""));
 		}
 		if ((UINT16_MAX / 10 < res) || ((UINT16_MAX - (token.get_token()[i] - '0')) < res * 10))
 		{
 			std::cout << std::string(config_file) + ": " + token.get_position().to_string() +
 						" : error: number in bigger than the maximum port number \n";
 			error_count++;
-			return (0);
+			throw (std::invalid_argument(""));
 		}
 		res *= 10;
 		res += token.get_token()[i] - '0';
@@ -73,7 +74,7 @@ void get_ports(t_c_server_constructor_params &params, std::vector<t_c_token> con
 			std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
 						" : error: redefinition of ports attribute previusly defined at: " + position.to_string() + '\n';
 			error_count++;
-			throw (std::invalid_argument(""));
+			return ;
 	}
 	params.ports_position = new t_c_position(position);
 	comma_found = false;
@@ -87,12 +88,19 @@ void get_ports(t_c_server_constructor_params &params, std::vector<t_c_token> con
 						" : error: expected a comma, found: " + tokens[i].get_token() + '\n';
 				i--;
 				error_count++;
+				return ;
 			}
 			comma_found = true;
 			i++;
 			continue;
 		}
-		ports.push_back(get_port(tokens[i], config_file, error_count));
+		try
+		{
+			ports.push_back(get_port(tokens[i], config_file, error_count));
+		}
+		catch (std::invalid_argument const &)
+		{
+		}
 		comma_found = false;
 		i++;
 	}

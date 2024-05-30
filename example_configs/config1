@@ -1,7 +1,7 @@
 server
 {
 	ports 100, 80, 90; # can be ommited 80 by default
-	hosts localhost, 127.0.0.1, test.com, sub.test.com;
+	hosts localhost, test.com, sub.test.com;
 	error_page_http_version_not_supported "default_error_pages/505"; # can be ommited defaults exist
 	error_page_not_implemeted "default_error_pages/501";
 	error_internal_server_error "default_error_pages/500";
@@ -21,13 +21,13 @@ server
 			resource
 			{
 				root "/www";
-				#redirect "any_uri"; # a resource can be conofigured as a redirection, as a cgi or file
-									  # (to be searched for in the directory defined in the root atribute), meaning
-									  # that root and redirect may not be present at the same time
-				methods GET, POST, DELETE; # can be ommited, GET by default
+				#redirect "any_uri"; # a resource can be configured as a redirection, or as a cgi or file
+									 # (to be searched for in the directory defined in the root atribute), meaning
+									 # that root and redirect may not be present at the same time
+				methods GET, POST, DELETE; # can be ommited, GET by default, can be left empty for none allowed
 				directory_listing off; # off by default
 				resource_is_a_directory_page "default_error_pages/403"; # can be ommited default exists
-				is_cgi off; # off by default
+				is_cgi off; # can be ommited off by default
 			}
 		}
 	}

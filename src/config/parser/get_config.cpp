@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/26 00:53:43                                            */
-/*   Updated:  2024/05/29 20:56:57                                            */
+/*   Updated:  2024/05/30 20:50:07                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ static void find_next_server_token(std::vector<t_c_token> const &tokens, size_t 
 	}
 }
 
+<<<<<<< HEAD
 static uint64_t get_value(t_c_token const &token, char const *config_file, int &error_count)
 {
 	uint64_t res;
@@ -97,6 +98,9 @@ static void get_client_body_size(t_c_server_constructor_params &params, std::vec
 }
 
 static t_c_server_config_token get_server_config(std::vector<t_c_token> const &tokens, size_t &i, const char *config_file,
+=======
+static t_c_server_config_token get_server_config(std::vector<t_c_token> &tokens, size_t &i, const char *config_file,
+>>>>>>> 6cdcf88 (added clang-format file)
 		int &error_count)
 {
 	t_c_server_constructor_params params;
@@ -134,14 +138,22 @@ static t_c_server_config_token get_server_config(std::vector<t_c_token> const &t
 		}
 		else if (tokens[i].get_token() == "router")
 		{
-
+			get_router(params, tokens, i, config_file, error_count);
+			if (i < tokens.size() && tokens[i].get_token()[0] == '}')
+			{
+				i++;
+			}
 		}
 		else
 		{
-
+			std::cout << std::string(config_file) + tokens[i].get_position().to_string() +
+		   	": error: error unrecognized token  " + tokens[i].get_token() + '\n';
+			i++;
 		}
-
-		i++;
+		if (i < tokens.size() && tokens[i].get_token()[0] == ';')
+		{
+			i++;
+		}
 	}
 	if (i == tokens.size())
 	{
@@ -153,12 +165,13 @@ static t_c_server_config_token get_server_config(std::vector<t_c_token> const &t
 	{
 		throw (std::invalid_argument(""));
 	}
+	//todo: finish
 }
 
 t_c_global_config *get_config(char const *config_file)
 {
 	int                                  error_count = 0;
-	std::vector<t_c_token> const         tokens = get_tokens(config_file, error_count);
+	std::vector<t_c_token>               tokens = get_tokens(config_file, error_count);
 	std::vector<t_c_server_config_token> server_configs;
 	size_t                               i;
 
@@ -192,6 +205,7 @@ t_c_global_config *get_config(char const *config_file)
 		{
 			server_configs.push_back(get_server_config(tokens, i, config_file, error_count)); // will update i to refer
 																							  // to the closing }
+			i++;
 		}
 		catch (std::invalid_argument const &)
 		{
