@@ -1,24 +1,24 @@
-#include <stddef.h>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <cstdio>
 #include "../config/config.hpp"
+#include <cstdio>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <stddef.h>
 
 /*class ReturnType
 {
-    private:
-        int fd;
-        pid_t child; // 0 != cgi
-    
-    public:
-        ReturnType(int fd, pid_t pid = 0);
-        ReturnType(std::string response, pid_t pid = 0);
+	private:
+		int fd;
+		pid_t child; // 0 != cgi
 
-        int     getFd(void);
-        pid_t   getChild(void);
+	public:
+		ReturnType(int fd, pid_t pid = 0);
+		ReturnType(std::string response, pid_t pid = 0);
 
-        bool    is_cgi(ReturnType &reponse);
+		int     getFd(void);
+		pid_t   getChild(void);
+
+		bool    is_cgi(ReturnType &reponse);
 
 
 };

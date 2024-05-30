@@ -54,20 +54,20 @@ class t_c_individual_server_config // perfoms no validity checks on construction
 		~t_c_individual_server_config(void);
 		t_c_individual_server_config const &operator=(t_c_individual_server_config const &copy);
 		bool                                operator==(t_c_individual_server_config const &comparator) const;
-		bool                                operator==(t_c_individual_server_config::t_c_light_key const &comparator) const;
-		bool                                operator>(t_c_individual_server_config const &comparator) const;
-		bool                                operator>(t_c_individual_server_config::t_c_light_key const &comparator) const;
-		bool                                operator<(t_c_individual_server_config const &comparator) const;
-		bool                                operator<(t_c_individual_server_config::t_c_light_key const &comparator) const;
+		bool                           operator==(t_c_individual_server_config::t_c_light_key const &comparator) const;
+		bool                           operator>(t_c_individual_server_config const &comparator) const;
+		bool                           operator>(t_c_individual_server_config::t_c_light_key const &comparator) const;
+		bool                           operator<(t_c_individual_server_config const &comparator) const;
+		bool                           operator<(t_c_individual_server_config::t_c_light_key const &comparator) const;
 
-		std::string const                  *get_host_name(void) const;
-		uint16_t                            get_port(void) const;
-		t_c_router const                   *get_router(void) const;
-		t_c_default_error_pages const      *get_default_error_pages(void) const;
-		std::string const                  *get_file_is_a_directory_page(void) const;
-		uint64_t                            get_client_body_size_limit(void) const;
+		std::string const             *get_host_name(void) const;
+		uint16_t                       get_port(void) const;
+		t_c_router const              *get_router(void) const;
+		t_c_default_error_pages const *get_default_error_pages(void) const;
+		std::string const             *get_file_is_a_directory_page(void) const;
+		uint64_t                       get_client_body_size_limit(void) const;
 
-		std::string                         to_string(void) const;
+		std::string                    to_string(void) const;
 };
 
 class t_c_individual_server_config::t_c_light_key

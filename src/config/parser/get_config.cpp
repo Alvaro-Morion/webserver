@@ -6,19 +6,19 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/26 00:53:43                                            */
-/*   Updated:  2024/05/30 21:03:49                                            */
+/*   Updated:  2024/05/30 21:38:29                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.hpp"
 #include <cstddef>
 #include <cstdint>
+#include <iostream>
 #include <stdexcept>
 #include <string>
+#include <unistd.h>
 #include <utility>
 #include <vector>
-#include <iostream>
-#include <unistd.h>
 
 ;
 #pragma GCC diagnostic push
@@ -49,39 +49,11 @@ static void find_next_server_token(std::vector<t_c_token> const &tokens, size_t 
 	}
 }
 
-static uint64_t get_value(t_c_token const &token, char const *config_file, int &error_count)
-{
-	uint64_t res;
-	size_t   i;
-
-	res = 0;
-	i = 0;
-	while (token.get_token()[i] != '\0')
-	{
-		if (isdigit(token.get_token()[i]) == 0)
-		{
-			std::cout << std::string(config_file) + ": " + token.get_position().to_string() +
-						" : error: expected number, found: " + token.get_token() + '\n';
-			error_count++;
-			throw (std::invalid_argument(""));
-		}
-		if ((UINT64_MAX / 10 < res) || ((UINT64_MAX - static_cast<unsigned>(token.get_token()[i] - '0')) < res * 10))
-		{
-			error_count++;
-			throw (std::invalid_argument(""));
-		}
-		res *= 10;
-		res += static_cast<unsigned>(token.get_token()[i] - '0');
-		i++;
-	}
-	return (res);
-}
-
-static t_c_server_config_token get_server_config(std::vector<t_c_token> &tokens, size_t &i, const char *config_file,
-		int &error_count)
+static t_c_server_config_token get_server_config(std::vector<t_c_token> &tokens, size_t &i, char const *config_file,
+												 int &error_count)
 {
 	t_c_server_constructor_params params;
-	const int                     original_error_count = error_count;
+	int const                     original_error_count = error_count;
 	const t_c_position            server_token_position = tokens[i].get_position();
 	const t_c_position            opening_key_position = tokens[i + 1].get_position();
 
@@ -96,20 +68,20 @@ static t_c_server_config_token get_server_config(std::vector<t_c_token> &tokens,
 		{
 			get_hosts(params, tokens, i, config_file, error_count);
 		}
-		else if ((tokens[i].get_token() == "error_page_http_version_not_supported")
-		|| (tokens[i].get_token() == "error_page_not_implemeted")
-		|| (tokens[i].get_token() == "error_internal_server_error")
-		|| (tokens[i].get_token() == "error_page_uri_too_long")
-		|| (tokens[i].get_token() == "error_page_content_too_large")
-		|| (tokens[i].get_token() == "error_page_length_requiered")
-		|| (tokens[i].get_token() == "error_page_request_timeout")
-		|| (tokens[i].get_token() == "error_page_not_found")
-		|| (tokens[i].get_token() == "error_page_forbidden")
-		|| (tokens[i].get_token() == "error_page_bad_request"))
+		else if ((tokens[i].get_token() == "error_page_http_version_not_supported") ||
+				 (tokens[i].get_token() == "error_page_not_implemeted") ||
+				 (tokens[i].get_token() == "error_internal_server_error") ||
+				 (tokens[i].get_token() == "error_page_uri_too_long") ||
+				 (tokens[i].get_token() == "error_page_content_too_large") ||
+				 (tokens[i].get_token() == "error_page_length_requiered") ||
+				 (tokens[i].get_token() == "error_page_request_timeout") ||
+				 (tokens[i].get_token() == "error_page_not_found") ||
+				 (tokens[i].get_token() == "error_page_forbidden") ||
+				 (tokens[i].get_token() == "error_page_bad_request"))
 		{
 			get_error_page(params, tokens, i, config_file, error_count);
 		}
-		else if(tokens[i].get_token() == "client_body_size_limit")
+		else if (tokens[i].get_token() == "client_body_size_limit")
 		{
 			get_client_body_size(params, tokens, i, config_file, error_count);
 		}
@@ -124,7 +96,7 @@ static t_c_server_config_token get_server_config(std::vector<t_c_token> &tokens,
 		else
 		{
 			std::cout << std::string(config_file) + tokens[i].get_position().to_string() +
-		   	": error: error unrecognized token  " + tokens[i].get_token() + '\n';
+							 ": error: error unrecognized token  " + tokens[i].get_token() + '\n';
 			i++;
 		}
 		if (i < tokens.size() && tokens[i].get_token()[0] == ';')
@@ -134,15 +106,15 @@ static t_c_server_config_token get_server_config(std::vector<t_c_token> &tokens,
 	}
 	if (i == tokens.size())
 	{
-		std::cout << std::string(config_file) + ": error, expected }, to match { at " + opening_key_position.to_string()
-		   + ", but found end of file\n";
-		throw (std::invalid_argument(""));
+		std::cout << std::string(config_file) + ": error, expected }, to match { at " +
+						 opening_key_position.to_string() + ", but found end of file\n";
+		throw(std::invalid_argument(""));
 	}
 	if (original_error_count != error_count)
 	{
-		throw (std::invalid_argument(""));
+		throw(std::invalid_argument(""));
 	}
-	//todo: finish
+	// todo: finish
 }
 
 t_c_global_config *get_config(char const *config_file)
@@ -158,27 +130,27 @@ t_c_global_config *get_config(char const *config_file)
 		if (tokens[i].get_token() != "server")
 		{
 			std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
-						" : error: expected server, found: " + tokens[i].get_token() + '\n';
+							 " : error: expected server, found: " + tokens[i].get_token() + '\n';
 			error_count++;
 			find_next_server_token(tokens, i);
 			continue;
 		}
 		if (i + 1 == tokens.size())
 		{
-			std::cout << std::string(config_file) + ": error, after: " + tokens[i - 1].get_position().to_string() + " " +
-				tokens[i - 1].get_token() + ", expected {, but found end of file\n";
+			std::cout << std::string(config_file) + ": error, after: " + tokens[i - 1].get_position().to_string() +
+							 " " + tokens[i - 1].get_token() + ", expected {, but found end of file\n";
 			error_count++;
 			break;
 		}
 		if (tokens[i + 1].get_token() != "{")
 		{
 			std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
-						" : error: expected '{', found: " + tokens[i].get_token() + '\n';
+							 " : error: expected '{', found: " + tokens[i].get_token() + '\n';
 			error_count++;
 			find_next_server_token(tokens, i);
 			continue;
 		}
-		try 
+		try
 		{
 			server_configs.push_back(get_server_config(tokens, i, config_file, error_count)); // will update i to refer
 																							  // to the closing }
@@ -190,11 +162,11 @@ t_c_global_config *get_config(char const *config_file)
 	}
 	if (error_count == 30)
 	{
-			std::cout << "too many errors emited stoping\n";
+		std::cout << "too many errors emited stoping\n";
 	}
 	if (error_count != 0)
 	{
-		throw (std::invalid_argument("invalid configuration file"));
+		throw(std::invalid_argument("invalid configuration file"));
 	}
 }
 

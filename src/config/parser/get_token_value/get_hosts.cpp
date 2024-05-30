@@ -32,19 +32,20 @@
 ;
 
 static bool was_not_parsed(std::vector<t_c_token> const &tokens, size_t &i, t_c_position const &position,
-		int &error_count, std::vector<std::string> *hosts, t_c_server_constructor_params &params,
-		char const *config_file)
+						   int &error_count, std::vector<std::string> *hosts, t_c_server_constructor_params &params,
+						   char const *config_file)
 {
 	if (i == tokens.size())
 	{
-		std::cout << std::string(config_file) + ": error, expected a semicolon, to end the hosts attribute at "
-			+ position.to_string() + ", but found end of file\n";
+		std::cout << std::string(config_file) + ": error, expected a semicolon, to end the hosts attribute at " +
+						 position.to_string() + ", but found end of file\n";
 		error_count++;
-		return  (true);
+		return (true);
 	}
 	if (hosts->empty() == true)
 	{
-		std::cout << std::string(config_file) + " " + position.to_string() + ": error, hosts attribute defines nothing\n";
+		std::cout << std::string(config_file) + " " + position.to_string() +
+						 ": error, hosts attribute defines nothing\n";
 		delete params.ports_position;
 		delete hosts;
 		params.ports_position = nullptr;
@@ -55,7 +56,7 @@ static bool was_not_parsed(std::vector<t_c_token> const &tokens, size_t &i, t_c_
 }
 
 void get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
-		char const *config_file, int &error_count)
+			   char const *config_file, int &error_count)
 {
 	t_c_position const        position = tokens[i].get_position();
 	std::vector<std::string> *hosts;
@@ -64,10 +65,11 @@ void get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> con
 	i++;
 	if (params.host_names_position != nullptr)
 	{
-			std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
-						" : error: redefinition of hosts attribute previusly defined at: " + position.to_string() + '\n';
-			error_count++;
-			throw (std::invalid_argument(""));
+		std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
+						 " : error: redefinition of hosts attribute previusly defined at: " + position.to_string() +
+						 '\n';
+		error_count++;
+		throw(std::invalid_argument(""));
 	}
 	params.ports_position = new t_c_position(position);
 	hosts = new std::vector<std::string>();
@@ -79,7 +81,7 @@ void get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> con
 			if (tokens[i].get_token() != ",")
 			{
 				std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
-						" : error: expected a comma, found: " + tokens[i].get_token() + '\n';
+								 " : error: expected a comma, found: " + tokens[i].get_token() + '\n';
 				i--;
 				error_count++;
 			}
@@ -90,7 +92,7 @@ void get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> con
 		if (is_valid_hostname(tokens[i].get_token()) == false)
 		{
 			std::cout << std::string(config_file) + ": " + tokens[i].to_string() +
-						" : error: token is not a valid hostname\n";
+							 " : error: token is not a valid hostname\n";
 			i++;
 			error_count++;
 			continue;

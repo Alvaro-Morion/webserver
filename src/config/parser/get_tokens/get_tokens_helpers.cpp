@@ -6,11 +6,12 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/27 08:02:34                                            */
-/*   Updated:  2024/05/28 18:23:02                                            */
+/*   Updated:  2024/05/30 21:44:05                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_tokens.hpp"
+#include <stdexcept>
 
 ;
 #pragma GCC diagnostic push
@@ -207,7 +208,10 @@ size_t find_token_end(char const *str, e_token_type token_type, size_t &colum, s
 			return (1);
 		}
 	}
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
 }
+#pragma GCC diagnostic pop
 
 e_token_type get_token_type(char const *buffer)
 {
@@ -223,7 +227,7 @@ e_token_type get_token_type(char const *buffer)
 	{
 		return (e_token_type::none);
 	}
-	if (buffer[0] == '}' || buffer[0] == '{' ||  buffer[0] == ',' || buffer[0] == ';')
+	if (buffer[0] == '}' || buffer[0] == '{' || buffer[0] == ',' || buffer[0] == ';')
 	{
 		return (e_token_type::separator);
 	}

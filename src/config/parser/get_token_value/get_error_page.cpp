@@ -12,8 +12,8 @@
 
 #include "../parser.hpp"
 #include <cstddef>
-#include <iostream>
 #include <fcntl.h>
+#include <iostream>
 #include <unistd.h>
 #include <vector>
 
@@ -34,17 +34,17 @@
 ;
 
 static bool remove_quotes_if_present_return_true_if_error(std::vector<t_c_token> &tokens, size_t &i, int &error_count,
-		char const *config_file)
+														  char const *config_file)
 {
 	if (tokens[i].get_token()[0] == '\"')
 	{
 		tokens[i].get_token_non_const().erase(0, 1);
 		tokens[i].get_position_non_const().add_one_to_colum();
-		if ((tokens[i].get_token().empty() == true)
-			|| (tokens[i].get_token()[tokens[i].get_token().size() - 1] != '\"'))
+		if ((tokens[i].get_token().empty() == true) ||
+			(tokens[i].get_token()[tokens[i].get_token().size() - 1] != '\"'))
 		{
-			std::cout << std::string(config_file) + ": error, expected a \", to end match \" font at "
-			+ tokens[i].get_position().to_string() + "\n";
+			std::cout << std::string(config_file) + ": error, expected a \", to end match \" font at " +
+							 tokens[i].get_position().to_string() + "\n";
 			error_count++;
 			return (true);
 		}
@@ -54,37 +54,37 @@ static bool remove_quotes_if_present_return_true_if_error(std::vector<t_c_token>
 }
 
 static void get_error_page_internal(std::pair<std::string, std::pair<std::string *, t_c_position **>> &elem,
-		std::vector<t_c_token> &tokens, size_t &i,
-		char const *config_file, int &error_count, t_c_position const &position)
+									std::vector<t_c_token> &tokens, size_t &i, char const *config_file,
+									int &error_count, t_c_position const &position)
 {
 	if (elem.second.second != nullptr)
 	{
 		std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
-				" : error: redefinition of " + tokens[i].get_token() + " attribute previusly defined at: "
-				+ position.to_string() + '\n';
+						 " : error: redefinition of " + tokens[i].get_token() +
+						 " attribute previusly defined at: " + position.to_string() + '\n';
 		if ((i < tokens.size() - 1) && (tokens[i].get_token()[0] != ';'))
 		{
 			i++;
 		}
-		error_count++; 
+		error_count++;
 		return;
 	}
 	if (i == tokens.size())
 	{
-		std::cout << std::string(config_file) + ": " + position.to_string() +
-			" : error: after" + tokens[i - 1].to_string() + ", expected filename but found end of file\n";
+		std::cout << std::string(config_file) + ": " + position.to_string() + " : error: after" +
+						 tokens[i - 1].to_string() + ", expected filename but found end of file\n";
 		error_count++;
 		return;
 	}
 	if (remove_quotes_if_present_return_true_if_error(tokens, i, error_count, config_file) == true)
 	{
 		i++;
-		return ;
+		return;
 	}
 	if (access(tokens[i].get_token().c_str(), R_OK) == -1)
 	{
 		std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
-			" : error: " + tokens[i].to_string() + ", does not exist or cannot be read\n";
+						 " : error: " + tokens[i].to_string() + ", does not exist or cannot be read\n";
 		error_count++;
 		i++;
 		return;
@@ -92,17 +92,17 @@ static void get_error_page_internal(std::pair<std::string, std::pair<std::string
 	i++;
 	if (i == tokens.size())
 	{
-		std::cout << std::string(config_file) + ": error, expected a semicolon, to end the "
-		+ tokens[i - 2].get_token() + " attribute defined in "
-		+ position.to_string() + ", but found end of file\n";
+		std::cout << std::string(config_file) + ": error, expected a semicolon, to end the " +
+						 tokens[i - 2].get_token() + " attribute defined in " + position.to_string() +
+						 ", but found end of file\n";
 		error_count++;
 		return;
 	}
 	if (tokens[i].get_token() != ";")
 	{
-		std::cout << std::string(config_file) + ": error, expected a semicolon, to end the "
-		+ tokens[i - 2].get_token() + " attribute at "
-		+ position.to_string() + ", but found: " + tokens[i].get_token() + "\n";
+		std::cout << std::string(config_file) + ": error, expected a semicolon, to end the " +
+						 tokens[i - 2].get_token() + " attribute at " + position.to_string() +
+						 ", but found: " + tokens[i].get_token() + "\n";
 		error_count++;
 		return;
 	}
@@ -111,32 +111,22 @@ static void get_error_page_internal(std::pair<std::string, std::pair<std::string
 }
 
 void get_error_page(t_c_server_constructor_params &params, std::vector<t_c_token> &tokens, size_t &i,
-		char const *config_file, int &error_count)
+					char const *config_file, int &error_count)
 {
 	t_c_position                                                      position = tokens[i].get_position();
-	std::pair<std::string, std::pair<std::string *, t_c_position **>> table[] =
-	{
-		{"error_page_http_version_not_supported", {&params.http_version_not_supported,
-													  &params.http_version_not_supported_position}},
-		{"error_page_not_implemeted", {&params.not_implemeted,
-										  &params.not_implemeted_position}},
-		{"error_internal_server_error", {&params.internal_server_error,
-											&params.internal_server_error_position}},
-		{"error_page_uri_too_long", {&params.uri_too_long,
-										&params.uri_too_long_position}},
-		{"error_page_content_too_large", {&params.content_too_large,
-											 &params.content_too_large_position}},
-		{"error_page_length_requiered", {&params.length_requiered,
-											&params.length_requiered_position}},
-		{"error_page_request_timeout", {&params.request_timeout,
-										   &params.request_timeout_position}},
-		{"error_page_not_found", {&params.not_found,
-									 &params.not_found_position}},
-		{"error_page_forbidden", {&params.forbidden,
-									 &params.forbidden_position}},
-		{"error_page_bad_request", {&params.bad_request,
-									   &params.bad_request_position}}
-	};
+	std::pair<std::string, std::pair<std::string *, t_c_position **>> table[] = {
+		{"error_page_http_version_not_supported",
+		 {&params.http_version_not_supported, &params.http_version_not_supported_position}                               },
+		{			"error_page_not_implemeted",               {&params.not_implemeted, &params.not_implemeted_position}},
+		{		  "error_internal_server_error", {&params.internal_server_error, &params.internal_server_error_position}},
+		{			  "error_page_uri_too_long",                   {&params.uri_too_long, &params.uri_too_long_position}},
+		{		 "error_page_content_too_large",         {&params.content_too_large, &params.content_too_large_position}},
+		{		  "error_page_length_requiered",           {&params.length_requiered, &params.length_requiered_position}},
+		{		   "error_page_request_timeout",             {&params.request_timeout, &params.request_timeout_position}},
+		{				 "error_page_not_found",                         {&params.not_found, &params.not_found_position}},
+		{				 "error_page_forbidden",                         {&params.forbidden, &params.forbidden_position}},
+		{			   "error_page_bad_request",                     {&params.bad_request, &params.bad_request_position}}
+    };
 
 	for (std::pair<std::string, std::pair<std::string *, t_c_position **>> &elem : table)
 	{
@@ -147,8 +137,8 @@ void get_error_page(t_c_server_constructor_params &params, std::vector<t_c_token
 			return;
 		}
 	}
-	std::cout << std::string(config_file) + position.to_string() + ": error, unrecognized token: " + tokens[i].get_token()
-		+ "\n";
+	std::cout << std::string(config_file) + position.to_string() +
+					 ": error, unrecognized token: " + tokens[i].get_token() + "\n";
 	i++;
 	error_count++;
 }

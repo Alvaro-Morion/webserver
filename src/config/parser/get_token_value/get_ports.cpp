@@ -11,8 +11,8 @@
 /* ************************************************************************** */
 
 #include "../parser.hpp"
-#include <iostream>
 #include <arpa/inet.h>
+#include <iostream>
 #include <stdexcept>
 
 ;
@@ -43,16 +43,16 @@ static uint16_t get_port(t_c_token const &token, char const *config_file, int &e
 		if (isdigit(token.get_token()[i]) == 0)
 		{
 			std::cout << std::string(config_file) + ": " + token.get_position().to_string() +
-						" : error: expected number, found: " + token.get_token() + '\n';
+							 " : error: expected number, found: " + token.get_token() + '\n';
 			error_count++;
-			throw (std::invalid_argument(""));
+			throw(std::invalid_argument(""));
 		}
 		if ((UINT16_MAX / 10 < res) || ((UINT16_MAX - (token.get_token()[i] - '0')) < res * 10))
 		{
 			std::cout << std::string(config_file) + ": " + token.get_position().to_string() +
-						" : error: number in bigger than the maximum port number \n";
+							 " : error: number in bigger than the maximum port number \n";
 			error_count++;
-			throw (std::invalid_argument(""));
+			throw(std::invalid_argument(""));
 		}
 		res *= 10;
 		res += token.get_token()[i] - '0';
@@ -62,7 +62,7 @@ static uint16_t get_port(t_c_token const &token, char const *config_file, int &e
 }
 
 void get_ports(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
-		char const *config_file, int &error_count)
+			   char const *config_file, int &error_count)
 {
 	t_c_position const    position = tokens[i].get_position();
 	std::vector<uint16_t> ports;
@@ -71,10 +71,11 @@ void get_ports(t_c_server_constructor_params &params, std::vector<t_c_token> con
 	i++;
 	if (params.ports_position != nullptr)
 	{
-			std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
-						" : error: redefinition of ports attribute previusly defined at: " + position.to_string() + '\n';
-			error_count++;
-			return ;
+		std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
+						 " : error: redefinition of ports attribute previusly defined at: " + position.to_string() +
+						 '\n';
+		error_count++;
+		return;
 	}
 	params.ports_position = new t_c_position(position);
 	comma_found = false;
@@ -85,10 +86,10 @@ void get_ports(t_c_server_constructor_params &params, std::vector<t_c_token> con
 			if (tokens[i].get_token() != ",")
 			{
 				std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
-						" : error: expected a comma, found: " + tokens[i].get_token() + '\n';
+								 " : error: expected a comma, found: " + tokens[i].get_token() + '\n';
 				i--;
 				error_count++;
-				return ;
+				return;
 			}
 			comma_found = true;
 			i++;
@@ -106,14 +107,15 @@ void get_ports(t_c_server_constructor_params &params, std::vector<t_c_token> con
 	}
 	if (i == tokens.size())
 	{
-		std::cout << std::string(config_file) + ": error, expected a semicolon, to end the ports attribute at "
-			+ position.to_string() + ", but found end of file\n";
+		std::cout << std::string(config_file) + ": error, expected a semicolon, to end the ports attribute at " +
+						 position.to_string() + ", but found end of file\n";
 		error_count++;
 		return;
 	}
 	if (ports.empty() == true)
 	{
-		std::cout << std::string(config_file) + " " + position.to_string() + ": error, ports attribute defines nothing\n";
+		std::cout << std::string(config_file) + " " + position.to_string() +
+						 ": error, ports attribute defines nothing\n";
 		delete params.ports_position;
 		error_count++;
 		return;

@@ -147,7 +147,8 @@ bool t_c_individual_server_config::operator>(t_c_individual_server_config const 
 
 bool t_c_individual_server_config::operator>(t_c_individual_server_config::t_c_light_key const &comparator) const
 {
-	if ((*host_name > *comparator.get_host_name()) || ((*host_name == *comparator.get_host_name()) && (port > comparator.get_port())))
+	if ((*host_name > *comparator.get_host_name()) ||
+		((*host_name == *comparator.get_host_name()) && (port > comparator.get_port())))
 	{
 		return (true);
 	}
@@ -165,7 +166,8 @@ bool t_c_individual_server_config::operator<(t_c_individual_server_config const 
 
 bool t_c_individual_server_config::operator<(t_c_individual_server_config::t_c_light_key const &comparator) const
 {
-	if ((*host_name < *comparator.get_host_name()) || ((*host_name == *comparator.get_host_name()) && (port < comparator.get_port())))
+	if ((*host_name < *comparator.get_host_name()) ||
+		((*host_name == *comparator.get_host_name()) && (port < comparator.get_port())))
 	{
 		return (true);
 	}
@@ -182,7 +184,8 @@ t_c_individual_server_config::t_c_light_key::t_c_light_key(std::string const *ho
 }
 
 t_c_individual_server_config::t_c_light_key::~t_c_light_key(void)
-{}
+{
+}
 
 std::string const *t_c_individual_server_config::t_c_light_key::get_host_name(void) const
 {
@@ -196,7 +199,7 @@ uint16_t t_c_individual_server_config::t_c_light_key::get_port(void) const
 
 bool t_c_individual_server_config::t_c_light_key::operator==(t_c_individual_server_config const &comparator) const
 {
-	if(*host_name == *comparator.get_host_name() && port == comparator.get_port())
+	if (*host_name == *comparator.get_host_name() && port == comparator.get_port())
 	{
 		return (true);
 	}
@@ -205,7 +208,8 @@ bool t_c_individual_server_config::t_c_light_key::operator==(t_c_individual_serv
 
 bool t_c_individual_server_config::t_c_light_key::operator>(t_c_individual_server_config const &comparator) const
 {
-	if(*host_name > *comparator.get_host_name() || ( *host_name == *comparator.get_host_name() && port > comparator.get_port()))
+	if (*host_name > *comparator.get_host_name() ||
+		(*host_name == *comparator.get_host_name() && port > comparator.get_port()))
 	{
 		return (true);
 	}
@@ -214,7 +218,8 @@ bool t_c_individual_server_config::t_c_light_key::operator>(t_c_individual_serve
 
 bool t_c_individual_server_config::t_c_light_key::operator<(t_c_individual_server_config const &comparator) const
 {
-	if(*host_name < *comparator.get_host_name() || ( *host_name == *comparator.get_host_name() && port < comparator.get_port()))
+	if (*host_name < *comparator.get_host_name() ||
+		(*host_name == *comparator.get_host_name() && port < comparator.get_port()))
 	{
 		return (true);
 	}

@@ -28,10 +28,9 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-void get_router(t_c_server_constructor_params &params, const std::vector<t_c_token> &tokens, size_t &i,
-		const char *config_file, int &error_count)
+void get_router(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
+				char const *config_file, int &error_count)
 {
-
 }
 
 #pragma GCC diagnostic pop

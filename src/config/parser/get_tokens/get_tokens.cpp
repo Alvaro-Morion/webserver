@@ -12,14 +12,14 @@
 
 #include "get_tokens.hpp"
 #include <cstddef>
-#include <string>
-#include <unistd.h>
 #include <fcntl.h>
-#include <string.h>
-#include <stdexcept>
-#include <system_error>
-#include <vector>
 #include <iostream>
+#include <stdexcept>
+#include <string.h>
+#include <string>
+#include <system_error>
+#include <unistd.h>
+#include <vector>
 
 ;
 #pragma GCC diagnostic push
@@ -37,9 +37,9 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-static int	open_throw_if_fail(char const *file, int mode)
+static int open_throw_if_fail(char const *file, int mode)
 {
-	int	fd = open (file, mode);
+	int fd = open(file, mode);
 
 	if (fd == -1)
 	{
@@ -63,12 +63,13 @@ static void close_throw_if_fail(int fd)
 {
 	if (close(fd) == -1)
 	{
-		throw(std::system_error(std::error_code(errno, std::system_category()), "system error when closing config file"));
+		throw(
+			std::system_error(std::error_code(errno, std::system_category()), "system error when closing config file"));
 	}
 }
 
 static void insert_token_if_needed(e_token_type &token_type, std::vector<t_c_token> &tokens, std::string &current_token,
-		size_t &beginning_column, size_t &beginning_row, size_t &column, size_t &row)
+								   size_t &beginning_column, size_t &beginning_row, size_t &column, size_t &row)
 {
 	if (token_type != e_token_type::none)
 	{
@@ -80,8 +81,7 @@ static void insert_token_if_needed(e_token_type &token_type, std::vector<t_c_tok
 	beginning_row = row;
 }
 
-
-static void	remove_comments_and_normalize(std::vector<t_c_token> &tokens, char const *config_file, int &error_count)
+static void remove_comments_and_normalize(std::vector<t_c_token> &tokens, char const *config_file, int &error_count)
 {
 	size_t i;
 	size_t j;
@@ -98,13 +98,14 @@ static void	remove_comments_and_normalize(std::vector<t_c_token> &tokens, char c
 		{
 			if (tokens[i].get_token()[j] == '\\')
 			{
-				if ((j == tokens[i].get_token().size())
-					|| (tokens[i].get_token()[j] != '\\' && tokens[i].get_token()[j] != '\"'))
+				if ((j == tokens[i].get_token().size()) ||
+					(tokens[i].get_token()[j] != '\\' && tokens[i].get_token()[j] != '\"'))
 				{
-					std::cout << std::string(config_file) + ":" + std::to_string(tokens[i].get_position().get_row())
-						+ ":" + std::to_string(tokens[i].get_position().get_colum() + j)
-						+ ": error: \\ munst be always followed by \\ of \" or preceded by a \\ that is not itself"
-						"preceded by a \\ recursively\n";
+					std::cout
+						<< std::string(config_file) + ":" + std::to_string(tokens[i].get_position().get_row()) + ":" +
+							   std::to_string(tokens[i].get_position().get_colum() + j) +
+							   ": error: \\ munst be always followed by \\ of \" or preceded by a \\ that is not itself"
+							   "preceded by a \\ recursively\n";
 					error_count++;
 					j++;
 				}
@@ -135,7 +136,7 @@ std::vector<t_c_token> get_tokens(char const *config_file, int &error_count)
 	size_t                 beginning_row;
 	size_t                 token_end;
 	e_token_type           token_type;
-	
+
 	read_ret = read_throw_if_fail(config_file_fd, read_buffer, read_buffer_size);
 	read_buffer[read_ret] = '\0';
 	column = 1;

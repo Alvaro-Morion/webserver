@@ -11,5 +11,5 @@
 	// t_c_individual_server_config &server) reads or splices the returned fd to the connection fd when all contents of
 	// returned fd are writen to connection fd closes conection fd and rips c_pid if not 0 (non blocking) dont forget
 	// SIGPIPE OK
-	// Gracefully exiting with SIGINT (En el main).	
+	// Gracefully exiting with SIGINT (En el main).
 }*/

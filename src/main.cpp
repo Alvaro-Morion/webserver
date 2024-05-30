@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:18:55                                            */
-/*   Updated:  2024/05/14 03:52:20                                            */
+/*   Updated:  2024/05/30 21:45:03                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,6 @@ static void print_usage(void)
 	std::cout << usage;
 }
 
-static void sigint_handler(int signal)
-{
-	exit(EXIT_SUCCESS);
-}
-
 int main(int argc, char **argv)
 {
 	t_c_global_config *config;
@@ -57,7 +52,6 @@ int main(int argc, char **argv)
 		print_usage();
 		return (EXIT_FAILURE);
 	}
-	std::signal(SIGINT, sigint_handler);
 	config = get_config(argv[1]);
 	signal(SIGPIPE, SIG_IGN);
 	Server server(config);
