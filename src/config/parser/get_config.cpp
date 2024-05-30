@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/26 00:53:43                                            */
-/*   Updated:  2024/05/30 20:50:07                                            */
+/*   Updated:  2024/05/30 21:03:49                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ static void find_next_server_token(std::vector<t_c_token> const &tokens, size_t 
 	}
 }
 
-<<<<<<< HEAD
 static uint64_t get_value(t_c_token const &token, char const *config_file, int &error_count)
 {
 	uint64_t res;
@@ -78,29 +77,7 @@ static uint64_t get_value(t_c_token const &token, char const *config_file, int &
 	return (res);
 }
 
-static void get_client_body_size(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
-		char const *config_file, int &error_count)
-{
-	const t_c_position position = tokens[i].get_position();
-	uint64_t           res;
-
-	i++;
-	if (i == tokens.size())
-	{
-		std::cout << std::string(config_file) + ": error, expected a number, to give value to the client_body_size_limit"
-			" attribute at " + position.to_string() + ", but found end of file\n";
-		error_count++;
-		return;
-	}
-	res = get_value(tokens[i], config_file, error_count);
-
-	i++;
-}
-
-static t_c_server_config_token get_server_config(std::vector<t_c_token> const &tokens, size_t &i, const char *config_file,
-=======
 static t_c_server_config_token get_server_config(std::vector<t_c_token> &tokens, size_t &i, const char *config_file,
->>>>>>> 6cdcf88 (added clang-format file)
 		int &error_count)
 {
 	t_c_server_constructor_params params;
