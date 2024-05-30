@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/26 00:53:43                                            */
-/*   Updated:  2024/05/30 21:38:29                                            */
+/*   Updated:  2024/05/30 23:18:21                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ static t_c_server_config_token get_server_config(std::vector<t_c_token> &tokens,
 	const t_c_position            opening_key_position = tokens[i + 1].get_position();
 
 	i += 2;
-	while (i < tokens.size() && tokens[i].get_token() != "}" && error_count < 30)
+	while (i < tokens.size() && tokens[i].get_token()[0] != '}' && error_count < 30)
 	{
 		if (tokens[i].get_token() == "ports")
 		{
@@ -142,7 +142,7 @@ t_c_global_config *get_config(char const *config_file)
 			error_count++;
 			break;
 		}
-		if (tokens[i + 1].get_token() != "{")
+		if (tokens[i + 1].get_token()[0] != '{')
 		{
 			std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
 							 " : error: expected '{', found: " + tokens[i].get_token() + '\n';

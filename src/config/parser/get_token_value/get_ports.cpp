@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/28 03:27:38                                            */
-/*   Updated:  2024/05/30 19:45:58                                            */
+/*   Updated:  2024/05/30 23:17:35                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ void get_ports(t_c_server_constructor_params &params, std::vector<t_c_token> con
 {
 	t_c_position const    position = tokens[i].get_position();
 	std::vector<uint16_t> ports;
+	int const             original_error_count = error_count;
 	bool                  comma_found;
 
 	i++;
@@ -77,9 +78,8 @@ void get_ports(t_c_server_constructor_params &params, std::vector<t_c_token> con
 		error_count++;
 		return;
 	}
-	params.ports_position = new t_c_position(position);
 	comma_found = false;
-	while (i < tokens.size() && tokens[i].get_token() != ";")
+	while (i < tokens.size() && tokens[i].get_token()[0] != ';')
 	{
 		if (ports.empty() == false && comma_found == false)
 		{
@@ -116,11 +116,14 @@ void get_ports(t_c_server_constructor_params &params, std::vector<t_c_token> con
 	{
 		std::cout << std::string(config_file) + " " + position.to_string() +
 						 ": error, ports attribute defines nothing\n";
-		delete params.ports_position;
 		error_count++;
 		return;
 	}
-	params.ports = ports;
+	if (error_count == original_error_count)
+	{
+		params.ports = ports;
+		params.ports_position = new t_c_position(position);
+	}
 }
 
 #pragma GCC diagnostic pop

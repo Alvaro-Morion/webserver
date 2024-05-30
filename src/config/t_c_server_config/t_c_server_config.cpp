@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:19:46                                            */
-/*   Updated:  2024/05/19 21:06:48                                            */
+/*   Updated:  2024/05/30 23:54:56                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,11 +75,9 @@ bool is_valid_hostname(std::string const &host_name)
 t_c_server_config::t_c_server_config(std::vector<std::string>    *host_names_param,
 									 std::vector<uint16_t> const &ports_param, t_c_router const *router_param,
 									 t_c_default_error_pages const *default_error_pages_param,
-									 std::string const             *resource_is_a_directory_page_param,
 									 uint64_t                       client_body_size_limit_param)
 	: host_names(host_names_param), ports(ports_param), router(router_param),
-	  default_error_pages(default_error_pages_param), resource_is_a_directory_page(resource_is_a_directory_page_param),
-	  client_body_size_limit(client_body_size_limit_param)
+	  default_error_pages(default_error_pages_param), client_body_size_limit(client_body_size_limit_param)
 {
 	if (host_names->empty() == true || ports.empty() == true)
 	{
@@ -98,17 +96,11 @@ t_c_server_config::t_c_server_config(std::vector<std::string>    *host_names_par
 			throw(std::invalid_argument(host_name + " is not a valid host_name")); // parameters invalid
 		}
 	}
-	if ((resource_is_a_directory_page->empty() == false) && access(resource_is_a_directory_page->c_str(), R_OK) == -1)
-	{
-		throw(*resource_is_a_directory_page_param +
-			  " cannot be open for reading or does not exits"); // parameters invalid
-	}
 }
 
 t_c_server_config::t_c_server_config(t_c_server_config const &copy)
 	: host_names(copy.host_names), ports(copy.ports), router(copy.router),
-	  default_error_pages(copy.default_error_pages), resource_is_a_directory_page(copy.resource_is_a_directory_page),
-	  client_body_size_limit(copy.client_body_size_limit)
+	  default_error_pages(copy.default_error_pages), client_body_size_limit(copy.client_body_size_limit)
 {
 }
 
@@ -134,11 +126,6 @@ t_c_router const *t_c_server_config::get_router(void) const
 t_c_default_error_pages const *t_c_server_config::get_default_error_pages(void) const
 {
 	return (default_error_pages);
-}
-
-std::string const *t_c_server_config::get_resource_is_a_directory_page(void) const
-{
-	return (resource_is_a_directory_page);
 }
 
 uint64_t t_c_server_config::get_client_body_size_limit(void) const

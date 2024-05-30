@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/28 03:29:23                                            */
-/*   Updated:  2024/05/30 21:04:17                                            */
+/*   Updated:  2024/05/31 00:22:25                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@
 
 static bool was_not_parsed(std::vector<t_c_token> const &tokens, size_t &i, t_c_position const &position,
 						   int &error_count, std::vector<std::string> *hosts, t_c_server_constructor_params &params,
-						   char const *config_file)
+						   char const *config_file, int original_error_count)
 {
 	if (i == tokens.size())
 	{
@@ -46,10 +46,16 @@ static bool was_not_parsed(std::vector<t_c_token> const &tokens, size_t &i, t_c_
 	{
 		std::cout << std::string(config_file) + " " + position.to_string() +
 						 ": error, hosts attribute defines nothing\n";
-		delete params.ports_position;
+		delete params.host_names_position;
 		delete hosts;
-		params.ports_position = nullptr;
+		params.host_names_position = nullptr;
 		error_count++;
+		return (true);
+	}
+	if (error_count != original_error_count)
+	{
+		delete params.host_names_position;
+		delete hosts;
 		return (true);
 	}
 	return (false);
@@ -60,6 +66,7 @@ void get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> con
 {
 	t_c_position const        position = tokens[i].get_position();
 	std::vector<std::string> *hosts;
+	int const                 original_error_count = error_count;
 	bool                      comma_found;
 
 	i++;
@@ -71,14 +78,14 @@ void get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> con
 		error_count++;
 		throw(std::invalid_argument(""));
 	}
-	params.ports_position = new t_c_position(position);
+	params.host_names_position = new t_c_position(position);
 	hosts = new std::vector<std::string>();
 	comma_found = false;
-	while (i < tokens.size() && tokens[i].get_token() != ";")
+	while (i < tokens.size() && tokens[i].get_token()[0] != ';')
 	{
 		if (hosts->empty() == false && comma_found == false)
 		{
-			if (tokens[i].get_token() != ",")
+			if (tokens[i].get_token()[0] != ',')
 			{
 				std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
 								 " : error: expected a comma, found: " + tokens[i].get_token() + '\n';
@@ -101,7 +108,7 @@ void get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> con
 		comma_found = false;
 		i++;
 	}
-	if (was_not_parsed(tokens, i, position, error_count, hosts, params, config_file) == true)
+	if (was_not_parsed(tokens, i, position, error_count, hosts, params, config_file, original_error_count) == true)
 	{
 		return;
 	}

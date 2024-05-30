@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 04:00:48                                            */
-/*   Updated:  2024/05/19 22:40:45                                            */
+/*   Updated:  2024/05/30 23:53:14                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,16 +39,13 @@ class t_c_individual_server_config // perfoms no validity checks on construction
 		uint16_t                       port;
 		t_c_router const              *router;
 		t_c_default_error_pages const *default_error_pages;
-		std::string const             *file_is_a_directory_page; // page to be served in case file is a directory
-													 // construct whit empty string to allow directory listing
-		uint64_t client_body_size_limit = UINT64_MAX; // UINT64_MAX to disable
+		uint64_t                       client_body_size_limit = UINT64_MAX; // UINT64_MAX to disable
 
 	public:
 		class t_c_light_key;
 		explicit t_c_individual_server_config(std::string const *host_name_param, uint16_t port_param,
 											  t_c_router const              *router_param,
 											  t_c_default_error_pages const *default_error_pages_param,
-											  std::string const             *file_is_a_directory_page_param,
 											  uint64_t                       client_body_size_limit_param);
 		t_c_individual_server_config(t_c_individual_server_config const &copy);
 		~t_c_individual_server_config(void);
@@ -64,7 +61,6 @@ class t_c_individual_server_config // perfoms no validity checks on construction
 		uint16_t                       get_port(void) const;
 		t_c_router const              *get_router(void) const;
 		t_c_default_error_pages const *get_default_error_pages(void) const;
-		std::string const             *get_file_is_a_directory_page(void) const;
 		uint64_t                       get_client_body_size_limit(void) const;
 
 		std::string                    to_string(void) const;

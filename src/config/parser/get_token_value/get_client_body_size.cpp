@@ -84,7 +84,7 @@ void get_client_body_size(t_c_server_constructor_params &params, std::vector<t_c
 	catch (std::invalid_argument const &)
 	{
 		i++;
-		return ;
+		return;
 	}
 	i++;
 	if (i == tokens.size())

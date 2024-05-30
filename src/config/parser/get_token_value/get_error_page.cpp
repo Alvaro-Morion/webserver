@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/28 17:58:15                                            */
-/*   Updated:  2024/05/30 19:56:41                                            */
+/*   Updated:  2024/05/31 00:20:22                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,11 @@ static void get_error_page_internal(std::pair<std::string, std::pair<std::string
 									std::vector<t_c_token> &tokens, size_t &i, char const *config_file,
 									int &error_count, t_c_position const &position)
 {
-	if (elem.second.second != nullptr)
+	if (*elem.second.second != nullptr)
 	{
-		std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
-						 " : error: redefinition of " + tokens[i].get_token() +
-						 " attribute previusly defined at: " + position.to_string() + '\n';
+		std::cout << std::string(config_file) + ": " + tokens[i - 1].get_position().to_string() +
+						 " : error: redefinition of " + tokens[i - 1].get_token() +
+						 " attribute previusly defined at: " + (*elem.second.second)->to_string() + '\n';
 		if ((i < tokens.size() - 1) && (tokens[i].get_token()[0] != ';'))
 		{
 			i++;
@@ -98,7 +98,7 @@ static void get_error_page_internal(std::pair<std::string, std::pair<std::string
 		error_count++;
 		return;
 	}
-	if (tokens[i].get_token() != ";")
+	if (tokens[i].get_token()[0] != ';')
 	{
 		std::cout << std::string(config_file) + ": error, expected a semicolon, to end the " +
 						 tokens[i - 2].get_token() + " attribute at " + position.to_string() +
@@ -116,16 +116,27 @@ void get_error_page(t_c_server_constructor_params &params, std::vector<t_c_token
 	t_c_position                                                      position = tokens[i].get_position();
 	std::pair<std::string, std::pair<std::string *, t_c_position **>> table[] = {
 		{"error_page_http_version_not_supported",
-		 {&params.http_version_not_supported, &params.http_version_not_supported_position}                               },
-		{			"error_page_not_implemeted",               {&params.not_implemeted, &params.not_implemeted_position}},
-		{		  "error_internal_server_error", {&params.internal_server_error, &params.internal_server_error_position}},
-		{			  "error_page_uri_too_long",                   {&params.uri_too_long, &params.uri_too_long_position}},
-		{		 "error_page_content_too_large",         {&params.content_too_large, &params.content_too_large_position}},
-		{		  "error_page_length_requiered",           {&params.length_requiered, &params.length_requiered_position}},
-		{		   "error_page_request_timeout",             {&params.request_timeout, &params.request_timeout_position}},
-		{				 "error_page_not_found",                         {&params.not_found, &params.not_found_position}},
-		{				 "error_page_forbidden",                         {&params.forbidden, &params.forbidden_position}},
-		{			   "error_page_bad_request",                     {&params.bad_request, &params.bad_request_position}}
+		 {&params.default_error_params.http_version_not_supported,
+         &params.default_error_params.http_version_not_supported_position}                                        },
+		{			"error_page_not_implemeted",
+		 {&params.default_error_params.not_implemeted, &params.default_error_params.not_implemeted_position}      },
+		{		  "error_internal_server_error",
+		 {&params.default_error_params.internal_server_error,
+         &params.default_error_params.internal_server_error_position}                                             },
+		{			  "error_page_uri_too_long",
+		 {&params.default_error_params.uri_too_long, &params.default_error_params.uri_too_long_position}          },
+		{		 "error_page_content_too_large",
+		 {&params.default_error_params.content_too_large, &params.default_error_params.content_too_large_position}},
+		{		  "error_page_length_requiered",
+		 {&params.default_error_params.length_requiered, &params.default_error_params.length_requiered_position}  },
+		{		   "error_page_request_timeout",
+		 {&params.default_error_params.request_timeout, &params.default_error_params.request_timeout_position}    },
+		{				 "error_page_not_found",
+		 {&params.default_error_params.not_found, &params.default_error_params.not_found_position}                },
+		{				 "error_page_forbidden",
+		 {&params.default_error_params.forbidden, &params.default_error_params.forbidden_position}                },
+		{			   "error_page_bad_request",
+		 {&params.default_error_params.bad_request, &params.default_error_params.bad_request_position}            }
     };
 
 	for (std::pair<std::string, std::pair<std::string *, t_c_position **>> &elem : table)

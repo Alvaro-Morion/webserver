@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/24 18:43:50                                            */
-/*   Updated:  2024/05/30 20:48:34                                            */
+/*   Updated:  2024/05/31 00:21:50                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,40 +129,47 @@ class t_c_token
 		}
 };
 
+struct t_c_default_error_pages_constructor_params
+{
+		t_c_router const *router = nullptr;
+		t_c_position     *router_position = nullptr;
+		std::string       http_version_not_supported;
+		t_c_position     *http_version_not_supported_position = nullptr;
+		std::string       not_implemeted;
+		t_c_position     *not_implemeted_position = nullptr;
+		std::string       internal_server_error;
+		t_c_position     *internal_server_error_position = nullptr;
+		std::string       uri_too_long;
+		t_c_position     *uri_too_long_position = nullptr;
+		std::string       content_too_large;
+		t_c_position     *content_too_large_position = nullptr;
+		std::string       length_requiered;
+		t_c_position     *length_requiered_position = nullptr;
+		std::string       request_timeout;
+		t_c_position     *request_timeout_position = nullptr;
+		std::string       not_found;
+		t_c_position     *not_found_position = nullptr;
+		std::string       forbidden;
+		t_c_position     *forbidden_position = nullptr;
+		std::string       bad_request;
+		t_c_position     *bad_request_position = nullptr;
+};
+
 struct t_c_server_constructor_params
 {
 		std::vector<std::string> *host_names = nullptr;
 		t_c_position             *host_names_position = nullptr;
-		std::vector<uint16_t>     ports; // must be in network format (big endian)
+		std::vector<uint16_t>     ports;                                  // must be in network format (big endian)
 		t_c_position             *ports_position = nullptr;
-		t_c_router const         *router = nullptr;
-		t_c_position             *router_position = nullptr;
-		std::string               http_version_not_supported;
-		t_c_position             *http_version_not_supported_position = nullptr;
-		std::string               not_implemeted;
-		t_c_position             *not_implemeted_position = nullptr;
-		std::string               internal_server_error;
-		t_c_position             *internal_server_error_position = nullptr;
-		std::string               uri_too_long;
-		t_c_position             *uri_too_long_position = nullptr;
-		std::string               content_too_large;
-		t_c_position             *content_too_large_position = nullptr;
-		std::string               length_requiered;
-		t_c_position             *length_requiered_position = nullptr;
-		std::string               request_timeout;
-		t_c_position             *request_timeout_position = nullptr;
-		std::string               not_found;
-		t_c_position             *not_found_position = nullptr;
-		std::string               forbidden;
-		t_c_position             *forbidden_position = nullptr;
-		std::string               bad_request;
-		t_c_position             *bad_request_position = nullptr;
 		std::string const        *resource_is_a_directory_page = nullptr; // page to be served in case file
 																		  // is a directory assing empty string
 																		  // to allow directory listing
-		t_c_position *resource_is_a_directory_page_position = nullptr;
-		uint64_t      client_body_size_limit = UINT64_MAX; // UINT64_MAX to disable
-		t_c_position *client_body_size_limit_position = nullptr;
+		t_c_default_error_pages_constructor_params default_error_params;
+		t_c_position                              *resource_is_a_directory_page_position = nullptr;
+		uint64_t                                   client_body_size_limit = UINT64_MAX; // UINT64_MAX to disable
+		t_c_position                              *client_body_size_limit_position = nullptr;
+		t_c_router                                *router = nullptr;
+		t_c_position                              *router_position = nullptr;
 };
 
 class t_c_server_config_token : public t_c_server_config

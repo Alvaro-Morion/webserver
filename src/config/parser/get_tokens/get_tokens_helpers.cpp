@@ -211,9 +211,10 @@ size_t find_token_end(char const *str, e_token_type token_type, size_t &colum, s
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
 }
+
 #pragma GCC diagnostic pop
 
-e_token_type get_token_type(char const *buffer)
+e_token_type           get_token_type(char const *buffer)
 {
 	if (buffer[0] == '#')
 	{

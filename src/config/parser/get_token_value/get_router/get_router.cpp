@@ -6,11 +6,12 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/30 20:51:43                                            */
-/*   Updated:  2024/05/30 20:52:17                                            */
+/*   Updated:  2024/05/30 23:23:11                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_router.hpp"
+#include <iostream>
 
 ;
 #pragma GCC diagnostic push
@@ -31,6 +32,30 @@
 void get_router(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
 				char const *config_file, int &error_count)
 {
+	t_c_position const position = tokens[i].get_position();
+	int const          original_error_count = error_count;
+
+	i++;
+	if (i == tokens.size())
+	{
+		std::cout << std::string(config_file) +
+						 ": error, expected a semicolon, to end the client_body_size_limit"
+						 " attribute at " +
+						 position.to_string() + ", but found end of file\n";
+		error_count++;
+		return;
+	}
+	if (tokens[i].get_token()[0] != '{')
+	{
+		std::cout << std::string(config_file) + ":" + tokens[i].get_position().to_string() +
+						 ": error, expected a semicolon, to end the client_body_size_limit"
+						 " attribute at " +
+						 position.to_string() + ", but found: " + tokens[i].get_token() + "\n";
+		error_count++;
+	}
+	i++;
+	while (i 
+	i++;
 }
 
 #pragma GCC diagnostic pop

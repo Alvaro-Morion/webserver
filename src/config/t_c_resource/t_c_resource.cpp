@@ -6,13 +6,14 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 18:30:24                                            */
-/*   Updated:  2024/05/18 02:20:14                                            */
+/*   Updated:  2024/05/31 00:13:13                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../config.hpp"
 #include <stdexcept>
 #include <string>
+#include <unistd.h>
 
 ;
 #pragma GCC diagnostic push
@@ -30,21 +31,22 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-t_c_resource::t_c_resource(std::string const &root_param, std::string const &redirect_param, bool post_allowed_param,
-						   bool delet_allowed_param, bool get_allowed_param, bool is_cgi_param)
-	: root(root_param), redirect(redirect_param), post_allowed(post_allowed_param), delet_allowed(delet_allowed_param),
+t_c_resource::t_c_resource(std::string const &root_param, std::string const &redirect_param,
+						   std::string const &file_is_a_directory_page_param, bool directory_listing_param,
+						   bool post_allowed_param, bool delet_allowed_param, bool get_allowed_param, bool is_cgi_param)
+	: root(root_param), redirect(redirect_param), file_is_a_directory_page(file_is_a_directory_page_param),
+	  directory_listing(directory_listing_param), post_allowed(post_allowed_param), delet_allowed(delet_allowed_param),
 	  get_allowed(get_allowed_param), is_cgi(is_cgi_param)
 {
 	if (root.empty() == redirect.empty())
 	{
-		throw(std::invalid_argument("a resource must either be a redirection or a path too a directory or file"));
+		throw(std::invalid_argument("a resource must either be a redirection or a path"));
 	}
-	if (post_allowed == true && is_cgi == false)
+	if (access(file_is_a_directory_page.c_str(), R_OK) == 0)
 	{
-		throw(std::invalid_argument("A resource whit a post method must be a cgi"));
+		throw(std::invalid_argument(file_is_a_directory_page + "does not exist or is not redable"));
 	}
 	// todo: test if redirect is a valid uri, throw if not
-	// todo: test if root is a syntatcically valid path, throw if not
 }
 
 t_c_resource::t_c_resource(t_c_resource const &copy)
@@ -82,6 +84,16 @@ std::string const &t_c_resource::get_redirect(void) const
 	return (redirect);
 }
 
+std::string const &t_c_resource::get_file_is_a_directory_page(void) const
+{
+	return (file_is_a_directory_page);
+}
+
+bool t_c_resource::get_direcory_listing(void) const
+{
+	return (directory_listing);
+}
+
 bool t_c_resource::get_post_allowed(void) const
 {
 	return (post_allowed);
@@ -104,8 +116,9 @@ bool t_c_resource::get_is_cgi(void) const
 
 std::string t_c_resource::to_string() const
 {
-	return ("{root: " + root + ", redirect: " + redirect +
-			",\n\t\t\t post allowed: " + ((post_allowed == true) ? "true" : "fasle") +
+	return ("{root: " + root + ", redirect: " + redirect + ", file_is_a_directory_page: " + file_is_a_directory_page +
+			",\n\t\t\t directory_listing" + ((post_allowed == true) ? "true" : "fasle") +
+			", post allowed: " + ((post_allowed == true) ? "true" : "fasle") +
 			", delet allowed: " + ((delet_allowed == true) ? "true" : "fasle") + ", get allowed: " +
 			((get_allowed == true) ? "true" : "fasle") + ", is cgi: " + ((is_cgi == true) ? "true}" : "fasle}"));
 }
