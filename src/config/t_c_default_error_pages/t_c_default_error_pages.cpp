@@ -162,6 +162,11 @@ std::string const &t_c_default_error_pages::get_not_implemeted(void) const
 	return (not_implemeted);
 }
 
+std::string const &t_c_default_error_pages::get_internal_server_error(void) const
+{
+	return (internal_server_error);
+}
+
 std::string const &t_c_default_error_pages::get_uri_too_long(void) const
 {
 	return (uri_too_long);

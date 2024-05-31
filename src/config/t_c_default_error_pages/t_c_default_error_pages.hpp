@@ -60,6 +60,7 @@ class t_c_default_error_pages
 
 		std::string const &get_http_version_not_supported(void) const;
 		std::string const &get_not_implemeted(void) const;
+		std::string const &get_internal_server_error(void) const;
 		std::string const &get_uri_too_long(void) const;
 		std::string const &get_content_too_large(void) const;
 		std::string const &get_length_requiered(void) const;

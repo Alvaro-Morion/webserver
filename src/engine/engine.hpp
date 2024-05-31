@@ -5,24 +5,22 @@
 #include <sstream>
 #include <stddef.h>
 
-/*class ReturnType
+class ReturnType
 {
 	private:
-		int fd;
+		FILE *file;
 		pid_t child; // 0 != cgi
 
 	public:
-		ReturnType(int fd, pid_t pid = 0);
-		ReturnType(std::string response, pid_t pid = 0);
+		ReturnType(FILE *file, pid_t pid);
+		~ReturnType(void);
 
-		int     getFd(void);
+		FILE	*getFile(void);
 		pid_t   getChild(void);
 
-		bool    is_cgi(ReturnType &reponse);
-
-
+		bool	is_cgi(void);
 };
 
 ReturnType handle_invalid_request(void);
 ReturnType handle_error(int error_code, t_c_individual_server_config const &config);
-ReturnType handle_request(std::string const &request, t_c_individual_server_config &config);*/
+ReturnType handle_request(std::string const &request, t_c_individual_server_config &config);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../config/config.hpp"
+#include "../../engine/engine.hpp"
 #include "../MySocket/MySocket.hpp"
 #include <fcntl.h>
 #include <fstream>
@@ -33,7 +33,7 @@ class Server
 		void                                server_loop(void);
 		void                                manage_request(int fd);
 		t_c_individual_server_config const &select_config(int fd, std::string request);
-		void                                send_response(int response_fd, int socketfd);
+		void                                send_response(ReturnType response, int socketfd);
 
 		t_c_global_config                  *getGlobalConfig(void);
 		int                                 getEpoll(void);

@@ -54,8 +54,8 @@ void get_router(t_c_server_constructor_params &params, std::vector<t_c_token> co
 		error_count++;
 	}
 	i++;
-	while (i 
-	i++;
+	//while (i 
+	//i++;
 }
 
 #pragma GCC diagnostic pop
