@@ -81,6 +81,13 @@ t_c_global_config::t_c_global_config(std::set<t_c_individual_server_config, std:
 	}
 }
 
+t_c_global_config::t_c_global_config(void)
+{
+	std::string host = "localhost";
+	this->ports.insert(8080);
+	this->servers.insert(t_c_individual_server_config("localhost", 8080));
+}
+
 t_c_global_config::~t_c_global_config(void)
 {
 }

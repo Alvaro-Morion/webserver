@@ -45,6 +45,15 @@ t_c_individual_server_config::t_c_individual_server_config(std::string const *ho
 	}
 }
 
+t_c_individual_server_config::t_c_individual_server_config(std::string host_name, int port)
+{
+	default_error_pages = new t_c_default_error_pages;
+	this->host_name = new std::string(host_name);
+	this->port = port;
+	client_body_size_limit = 0;
+	
+}
+
 t_c_individual_server_config::t_c_individual_server_config(t_c_individual_server_config const &copy)
 	: host_name(copy.host_name), port(copy.port), router(copy.router), default_error_pages(copy.default_error_pages),
 	  client_body_size_limit(copy.client_body_size_limit)

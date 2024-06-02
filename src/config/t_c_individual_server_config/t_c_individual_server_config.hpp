@@ -47,6 +47,7 @@ class t_c_individual_server_config // perfoms no validity checks on construction
 											  t_c_router const              *router_param,
 											  t_c_default_error_pages const *default_error_pages_param,
 											  uint64_t                       client_body_size_limit_param);
+		t_c_individual_server_config(std::string const host_nname, int port); //For test only
 		t_c_individual_server_config(t_c_individual_server_config const &copy);
 		~t_c_individual_server_config(void);
 		t_c_individual_server_config const &operator=(t_c_individual_server_config const &copy);

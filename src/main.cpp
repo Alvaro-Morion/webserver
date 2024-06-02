@@ -19,6 +19,8 @@
 #include <string>
 #include <vector>
 
+#define DEFAULT_CONFIG "example_configs/config1"
+
 ;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpragmas"
@@ -38,23 +40,33 @@
 static void print_usage(void)
 {
 	char usage[] = "Usage:\n"
-				   "\t./webserver CONFIGURATION_FILE\n";
+				   "\t./webserver [CONFIGURATION_FILE]\n";
 
 	std::cout << usage;
 }
 
 int main(int argc, char **argv)
 {
+	//t_c_global_config config; //For test
+
 	t_c_global_config *config;
 
-	if (argc != 2)
+	if (argc > 2)
 	{
 		print_usage();
 		return (EXIT_FAILURE);
 	}
-	config = get_config(argv[1]);
+	if (argc == 2)
+	{
+		config = get_config(argv[1]);
+	}
+	else
+	{
+		config = get_config(DEFAULT_CONFIG);
+	}
 	signal(SIGPIPE, SIG_IGN);
 	Server server(config);
+	//Server server(&config); //For test
 	return (EXIT_FAILURE);
 }
 

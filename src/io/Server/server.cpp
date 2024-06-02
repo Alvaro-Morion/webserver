@@ -87,7 +87,7 @@ void Server::server_loop(void)
 					exit(EXIT_FAILURE);
 				}
 				setsockopt(confd, SOL_SOCKET, SOCK_NONBLOCK, &size, sizeof(int));
-				epoll_add(confd, EPOLLIN | EPOLLOUT | EPOLLRDHUP | EPOLLHUP);
+				epoll_add(confd, EPOLLIN | EPOLLRDHUP | EPOLLHUP);
 				client_port_map[confd] = socket_map[sockfd]->getPort();
 				std::cout << "New client: " << confd << " Accepted in port " << socket_map[sockfd]->getPort()
 						  << std::endl;
@@ -96,9 +96,9 @@ void Server::server_loop(void)
 			{
 				std::cout << "A request has been received...\n";
 				manage_request(sockfd);
+				socket_map.erase(sockfd);
+				close(sockfd);
 			}
-			socket_map.erase(sockfd);
-			close(sockfd);
 			std::cout << "end of the loop" << std::endl;
 		}
 	}
@@ -118,13 +118,14 @@ void Server::manage_request(int fd)
 		recv_str += buffer;
 	}
 	std::cout << nbytes << std::endl;
-	if (nbytes == -1 && recv_str.length() > 0) // EWOULDBLOCK o se ha terminado de leer.
+	if (nbytes <= 0 && recv_str.length() > 0) // EWOULDBLOCK y ha terminado de leer.
 	{
 		std::cout << recv_str << std::endl;
 		try
 		{
 			t_c_individual_server_config server_config = select_config(fd, recv_str);
 			//send_response(engine(request, config), fd);
+			send_response(handle_error(501, server_config), fd);
 		}
 		catch (ReturnType &error_response)
 		{
@@ -178,28 +179,27 @@ t_c_individual_server_config const &Server::select_config(int fd, std::string re
 
 	if (config != servers.end())
 	{
-		if (get_header_value("Content-length", request) != "")
+		std::cout << "a server was found\n";
+		if (config->get_client_body_size_limit() != UINT16_MAX)
 		{
-			size_t content_length = std::atoll(get_header_value("Content-length", request).c_str());
-			if (content_length > config->get_client_body_size_limit())
+			if (get_header_value("Content-length", request) != "")
 			{
-				throw handle_error(413, *config);
+				size_t content_length = std::atoll(get_header_value("Content-length", request).c_str());
+				if (content_length > config->get_client_body_size_limit())
+				{
+					throw handle_error(413, *config);
+				}
+				return (*config);
 			}
-			return (*config);
 		}
-		else
-		{
-			throw handle_error(411, *config);
-		}
+		return (*config);
 	}
-	throw handle_error(400, *config);
+	throw handle_invalid_request();
 }
 
 void Server::send_response(ReturnType response, int socketfd)
 {
 	std::string response_str = "";
-	size_t      nbytes;
-	char        buf[BUFFER_SIZE];
 	if (response.is_cgi())
 	{
 		//do 	CGI		stuff.
@@ -209,7 +209,7 @@ void Server::send_response(ReturnType response, int socketfd)
 	{
 		std::stringstream response_str;
 		char buffer[BUFFER_SIZE];
-		char const *response_string;
+		std::string response_string;
 		ssize_t nbytes = 0;
 		ssize_t bytes_sent = 0;
 		ssize_t bytes_read = 0;
@@ -219,9 +219,10 @@ void Server::send_response(ReturnType response, int socketfd)
 			response_str << buffer;
 			bytes_read += nbytes;
 		}
-		bytes_read = response_str.str().length();
-		response_string = response_str.str().c_str();
-		while (bytes_sent = write(socketfd, response_string, bytes_read) > 0)
+		response_string = response_str.str();
+		bytes_read = response_string.length();
+		std::cout << response_string.c_str();
+		while ((bytes_sent = send(socketfd, response_string.c_str(), bytes_read, MSG_DONTWAIT)) > 0)
 		{
 			nbytes += bytes_sent;
 			if(nbytes == bytes_read)
@@ -231,9 +232,8 @@ void Server::send_response(ReturnType response, int socketfd)
 		}
 		if (bytes_sent < 0)
 		{
-			perror("Send Response ");
+			perror("Send Response");
 		}
-		std::fclose(response.getFile());
 	}
 	
 }
