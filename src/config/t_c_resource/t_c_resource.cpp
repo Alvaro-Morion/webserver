@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 18:30:24                                            */
-/*   Updated:  2024/05/31 00:13:13                                            */
+/*   Updated:  2024/06/02 02:24:54                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,11 @@ t_c_resource::t_c_resource(std::string const &root_param, std::string const &red
 t_c_resource::t_c_resource(t_c_resource const &copy)
 	: root(copy.root), redirect(copy.redirect), post_allowed(copy.post_allowed), delet_allowed(copy.delet_allowed),
 	  get_allowed(copy.get_allowed), is_cgi(copy.is_cgi)
+{
+}
+
+
+t_c_resource::t_c_resource(void)
 {
 }
 
@@ -127,6 +132,7 @@ t_c_resource const &t_c_resource::operator=(t_c_resource const &copy)
 {
 	root = copy.root;
 	redirect = copy.redirect;
+	file_is_a_directory_page = copy.file_is_a_directory_page;
 	post_allowed = copy.post_allowed;
 	delet_allowed = copy.delet_allowed;
 	get_allowed = copy.get_allowed;

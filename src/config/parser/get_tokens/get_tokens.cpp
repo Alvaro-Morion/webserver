@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/27 07:58:56                                            */
-/*   Updated:  2024/05/30 14:32:13                                            */
+/*   Updated:  2024/06/01 04:19:09                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ static void insert_token_if_needed(e_token_type &token_type, std::vector<t_c_tok
 	beginning_row = row;
 }
 
-static void remove_comments_and_normalize(std::vector<t_c_token> &tokens, char const *config_file, int &error_count)
+static void remove_comments_and_normalize(std::vector<t_c_token> &tokens, char const *config_file)
 {
 	size_t i;
 	size_t j;
@@ -101,18 +101,13 @@ static void remove_comments_and_normalize(std::vector<t_c_token> &tokens, char c
 				if ((j == tokens[i].get_token().size()) ||
 					(tokens[i].get_token()[j] != '\\' && tokens[i].get_token()[j] != '\"'))
 				{
-					std::cout
-						<< std::string(config_file) + ":" + std::to_string(tokens[i].get_position().get_row()) + ":" +
-							   std::to_string(tokens[i].get_position().get_colum() + j) +
-							   ": error: \\ munst be always followed by \\ of \" or preceded by a \\ that is not itself"
-							   "preceded by a \\ recursively\n";
-					error_count++;
-					j++;
+					throw(std::invalid_argument(
+						std::string(config_file) + ":" + std::to_string(tokens[i].get_position().get_row()) + ":" +
+						std::to_string(tokens[i].get_position().get_colum() + j) +
+						": error: \\ munst be always followed by \\ of \" or preceded by a \\ that is not itself"
+						"preceded by a \\ recursively\n"));
 				}
-				else
-				{
-					tokens[i].get_token_non_const().erase(j, 1);
-				}
+				tokens[i].get_token_non_const().erase(j, 1);
 			}
 			else
 			{
@@ -122,7 +117,7 @@ static void remove_comments_and_normalize(std::vector<t_c_token> &tokens, char c
 	}
 }
 
-std::vector<t_c_token> get_tokens(char const *config_file, int &error_count)
+std::vector<t_c_token> get_tokens(char const *config_file)
 {
 	std::vector<t_c_token> tokens;
 	std::string            current_token;
@@ -173,7 +168,7 @@ std::vector<t_c_token> get_tokens(char const *config_file, int &error_count)
 		current_token.erase();
 	}
 	close_throw_if_fail(config_file_fd);
-	remove_comments_and_normalize(tokens, config_file, error_count);
+	remove_comments_and_normalize(tokens, config_file);
 	return (tokens);
 }
 

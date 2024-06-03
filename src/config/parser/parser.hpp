@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/24 18:43:50                                            */
-/*   Updated:  2024/05/31 00:21:50                                            */
+/*   Updated:  2024/06/02 01:46:47                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,10 @@ class t_c_position
 		{
 		}
 
+		t_c_position(void) : colum(0), row(0)
+		{
+		}
+
 		~t_c_position(void)
 		{
 		}
@@ -53,6 +57,15 @@ class t_c_position
 			colum = copy.colum;
 			row = copy.row;
 			return (*this);
+		}
+
+		bool is_valid(void) const
+		{
+			if (colum == 0 || row == 0)
+			{
+				return (false);
+			}
+			return (true);
 		}
 
 		size_t get_colum(void) const
@@ -131,45 +144,40 @@ class t_c_token
 
 struct t_c_default_error_pages_constructor_params
 {
-		t_c_router const *router = nullptr;
-		t_c_position     *router_position = nullptr;
-		std::string       http_version_not_supported;
-		t_c_position     *http_version_not_supported_position = nullptr;
-		std::string       not_implemeted;
-		t_c_position     *not_implemeted_position = nullptr;
-		std::string       internal_server_error;
-		t_c_position     *internal_server_error_position = nullptr;
-		std::string       uri_too_long;
-		t_c_position     *uri_too_long_position = nullptr;
-		std::string       content_too_large;
-		t_c_position     *content_too_large_position = nullptr;
-		std::string       length_requiered;
-		t_c_position     *length_requiered_position = nullptr;
-		std::string       request_timeout;
-		t_c_position     *request_timeout_position = nullptr;
-		std::string       not_found;
-		t_c_position     *not_found_position = nullptr;
-		std::string       forbidden;
-		t_c_position     *forbidden_position = nullptr;
-		std::string       bad_request;
-		t_c_position     *bad_request_position = nullptr;
+		t_c_position router_position;
+		std::string  http_version_not_supported;
+		t_c_position http_version_not_supported_position;
+		std::string  not_implemeted;
+		t_c_position not_implemeted_position;
+		std::string  internal_server_error;
+		t_c_position internal_server_error_position;
+		std::string  uri_too_long;
+		t_c_position uri_too_long_position;
+		std::string  content_too_large;
+		t_c_position content_too_large_position;
+		std::string  length_requiered;
+		t_c_position length_requiered_position;
+		std::string  request_timeout;
+		t_c_position request_timeout_position;
+		std::string  not_found;
+		t_c_position not_found_position;
+		std::string  forbidden;
+		t_c_position forbidden_position;
+		std::string  bad_request;
+		t_c_position bad_request_position;
 };
 
 struct t_c_server_constructor_params
 {
-		std::vector<std::string> *host_names = nullptr;
-		t_c_position             *host_names_position = nullptr;
-		std::vector<uint16_t>     ports;                                  // must be in network format (big endian)
-		t_c_position             *ports_position = nullptr;
-		std::string const        *resource_is_a_directory_page = nullptr; // page to be served in case file
-																		  // is a directory assing empty string
-																		  // to allow directory listing
+		std::vector<std::string>                  *host_names = nullptr;
+		t_c_position                               host_names_position;
+		std::vector<uint16_t>                      ports; // must be in network format (big endian)
+		t_c_position                               ports_position;
 		t_c_default_error_pages_constructor_params default_error_params;
-		t_c_position                              *resource_is_a_directory_page_position = nullptr;
 		uint64_t                                   client_body_size_limit = UINT64_MAX; // UINT64_MAX to disable
-		t_c_position                              *client_body_size_limit_position = nullptr;
+		t_c_position                               client_body_size_limit_position;
 		t_c_router                                *router = nullptr;
-		t_c_position                              *router_position = nullptr;
+		t_c_position                               router_position;
 };
 
 class t_c_server_config_token : public t_c_server_config
@@ -218,16 +226,17 @@ class t_c_individual_server_config_token : public t_c_individual_server_config
 };
 
 t_c_global_config     *get_config(char const *config_file);
-std::vector<t_c_token> get_tokens(char const *config_file, int &error_count);
+std::vector<t_c_token> get_tokens(char const *config_file);
 void                   get_ports(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
-								 char const *config_file, int &error_count);
+								 char const *config_file);
 void                   get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
-								 char const *config_file, int &error_count);
+								 char const *config_file);
 void                   get_error_page(t_c_server_constructor_params &params, std::vector<t_c_token> &tokens, size_t &i,
-									  char const *config_file, int &error_count);
+									  char const *config_file);
 void get_client_body_size(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
-						  char const *config_file, int &error_count);
-void get_router(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
-				char const *config_file, int &error_count);
+						  char const *config_file);
+void get_router(t_c_server_constructor_params &params, std::vector<t_c_token> &tokens, size_t &i,
+				char const *config_file);
+void remove_quotes_if_present(std::vector<t_c_token> &tokens, size_t &i, char const *config_file);
 
 #pragma GCC diagnostic pop

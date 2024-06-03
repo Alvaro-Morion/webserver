@@ -1,17 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                                            */
-/*   Filename: get_client_body_size.cpp                                       */
+/*   Filename: get_root.cpp                                                   */
 /*   Author:   Peru Riezu <riezumunozperu@gmail.com>                          */
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
-/*   Created:  2024/05/30 20:45:24                                            */
-/*   Updated:  2024/06/02 01:50:38                                            */
+/*   Created:  2024/06/02 08:36:42                                            */
+/*   Updated:  2024/06/02 10:10:59                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../parser.hpp"
-#include <iostream>
+#include "../get_router.hpp"
 #include <stdexcept>
 
 ;
@@ -30,71 +29,41 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-static uint64_t get_value(t_c_token const &token, char const *config_file)
-{
-	uint64_t res;
-	size_t   i;
-
-	res = 0;
-	i = 0;
-	while (token.get_token()[i] != '\0')
-	{
-		if (isdigit(token.get_token()[i]) == 0)
-		{
-			throw(std::invalid_argument(std::string(config_file) + ": " + token.get_position().to_string() +
-										" : error: expected number, found: " + token.get_token() + '\n'));
-		}
-		if ((UINT64_MAX - 1 / 10 < res) ||
-			((UINT64_MAX - 1 - static_cast<unsigned>(token.get_token()[i] - '0')) < res * 10))
-		{
-			throw(std::invalid_argument(std::string(config_file) + ": " + token.get_position().to_string() +
-										" : error: value must be less than 2^64-1 \n"));
-		}
-		res *= 10;
-		res += static_cast<unsigned>(token.get_token()[i] - '0');
-		i++;
-	}
-	return (res);
-}
-
-void get_client_body_size(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
-						  char const *config_file)
+void	get_root(t_c_resource_constructor_params &params, std::vector<t_c_token> &tokens, size_t &i,
+			char const *config_file)
 {
 	const t_c_position position = tokens[i].get_position();
-	uint64_t           res;
 
 	i++;
-	if (params.client_body_size_limit_position.is_valid() == true)
+	if (params.root_position.is_valid() == true)
 	{
 		throw(
 			std::invalid_argument(std::string(config_file) + ": " + position.to_string() +
-								  " : error: redefinition of client_body_size_limit attribute previusly defined at: " +
-								  params.client_body_size_limit_position.to_string() + '\n'));
+								  " : error: redefinition of root attribute previusly defined at: " +
+								  params.root_position.to_string() + '\n'));
 	}
 	if (i == tokens.size())
 	{
 		throw(std::invalid_argument(std::string(config_file) +
-									": error, expected a number, to give value to the client_body_size_limit"
-									" attribute at " +
+									": error, expected a value for root atribute at " +
 									position.to_string() + ", but found end of file\n"));
 	}
-	res = get_value(tokens[i], config_file);
+	remove_quotes_if_present(tokens, i, config_file);
+	params.root = tokens[i].get_token();
 	i++;
 	if (i == tokens.size())
 	{
 		throw(std::invalid_argument(std::string(config_file) +
-									": error, expected a semicolon, to end the client_body_size_limit"
+									": error, expected a semicolon, to end the root"
 									" attribute at " +
 									position.to_string() + ", but found end of file\n"));
 	}
 	if (tokens[i].get_token()[0] != ';')
 	{
 		throw(std::invalid_argument(std::string(config_file) + tokens[i].get_position().to_string() +
-									": error, expected a semicolon, to end the client_body_size_limit attribute at " +
+									": error, expected a semicolon, to end the root attribute at " +
 									position.to_string() + ", but found: " + tokens[i].get_token() + '\n'));
 	}
-	params.client_body_size_limit_position = position;
-	params.client_body_size_limit = res;
 }
 
 #pragma GCC diagnostic pop

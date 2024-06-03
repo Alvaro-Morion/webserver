@@ -6,14 +6,17 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/28 03:27:38                                            */
-/*   Updated:  2024/05/30 23:17:35                                            */
+/*   Updated:  2024/06/02 01:52:55                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../parser.hpp"
 #include <arpa/inet.h>
+#include <cstddef>
+#include <cstdint>
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 
 ;
 #pragma GCC diagnostic push
@@ -31,7 +34,7 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-static uint16_t get_port(t_c_token const &token, char const *config_file, int &error_count)
+static uint16_t get_port(t_c_token const &token, char const *config_file)
 {
 	uint16_t res;
 	size_t   i;
@@ -42,17 +45,13 @@ static uint16_t get_port(t_c_token const &token, char const *config_file, int &e
 	{
 		if (isdigit(token.get_token()[i]) == 0)
 		{
-			std::cout << std::string(config_file) + ": " + token.get_position().to_string() +
-							 " : error: expected number, found: " + token.get_token() + '\n';
-			error_count++;
-			throw(std::invalid_argument(""));
+			throw(std::invalid_argument(std::string(config_file) + ": " + token.get_position().to_string() +
+										" : error: expected number, found: " + token.get_token() + '\n'));
 		}
 		if ((UINT16_MAX / 10 < res) || ((UINT16_MAX - (token.get_token()[i] - '0')) < res * 10))
 		{
-			std::cout << std::string(config_file) + ": " + token.get_position().to_string() +
-							 " : error: number in bigger than the maximum port number \n";
-			error_count++;
-			throw(std::invalid_argument(""));
+			throw(std::invalid_argument(std::string(config_file) + ": " + token.get_position().to_string() +
+										" : error: number in bigger than the maximum port number \n"));
 		}
 		res *= 10;
 		res += token.get_token()[i] - '0';
@@ -61,22 +60,35 @@ static uint16_t get_port(t_c_token const &token, char const *config_file, int &e
 	return (htons(res));
 }
 
+static void last_checks(std::vector<t_c_token> const &tokens, size_t &i, char const *config_file,
+						std::vector<uint16_t> const &ports, t_c_position const &position)
+{
+	if (i == tokens.size())
+	{
+		throw(std::invalid_argument(std::string(config_file) +
+									": error, expected a semicolon, to end the ports attribute at " +
+									position.to_string() + ", but found end of file\n"));
+	}
+	if (ports.empty() == true)
+	{
+		throw(std::invalid_argument(std::string(config_file) + " " + position.to_string() +
+									": error, ports attribute defines nothing\n"));
+	}
+}
+
 void get_ports(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
-			   char const *config_file, int &error_count)
+			   char const *config_file)
 {
 	t_c_position const    position = tokens[i].get_position();
 	std::vector<uint16_t> ports;
-	int const             original_error_count = error_count;
 	bool                  comma_found;
 
 	i++;
-	if (params.ports_position != nullptr)
+	if (params.ports_position.is_valid() == true)
 	{
-		std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
-						 " : error: redefinition of ports attribute previusly defined at: " + position.to_string() +
-						 '\n';
-		error_count++;
-		return;
+		throw(std::invalid_argument(std::string(config_file) + ": " + position.to_string() +
+									" : error: redefinition of ports attribute previusly defined at: " +
+									params.ports_position.to_string() + '\n'));
 	}
 	comma_found = false;
 	while (i < tokens.size() && tokens[i].get_token()[0] != ';')
@@ -85,45 +97,20 @@ void get_ports(t_c_server_constructor_params &params, std::vector<t_c_token> con
 		{
 			if (tokens[i].get_token() != ",")
 			{
-				std::cout << std::string(config_file) + ": " + tokens[i].get_position().to_string() +
-								 " : error: expected a comma, found: " + tokens[i].get_token() + '\n';
-				i--;
-				error_count++;
-				return;
+				throw(std::invalid_argument(std::string(config_file) + ": " + tokens[i].get_position().to_string() +
+											" : error: expected a comma, found: " + tokens[i].get_token() + '\n'));
 			}
 			comma_found = true;
 			i++;
 			continue;
 		}
-		try
-		{
-			ports.push_back(get_port(tokens[i], config_file, error_count));
-		}
-		catch (std::invalid_argument const &)
-		{
-		}
+		ports.push_back(get_port(tokens[i], config_file));
 		comma_found = false;
 		i++;
 	}
-	if (i == tokens.size())
-	{
-		std::cout << std::string(config_file) + ": error, expected a semicolon, to end the ports attribute at " +
-						 position.to_string() + ", but found end of file\n";
-		error_count++;
-		return;
-	}
-	if (ports.empty() == true)
-	{
-		std::cout << std::string(config_file) + " " + position.to_string() +
-						 ": error, ports attribute defines nothing\n";
-		error_count++;
-		return;
-	}
-	if (error_count == original_error_count)
-	{
-		params.ports = ports;
-		params.ports_position = new t_c_position(position);
-	}
+	last_checks(tokens, i, config_file, ports, position);
+	params.ports = ports;
+	params.ports_position = position;
 }
 
 #pragma GCC diagnostic pop

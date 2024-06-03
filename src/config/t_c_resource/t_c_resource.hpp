@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 03:52:48                                            */
-/*   Updated:  2024/05/30 23:57:14                                            */
+/*   Updated:  2024/06/02 02:23:37                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ class t_c_resource
 							  bool post_allowed_param, bool delet_allowed_param, bool get_allowed_param,
 							  bool is_cgi_param);
 		t_c_resource(t_c_resource const &copy);
+		t_c_resource(void);
 		~t_c_resource(void);
 		bool                operator==(t_c_resource const &comparator) const;
 		t_c_resource const &operator=(t_c_resource const &copy);
