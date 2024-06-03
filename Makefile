@@ -6,7 +6,7 @@
 #    github:   https://github.com/priezu-m                                     #
 #    Licence:  GPLv3                                                           #
 #    Created:  2023/09/27 18:57:07                                             #
-#    Updated:  2024/05/30 22:57:46                                             #
+#    Updated:  2024/06/03 07:30:34                                             #
 #                                                                              #
 # **************************************************************************** #
 
@@ -120,7 +120,7 @@ re: fclean
 	@make --no-print-directory
 
 pull:
-	@git pull --rebase
+	@git pull --rebase -X theirs
 
 push: fclean
 	@git add .
