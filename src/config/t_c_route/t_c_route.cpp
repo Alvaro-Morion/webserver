@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/16 16:25:01                                            */
-/*   Updated:  2024/05/18 16:41:36                                            */
+/*   Updated:  2024/06/03 09:00:38                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,10 @@ t_c_route::t_c_route(std::string const &path_param, t_c_resource const &resource
 	{
 		throw(std::invalid_argument("redirected path must begin whit a '/'"));
 	}
+}
+
+t_c_route::t_c_route(void)
+{
 }
 
 t_c_route::t_c_route(t_c_route const &copy) : path(copy.path), resource(copy.resource)

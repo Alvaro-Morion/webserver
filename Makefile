@@ -6,7 +6,7 @@
 #    github:   https://github.com/priezu-m                                     #
 #    Licence:  GPLv3                                                           #
 #    Created:  2023/09/27 18:57:07                                             #
-#    Updated:  2024/06/03 07:30:34                                             #
+#    Updated:  2024/06/05 08:12:28                                             #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,10 +17,10 @@
 SHELL :=			bash
 CC :=				gcc
 CXX :=				g++
-CFLAGS :=			-O2 -flto -Wall -Wextra
-CXXFLAGS :=			-O2 -flto -Wall -Wextra -std=c++20
-CDEBUG_FLAGS :=		-O0  -g3 -fsanitize=address,undefined,leak
-CXXDEBUG_FLAGS :=	-O0  -g3 -fsanitize=address,undefined,leak
+CFLAGS :=			-O3 -flto -Wall -Wextra
+CXXFLAGS :=			-O3 -flto -Wall -Wextra -std=c++20
+CDEBUG_FLAGS :=		-O0 -g3 -fsanitize=address,undefined,leak
+CXXDEBUG_FLAGS :=	-O0 -g3 -fsanitize=address,undefined,leak
 LDFLAGS :=			
 
 ################################################################################

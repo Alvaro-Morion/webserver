@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/24 18:43:50                                            */
-/*   Updated:  2024/06/02 01:46:47                                            */
+/*   Updated:  2024/06/05 08:43:02                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,31 +145,31 @@ class t_c_token
 struct t_c_default_error_pages_constructor_params
 {
 		t_c_position router_position;
-		std::string  http_version_not_supported;
+		std::string  http_version_not_supported = "default_error_pages/505";
 		t_c_position http_version_not_supported_position;
-		std::string  not_implemeted;
+		std::string  not_implemeted = "default_error_pages/501";
 		t_c_position not_implemeted_position;
-		std::string  internal_server_error;
+		std::string  internal_server_error = "default_error_pages/500";
 		t_c_position internal_server_error_position;
-		std::string  uri_too_long;
+		std::string  uri_too_long = "default_error_pages/414";
 		t_c_position uri_too_long_position;
-		std::string  content_too_large;
+		std::string  content_too_large = "default_error_pages/413";
 		t_c_position content_too_large_position;
-		std::string  length_requiered;
+		std::string  length_requiered = "default_error_pages/411";
 		t_c_position length_requiered_position;
-		std::string  request_timeout;
+		std::string  request_timeout = "default_error_pages/408";
 		t_c_position request_timeout_position;
-		std::string  not_found;
+		std::string  not_found = "default_error_pages/404";
 		t_c_position not_found_position;
-		std::string  forbidden;
+		std::string  forbidden = "default_error_pages/403";
 		t_c_position forbidden_position;
-		std::string  bad_request;
+		std::string  bad_request = "default_error_pages/400";
 		t_c_position bad_request_position;
 };
 
 struct t_c_server_constructor_params
 {
-		std::vector<std::string>                  *host_names = nullptr;
+		std::vector<std::string *>                 host_names;
 		t_c_position                               host_names_position;
 		std::vector<uint16_t>                      ports; // must be in network format (big endian)
 		t_c_position                               ports_position;
@@ -178,6 +178,32 @@ struct t_c_server_constructor_params
 		t_c_position                               client_body_size_limit_position;
 		t_c_router                                *router = nullptr;
 		t_c_position                               router_position;
+};
+
+class t_c_route_token : public t_c_route
+{
+	private:
+		t_c_position position;
+
+	public:
+		t_c_route_token(t_c_route const &routes_param, t_c_position const &position_param)
+			: t_c_route(routes_param), position(position_param)
+		{
+		}
+
+		t_c_route_token(void)
+		{
+		}
+
+		t_c_route const &get_route(void) const
+		{
+			return (*this);
+		}
+
+		t_c_position const &get_position(void) const
+		{
+			return (position);
+		}
 };
 
 class t_c_server_config_token : public t_c_server_config

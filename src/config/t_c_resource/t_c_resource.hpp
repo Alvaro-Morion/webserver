@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 03:52:48                                            */
-/*   Updated:  2024/06/02 02:23:37                                            */
+/*   Updated:  2024/06/03 08:26:57                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,9 @@
 class t_c_resource
 {
 	private:
-		std::string root; // path to the directory in the filesystem of the origin server considered to be the root of
-						  // the path of the requested resource, it can also be a file case in wich it will always
-						  // respond whit the same file regardless of the requested resource
-		std::string redirect; // empty string for no redirect, if not empty it will not reply whit a file but whit a:
-							  // 301 permanently moved to "redirect"
-		std::string file_is_a_directory_page = "default_error_pages/403"; // 403 forbidden by default
+		std::string root;
+		std::string file_is_a_directory_page = "default_error_pages/403";
+		bool        is_redirect;
 		bool        directory_listing = false;
 		bool        post_allowed = false;
 		bool        delet_allowed = false;
@@ -46,10 +43,9 @@ class t_c_resource
 		bool        is_cgi = false;
 
 	public:
-		explicit t_c_resource(std::string const &root_param, std::string const &redirect_param,
-							  std::string const &file_is_a_directory_page_param, bool directory_listing_param,
-							  bool post_allowed_param, bool delet_allowed_param, bool get_allowed_param,
-							  bool is_cgi_param);
+		explicit t_c_resource(std::string const &root_param, std::string const &file_is_a_directory_page_param,
+							  bool is_redirect_param, bool directory_listing_param, bool post_allowed_param,
+							  bool delet_allowed_param, bool get_allowed_param, bool is_cgi_param);
 		t_c_resource(t_c_resource const &copy);
 		t_c_resource(void);
 		~t_c_resource(void);
@@ -57,8 +53,8 @@ class t_c_resource
 		t_c_resource const &operator=(t_c_resource const &copy);
 
 		std::string const  &get_root(void) const;
-		std::string const  &get_redirect(void) const; // empty string for no redirect
 		std::string const  &get_file_is_a_directory_page(void) const;
+		bool                get_is_redirect(void) const;
 		bool                get_direcory_listing(void) const;
 		bool                get_post_allowed(void) const;
 		bool                get_delet_allowed(void) const;

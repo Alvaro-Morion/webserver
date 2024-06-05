@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 03:58:30                                            */
-/*   Updated:  2024/05/30 23:54:31                                            */
+/*   Updated:  2024/06/05 08:42:37                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include "../t_c_default_error_pages/t_c_default_error_pages.hpp"
 #include "../t_c_router/t_c_router.hpp"
+#include <vector>
 
 ;
 #pragma GCC diagnostic push
@@ -34,7 +35,7 @@
 class t_c_server_config // binds to objects recived in construction
 {
 	private:
-		std::vector<std::string>      *host_names;
+		std::vector<std::string *>     host_names;
 		std::vector<uint16_t>          ports; // must be in network format (big endian)
 		t_c_router const              *router;
 		t_c_default_error_pages const *default_error_pages;
@@ -55,6 +56,6 @@ class t_c_server_config // binds to objects recived in construction
 		uint64_t                        get_client_body_size_limit(void) const;
 };
 
-bool                   is_valid_hostname(std::string const &host_name);
+bool is_valid_hostname(std::string const &host_name);
 
 #pragma GCC diagnostic pop

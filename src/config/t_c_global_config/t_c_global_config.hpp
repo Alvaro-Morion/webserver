@@ -42,7 +42,7 @@ class t_c_global_config
 
 	public:
 		explicit t_c_global_config(std::set<t_c_individual_server_config, std::less<>> const &servers_param);
-		t_c_global_config(void); //Test only
+		t_c_global_config(void); // Test only
 		~t_c_global_config(void);
 
 		std::set<t_c_individual_server_config, std::less<>> const &get_servers(void) const;

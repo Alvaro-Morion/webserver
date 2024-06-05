@@ -51,7 +51,6 @@ t_c_individual_server_config::t_c_individual_server_config(std::string host_name
 	this->host_name = new std::string(host_name);
 	this->port = port;
 	client_body_size_limit = 0;
-	
 }
 
 t_c_individual_server_config::t_c_individual_server_config(t_c_individual_server_config const &copy)

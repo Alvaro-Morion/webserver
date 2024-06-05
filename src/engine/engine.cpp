@@ -2,34 +2,34 @@
 
 static FILE *write_response(std::string head, std::string file)
 {
-	FILE *tmp = std::tmpfile();
+	FILE         *tmp = std::tmpfile();
 	std::ifstream body(file);
-	std::string buffer;
+	std::string   buffer;
 
 	std::fputs(head.c_str(), tmp);
-	while(std::getline(body, head))
+	while (std::getline(body, head))
 	{
 		std::fputs((head + "\n").c_str(), tmp);
 	}
 	std::rewind(tmp);
-	return(tmp);
+	return (tmp);
 }
 
-ReturnType  handle_invalid_request(void)
+ReturnType handle_invalid_request(void)
 {
-	
+
 	t_c_default_error_pages default_errors;
-	std::string head = "HTTP/1.1 400 Bad Request\r\n\r\n";
-	return(ReturnType(write_response(head, default_errors.get_bad_request()), 0));
+	std::string             head = "HTTP/1.1 400 Bad Request\r\n\r\n";
+	return (ReturnType(write_response(head, default_errors.get_bad_request()), 0));
 }
 
 ReturnType handle_error(int error_code, t_c_individual_server_config const &config)
 {
-	FILE *file;
+	FILE                          *file;
 	t_c_default_error_pages const *error_pages = config.get_default_error_pages();
-	std::stringstream head;
+	std::stringstream              head;
 	head << "HTTP/1.1 " << error_code << " ";
-	switch(error_code)
+	switch (error_code)
 	{
 		case 400:
 		{
@@ -92,7 +92,7 @@ ReturnType handle_error(int error_code, t_c_individual_server_config const &conf
 			break;
 		}
 	}
-	return(ReturnType(file, 0));
+	return (ReturnType(file, 0));
 }
 
 ReturnType::ReturnType(FILE *file, pid_t child)
@@ -102,7 +102,8 @@ ReturnType::ReturnType(FILE *file, pid_t child)
 }
 
 ReturnType::~ReturnType()
-{}
+{
+}
 
 FILE *ReturnType::getFile(void)
 {

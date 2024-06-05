@@ -15,10 +15,10 @@ class ReturnType
 		ReturnType(FILE *file, pid_t pid);
 		~ReturnType(void);
 
-		FILE	*getFile(void);
-		pid_t   getChild(void);
+		FILE *getFile(void);
+		pid_t getChild(void);
 
-		bool	is_cgi(void);
+		bool  is_cgi(void);
 };
 
 ReturnType handle_invalid_request(void);

@@ -124,7 +124,7 @@ void Server::manage_request(int fd)
 		try
 		{
 			t_c_individual_server_config server_config = select_config(fd, recv_str);
-			//send_response(engine(request, config), fd);
+			// send_response(engine(request, config), fd);
 			send_response(handle_error(501, server_config), fd);
 		}
 		catch (ReturnType &error_response)
@@ -202,19 +202,19 @@ void Server::send_response(ReturnType response, int socketfd)
 	std::string response_str = "";
 	if (response.is_cgi())
 	{
-		//do 	CGI		stuff.
+		// do 	CGI		stuff.
 		return;
 	}
 	else
 	{
 		std::stringstream response_str;
-		char buffer[BUFFER_SIZE];
-		std::string response_string;
-		ssize_t nbytes = 0;
-		ssize_t bytes_sent = 0;
-		ssize_t bytes_read = 0;
+		char              buffer[BUFFER_SIZE];
+		std::string       response_string;
+		ssize_t           nbytes = 0;
+		ssize_t           bytes_sent = 0;
+		ssize_t           bytes_read = 0;
 
-		while(std::fgets(buffer, BUFFER_SIZE, response.getFile()) != NULL)
+		while (std::fgets(buffer, BUFFER_SIZE, response.getFile()) != NULL)
 		{
 			response_str << buffer;
 			bytes_read += nbytes;
@@ -225,7 +225,7 @@ void Server::send_response(ReturnType response, int socketfd)
 		while ((bytes_sent = send(socketfd, response_string.c_str(), bytes_read, MSG_DONTWAIT)) > 0)
 		{
 			nbytes += bytes_sent;
-			if(nbytes == bytes_read)
+			if (nbytes == bytes_read)
 			{
 				break;
 			}
@@ -235,7 +235,6 @@ void Server::send_response(ReturnType response, int socketfd)
 			perror("Send Response");
 		}
 	}
-	
 }
 
 t_c_global_config *Server::getGlobalConfig(void)

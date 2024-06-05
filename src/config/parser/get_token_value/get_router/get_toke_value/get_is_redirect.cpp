@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                                            */
-/*   Filename: get_root.cpp                                                   */
+/*   Filename: get_is_redirect.cpp                                            */
 /*   Author:   Peru Riezu <riezumunozperu@gmail.com>                          */
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
-/*   Created:  2024/06/02 08:36:42                                            */
-/*   Updated:  2024/06/03 12:54:09                                            */
+/*   Created:  2024/06/03 10:13:55                                            */
+/*   Updated:  2024/06/04 18:05:32                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,38 +29,51 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-void get_root(t_c_resource_constructor_params &params, std::vector<t_c_token> &tokens, size_t &i,
-			  char const *config_file)
+static bool get_on_or_off(std::vector<t_c_token> &tokens, size_t &i, char const *config_file)
+{
+	if (tokens[i].get_token() == "true")
+	{
+		return (true);
+	}
+	if (tokens[i].get_token() == "false")
+	{
+		return (false);
+	}
+	throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i].get_position().to_string() +
+								": error expected true or false, but found: " + tokens[i].get_token() + '\n'));
+}
+
+void get_is_redirect(t_c_resource_constructor_params &params, std::vector<t_c_token> &tokens, size_t &i,
+					 char const *config_file)
 {
 	t_c_position const position = tokens[i].get_position();
 
-	i++;
-	if (params.root_position.is_valid() == true)
+	if (params.is_redirect_position.is_valid() == true)
 	{
 		throw(std::invalid_argument(std::string(config_file) + ": " + position.to_string() +
-									" : error: redefinition of root attribute previusly defined at: " +
-									params.root_position.to_string() + '\n'));
+									" : error: redefinition of is_redirect attribute previusly defined at: " +
+									params.is_redirect_position.to_string() + '\n'));
 	}
+	i++;
 	if (i == tokens.size())
 	{
-		throw(std::invalid_argument(std::string(config_file) + ": error, expected a value for root atribute at " +
+		throw(std::invalid_argument(std::string(config_file) + ": error, expected a value for is_redirect atribute at " +
 									position.to_string() + ", but found end of file\n"));
 	}
-	remove_quotes_if_present(tokens, i, config_file);
-	params.root = tokens[i].get_token();
-	params.root_position = position;
+	params.is_redirect = get_on_or_off(tokens, i, config_file);
+	params.is_redirect_position = position;
 	i++;
 	if (i == tokens.size())
 	{
 		throw(std::invalid_argument(std::string(config_file) +
-									": error, expected a semicolon, to end the root"
+									": error, expected a semicolon, to end the is_redirect"
 									" attribute at " +
 									position.to_string() + ", but found end of file\n"));
 	}
 	if (tokens[i].get_token()[0] != ';')
 	{
 		throw(std::invalid_argument(std::string(config_file) + tokens[i].get_position().to_string() +
-									": error, expected a semicolon, to end the root attribute at " +
+									": error, expected a semicolon, to end the is_redirect attribute at " +
 									position.to_string() + ", but found: " + tokens[i].get_token() + '\n'));
 	}
 }

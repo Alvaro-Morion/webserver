@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/28 17:58:15                                            */
-/*   Updated:  2024/06/02 01:51:43                                            */
+/*   Updated:  2024/06/05 07:41:49                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ static void get_error_page_internal(std::pair<std::string, std::pair<std::string
 void get_error_page(t_c_server_constructor_params &params, std::vector<t_c_token> &tokens, size_t &i,
 					char const *config_file)
 {
-	t_c_position                                                      position = tokens[i].get_position();
+	t_c_position                                                     position = tokens[i].get_position();
 	std::pair<std::string, std::pair<std::string *, t_c_position *>> table[] = {
 		{"http_version_not_supported",
 		 {&params.default_error_params.http_version_not_supported,
@@ -123,7 +123,7 @@ void get_error_page(t_c_server_constructor_params &params, std::vector<t_c_token
 			return;
 		}
 	}
-	throw(std::invalid_argument(std::string(config_file) + position.to_string() +
+	throw(std::invalid_argument(std::string(config_file) + ":" + position.to_string() +
 								": error, unrecognized token: " + tokens[i].get_token() + "\n"));
 }
 

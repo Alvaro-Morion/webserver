@@ -47,7 +47,7 @@ static void print_usage(void)
 
 int main(int argc, char **argv)
 {
-	//t_c_global_config config; //For test
+	// t_c_global_config config; //For test
 
 	t_c_global_config *config;
 
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 	}
 	signal(SIGPIPE, SIG_IGN);
 	Server server(config);
-	//Server server(&config); //For test
+	// Server server(&config); //For test
 	return (EXIT_FAILURE);
 }
 

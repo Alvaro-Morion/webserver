@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                                            */
-/*   Filename: get_redirect.cpp                                               */
+/*   Filename: get_directory_listing.cpp                                      */
 /*   Author:   Peru Riezu <riezumunozperu@gmail.com>                          */
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
-/*   Created:  2024/06/02 10:11:26                                            */
-/*   Updated:  2024/06/02 10:11:28                                            */
+/*   Created:  2024/06/04 12:10:13                                            */
+/*   Updated:  2024/06/04 12:10:15                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
