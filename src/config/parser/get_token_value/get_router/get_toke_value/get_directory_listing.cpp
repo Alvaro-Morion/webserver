@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/04 12:11:29                                            */
-/*   Updated:  2024/06/04 12:16:00                                            */
+/*   Updated:  2024/06/06 17:58:54                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void get_direcory_listing(t_c_resource_constructor_params &params, std::vector<t
 
 	if (params.directory_listing_position.is_valid() == true)
 	{
-		throw(std::invalid_argument(std::string(config_file) + ": " + position.to_string() +
+		throw(std::invalid_argument(std::string(config_file) + ":" + position.to_string() +
 									" : error: redefinition of directory_listing attribute previusly defined at: " +
 									params.directory_listing_position.to_string() + '\n'));
 	}
@@ -73,7 +73,7 @@ void get_direcory_listing(t_c_resource_constructor_params &params, std::vector<t
 	}
 	if (tokens[i].get_token()[0] != ';')
 	{
-		throw(std::invalid_argument(std::string(config_file) + tokens[i].get_position().to_string() +
+		throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i].get_position().to_string() +
 									": error, expected a semicolon, to end the directory_listing attribute at " +
 									position.to_string() + ", but found: " + tokens[i].get_token() + '\n'));
 	}

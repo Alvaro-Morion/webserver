@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/28 03:27:38                                            */
-/*   Updated:  2024/06/02 01:52:55                                            */
+/*   Updated:  2024/06/06 17:57:09                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,12 +45,12 @@ static uint16_t get_port(t_c_token const &token, char const *config_file)
 	{
 		if (isdigit(token.get_token()[i]) == 0)
 		{
-			throw(std::invalid_argument(std::string(config_file) + ": " + token.get_position().to_string() +
+			throw(std::invalid_argument(std::string(config_file) + ":" + token.get_position().to_string() +
 										" : error: expected number, found: " + token.get_token() + '\n'));
 		}
 		if ((UINT16_MAX / 10 < res) || ((UINT16_MAX - (token.get_token()[i] - '0')) < res * 10))
 		{
-			throw(std::invalid_argument(std::string(config_file) + ": " + token.get_position().to_string() +
+			throw(std::invalid_argument(std::string(config_file) + ":" + token.get_position().to_string() +
 										" : error: number in bigger than the maximum port number \n"));
 		}
 		res *= 10;
@@ -71,7 +71,7 @@ static void last_checks(std::vector<t_c_token> const &tokens, size_t &i, char co
 	}
 	if (ports.empty() == true)
 	{
-		throw(std::invalid_argument(std::string(config_file) + " " + position.to_string() +
+		throw(std::invalid_argument(std::string(config_file) + ":" + position.to_string() +
 									": error, ports attribute defines nothing\n"));
 	}
 }
@@ -86,7 +86,7 @@ void get_ports(t_c_server_constructor_params &params, std::vector<t_c_token> con
 	i++;
 	if (params.ports_position.is_valid() == true)
 	{
-		throw(std::invalid_argument(std::string(config_file) + ": " + position.to_string() +
+		throw(std::invalid_argument(std::string(config_file) + ":" + position.to_string() +
 									" : error: redefinition of ports attribute previusly defined at: " +
 									params.ports_position.to_string() + '\n'));
 	}
@@ -97,7 +97,7 @@ void get_ports(t_c_server_constructor_params &params, std::vector<t_c_token> con
 		{
 			if (tokens[i].get_token() != ",")
 			{
-				throw(std::invalid_argument(std::string(config_file) + ": " + tokens[i].get_position().to_string() +
+				throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i].get_position().to_string() +
 											" : error: expected a comma, found: " + tokens[i].get_token() + '\n'));
 			}
 			comma_found = true;

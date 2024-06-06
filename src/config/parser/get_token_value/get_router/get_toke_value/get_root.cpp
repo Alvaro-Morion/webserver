@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/02 08:36:42                                            */
-/*   Updated:  2024/06/03 12:54:09                                            */
+/*   Updated:  2024/06/06 17:57:36                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void get_root(t_c_resource_constructor_params &params, std::vector<t_c_token> &t
 	i++;
 	if (params.root_position.is_valid() == true)
 	{
-		throw(std::invalid_argument(std::string(config_file) + ": " + position.to_string() +
+		throw(std::invalid_argument(std::string(config_file) + ":" + position.to_string() +
 									" : error: redefinition of root attribute previusly defined at: " +
 									params.root_position.to_string() + '\n'));
 	}
@@ -59,7 +59,7 @@ void get_root(t_c_resource_constructor_params &params, std::vector<t_c_token> &t
 	}
 	if (tokens[i].get_token()[0] != ';')
 	{
-		throw(std::invalid_argument(std::string(config_file) + tokens[i].get_position().to_string() +
+		throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i].get_position().to_string() +
 									": error, expected a semicolon, to end the root attribute at " +
 									position.to_string() + ", but found: " + tokens[i].get_token() + '\n'));
 	}

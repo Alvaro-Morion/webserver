@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/03 12:55:56                                            */
-/*   Updated:  2024/06/04 19:05:55                                            */
+/*   Updated:  2024/06/06 17:58:21                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void get_methods(t_c_resource_constructor_params &params, std::vector<t_c_token>
 
 	if (params.methods_position.is_valid())
 	{
-		throw(std::invalid_argument(std::string(config_file) + ": " + position.to_string() +
+		throw(std::invalid_argument(std::string(config_file) + ":" + position.to_string() +
 									" : error: redefinition of methods attribute previusly defined at: " +
 									params.methods_position.to_string() + '\n'));
 	}
@@ -90,7 +90,7 @@ void get_methods(t_c_resource_constructor_params &params, std::vector<t_c_token>
 		{
 			if (tokens[i].get_token() != ",")
 			{
-				throw(std::invalid_argument(std::string(config_file) + ": " + tokens[i].get_position().to_string() +
+				throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i].get_position().to_string() +
 											": error: expected a comma, found: " + tokens[i].get_token() + '\n'));
 			}
 			comma_found = true;

@@ -180,7 +180,7 @@ t_c_individual_server_config const &Server::select_config(int fd, std::string re
 	if (config != servers.end())
 	{
 		std::cout << "a server was found\n";
-		if (config->get_client_body_size_limit() != UINT16_MAX)
+		if (config->get_client_body_size_limit() != UINT64_MAX)
 		{
 			if (get_header_value("Content-length", request) != "")
 			{

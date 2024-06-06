@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/04 12:28:05                                            */
-/*   Updated:  2024/06/04 18:05:43                                            */
+/*   Updated:  2024/06/06 17:59:10                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void get_is_cgi(t_c_resource_constructor_params &params, std::vector<t_c_token> 
 
 	if (params.is_cgi_position.is_valid() == true)
 	{
-		throw(std::invalid_argument(std::string(config_file) + ": " + position.to_string() +
+		throw(std::invalid_argument(std::string(config_file) + ":" + position.to_string() +
 									" : error: redefinition of is_cgi attribute previusly defined at: " +
 									params.is_cgi_position.to_string() + '\n'));
 	}
@@ -72,7 +72,7 @@ void get_is_cgi(t_c_resource_constructor_params &params, std::vector<t_c_token> 
 	}
 	if (tokens[i].get_token()[0] != ';')
 	{
-		throw(std::invalid_argument(std::string(config_file) + tokens[i].get_position().to_string() +
+		throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i].get_position().to_string() +
 									": error, expected a semicolon, to end the is_cgi attribute at " +
 									position.to_string() + ", but found: " + tokens[i].get_token() + '\n'));
 	}
