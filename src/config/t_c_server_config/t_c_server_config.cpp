@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:19:46                                            */
-/*   Updated:  2024/05/30 23:54:56                                            */
+/*   Updated:  2024/06/06 10:10:39                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,28 +72,28 @@ bool is_valid_hostname(std::string const &host_name)
 	return (true);
 }
 
-t_c_server_config::t_c_server_config(std::vector<std::string>    *host_names_param,
+t_c_server_config::t_c_server_config(std::vector<std::string *> const &host_names_param,
 									 std::vector<uint16_t> const &ports_param, t_c_router const *router_param,
 									 t_c_default_error_pages const *default_error_pages_param,
 									 uint64_t                       client_body_size_limit_param)
 	: host_names(host_names_param), ports(ports_param), router(router_param),
 	  default_error_pages(default_error_pages_param), client_body_size_limit(client_body_size_limit_param)
 {
-	if (host_names->empty() == true || ports.empty() == true)
+	if (host_names.empty() == true || ports.empty() == true)
 	{
 		throw(
 			std::invalid_argument("atleast a host name and port musts be provided for a server")); // parameters invalid
 	}
-	for (std::string &host_name : *host_names)
+	for (std::string *host_name : host_names)
 	{
-		std::transform(host_name.begin(), host_name.end(), host_name.begin(),
+		std::transform(host_name->begin(), host_name->end(), host_name->begin(),
 					   [](unsigned char c)
 					   {
 						   return std::tolower(c);
 					   });
-		if (is_valid_hostname(host_name) == false)
+		if (is_valid_hostname(*host_name) == false)
 		{
-			throw(std::invalid_argument(host_name + " is not a valid host_name")); // parameters invalid
+			throw(std::invalid_argument(*host_name + " is not a valid host_name")); // parameters invalid
 		}
 	}
 }
@@ -108,7 +108,7 @@ t_c_server_config::~t_c_server_config(void)
 {
 }
 
-std::vector<std::string> const *t_c_server_config::get_host_names(void) const
+std::vector<std::string *> const &t_c_server_config::get_host_names(void) const
 {
 	return (host_names);
 }

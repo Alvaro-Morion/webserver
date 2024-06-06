@@ -37,7 +37,7 @@ static void get_method(t_c_resource_constructor_params &params, std::vector<t_c_
 		if (params.get_allowed == true)
 		{
 			throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i].get_position().to_string() +
-									": error: GET method listed more than once\n"));
+										": error: GET method listed more than once\n"));
 		}
 		params.get_allowed = true;
 		return;
@@ -47,7 +47,7 @@ static void get_method(t_c_resource_constructor_params &params, std::vector<t_c_
 		if (params.post_allowed == true)
 		{
 			throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i].get_position().to_string() +
-									": error: POST method listed more than onece\n"));
+										": error: POST method listed more than onece\n"));
 		}
 		params.post_allowed = true;
 		return;

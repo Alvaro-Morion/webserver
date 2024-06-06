@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 19:13:58                                            */
-/*   Updated:  2024/05/27 05:16:04                                            */
+/*   Updated:  2024/06/06 10:32:34                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,38 +35,6 @@
 #pragma GCC diagnostic ignored "-Wc++20-designator"
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
-
-/*static void ungroup_and_add(std::set<t_c_individual_server_config, std::less<>> &servers,
-							std::vector<t_c_server_config> const                &new_servers)
-{
-	for (t_c_server_config const &server_confing : new_servers)
-	{
-		for (std::string const &host_name : *server_confing.get_host_names())
-		{
-			for (uint16_t port : server_confing.get_ports())
-			{
-				t_c_individual_server_config new_server(
-					&host_name, port, server_confing.get_router(), server_confing.get_default_error_pages(),
-					server_confing.get_resource_is_a_directory_page(), server_confing.get_client_body_size_limit());
-
-				std::set<t_c_individual_server_config, std::less<>>::iterator it =
-					servers.find(t_c_individual_server_config::t_c_light_key(&host_name, port));
-				if (it == servers.end())
-				{
-					servers.insert(new_server);
-				}
-				else
-				{
-					if (*it != new_server)
-					{
-						throw(std::invalid_argument(*it->get_host_name() + ":" + std::to_string(it->get_port()) +
-													" is duplicated"));
-					}
-				}
-			}
-		}
-	}
-}*/
 
 t_c_global_config::t_c_global_config(std::set<t_c_individual_server_config, std::less<>> const &servers_param)
 	: servers(servers_param)

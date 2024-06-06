@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/27 08:02:34                                            */
-/*   Updated:  2024/05/30 21:44:05                                            */
+/*   Updated:  2024/06/06 10:12:29                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,7 +184,7 @@ size_t find_first_non_space(char const *str, size_t &colum, size_t &row)
 
 size_t find_token_end(char const *str, e_token_type token_type, size_t &colum, size_t &row)
 {
-	switch (token_type)
+	switch (token_type) // NOLINT
 	{
 		case e_token_type::quoted:
 		{

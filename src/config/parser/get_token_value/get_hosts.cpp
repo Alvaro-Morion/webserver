@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/28 03:29:23                                            */
-/*   Updated:  2024/06/02 01:52:14                                            */
+/*   Updated:  2024/06/06 10:14:01                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@
 ;
 
 static void last_checks(std::vector<t_c_token> const &tokens, size_t &i, t_c_position const &position,
-						std::vector<std::string> *hosts, char const *config_file)
+						std::vector<std::string *> const &hosts, char const *config_file)
 {
 	if (i == tokens.size())
 	{
@@ -41,7 +41,7 @@ static void last_checks(std::vector<t_c_token> const &tokens, size_t &i, t_c_pos
 									": error, expected a semicolon, to end the hosts attribute at " +
 									position.to_string() + ", but found end of file\n"));
 	}
-	if (hosts->empty() == true)
+	if (hosts.empty() == true)
 	{
 		throw(std::invalid_argument(std::string(config_file) + " " + position.to_string() +
 									": error, hosts attribute defines nothing\n"));
@@ -51,9 +51,9 @@ static void last_checks(std::vector<t_c_token> const &tokens, size_t &i, t_c_pos
 void get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> const &tokens, size_t &i,
 			   char const *config_file)
 {
-	t_c_position const        position = tokens[i].get_position();
-	std::vector<std::string> *hosts;
-	bool                      comma_found;
+	t_c_position const         position = tokens[i].get_position();
+	std::vector<std::string *> hosts;
+	bool                       comma_found;
 
 	i++;
 	if (params.host_names_position.is_valid() == true)
@@ -63,11 +63,10 @@ void get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> con
 			" : error: redefinition of hosts attribute previusly defined at: " + position.to_string() + '\n'));
 	}
 	params.host_names_position = position;
-	hosts = new std::vector<std::string>();
 	comma_found = false;
 	while (i < tokens.size() && tokens[i].get_token()[0] != ';')
 	{
-		if (hosts->empty() == false && comma_found == false)
+		if (hosts.empty() == false && comma_found == false)
 		{
 			if (tokens[i].get_token()[0] != ',')
 			{
@@ -83,7 +82,7 @@ void get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> con
 			throw(std::invalid_argument(std::string(config_file) + ": " + tokens[i].to_string() +
 										" : error: token is not a valid hostname\n"));
 		}
-		hosts->push_back(tokens[i].get_token());
+		hosts.push_back(new std::string(tokens[i].get_token()));
 		comma_found = false;
 		i++;
 	}

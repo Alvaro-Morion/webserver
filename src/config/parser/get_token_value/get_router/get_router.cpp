@@ -31,59 +31,65 @@
 #pragma GCC diagnostic ignored "-Wc++20-designator"
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
-static t_c_resource add_defaults_and_construct_resource(t_c_resource_constructor_params &params, t_c_position const &position, char const *config_file)
+
+static t_c_resource add_defaults_and_construct_resource(t_c_resource_constructor_params &params,
+														t_c_position const &position, char const *config_file)
 {
-	if ((params.is_cgi_position.is_valid() == true && params.is_redirect_position.is_valid() == true)
-	 && (params.is_cgi == true && params.is_redirect == true))
+	if ((params.is_cgi_position.is_valid() == true && params.is_redirect_position.is_valid() == true) &&
+		(params.is_cgi == true && params.is_redirect == true))
 	{
-		throw (std::invalid_argument(std::string(config_file) + ": error: in resource defined at: " + position.to_string() + ": is_cgi and is_redirect set to true sinmultaniusly\n"));
+		throw(std::invalid_argument(std::string(config_file) + ": error: in resource defined at: " +
+									position.to_string() + ": is_cgi and is_redirect set to true sinmultaniusly\n"));
 	}
 	if (params.root_position.is_valid() == false)
 	{
-		throw (std::invalid_argument(std::string(config_file) + ": error: in resource defined at: " + position.to_string() + ": no root attribute defined\n"));
+		throw(std::invalid_argument(std::string(config_file) + ": error: in resource defined at: " +
+									position.to_string() + ": no root attribute defined\n"));
 	}
 	if (params.methods_position.is_valid() == false)
 	{
 		params.get_allowed = true;
 	}
-	return (t_c_resource(params.root, params.file_is_a_directory_page, params.is_redirect, params.directory_listing, params.post_allowed, params.delet_allowed, params.get_allowed, params.is_cgi));
+	return (t_c_resource(params.root, params.file_is_a_directory_page, params.is_redirect, params.directory_listing,
+						 params.post_allowed, params.delet_allowed, params.get_allowed, params.is_cgi));
 }
 
-static void get_token_value(std::vector<t_c_token> &tokens, size_t &i, t_c_resource_constructor_params &params, char const *config_file)
+static void get_token_value(std::vector<t_c_token> &tokens, size_t &i, t_c_resource_constructor_params &params,
+							char const *config_file)
 {
-		if (tokens[i].get_token() == "root")
-		{
-			get_root(params, tokens, i, config_file);
-		}
-		else if (tokens[i].get_token() == "is_redirect")
-		{
-			get_is_redirect(params, tokens, i, config_file);
-		}
-		else if (tokens[i].get_token() == "methods")
-		{
-			get_methods(params, tokens, i, config_file);
-		}
-		else if (tokens[i].get_token() == "directory_listing")
-		{
-			get_direcory_listing(params, tokens, i, config_file);
-		}
-		else if (tokens[i].get_token() == "resource_is_a_directory_error_page")
-		{
-			get_file_is_a_directory_page(params, tokens, i, config_file);
-		}
-		else if (tokens[i].get_token() == "is_cgi")
-		{
-			get_is_cgi(params, tokens, i, config_file);
-		}
-		else
-		{
-			throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i].get_position().to_string() +
-										": error: error unrecognized token  " + tokens[i].get_token() + '\n'));
-		}
-		if (i < tokens.size())
-		{
-			i++;
-		}
+	if (tokens[i].get_token() == "root")
+	{
+		get_root(params, tokens, i, config_file);
+	}
+	else if (tokens[i].get_token() == "is_redirect")
+	{
+		get_is_redirect(params, tokens, i, config_file);
+	}
+	else if (tokens[i].get_token() == "methods")
+	{
+		get_methods(params, tokens, i, config_file);
+	}
+	else if (tokens[i].get_token() == "directory_listing")
+	{
+		get_direcory_listing(params, tokens, i, config_file);
+	}
+	else if (tokens[i].get_token() == "resource_is_a_directory_error_page")
+	{
+		get_file_is_a_directory_page(params, tokens, i, config_file);
+	}
+	else if (tokens[i].get_token() == "is_cgi")
+	{
+		get_is_cgi(params, tokens, i, config_file);
+	}
+	else
+	{
+		throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i].get_position().to_string() +
+									": error: error unrecognized token  " + tokens[i].get_token() + '\n'));
+	}
+	if (i < tokens.size())
+	{
+		i++;
+	}
 }
 
 static t_c_resource get_resource(std::vector<t_c_token> &tokens, size_t &i, char const *config_file)

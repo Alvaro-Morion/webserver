@@ -57,8 +57,9 @@ void get_is_redirect(t_c_resource_constructor_params &params, std::vector<t_c_to
 	i++;
 	if (i == tokens.size())
 	{
-		throw(std::invalid_argument(std::string(config_file) + ": error, expected a value for is_redirect atribute at " +
-									position.to_string() + ", but found end of file\n"));
+		throw(std::invalid_argument(std::string(config_file) +
+									": error, expected a value for is_redirect atribute at " + position.to_string() +
+									", but found end of file\n"));
 	}
 	params.is_redirect = get_on_or_off(tokens, i, config_file);
 	params.is_redirect_position = position;

@@ -39,10 +39,10 @@ void get_file_is_a_directory_page(t_c_resource_constructor_params &params, std::
 	i++;
 	if (params.file_is_a_directory_page_position.is_valid() == true)
 	{
-		throw(std::invalid_argument(
-			std::string(config_file) + ":" + position.to_string() +
-			": error: redefinition of file_is_a_directory_page attribute previusly defined at: " +
-			params.file_is_a_directory_page_position.to_string() + '\n'));
+		throw(
+			std::invalid_argument(std::string(config_file) + ":" + position.to_string() +
+								  ": error: redefinition of file_is_a_directory_page attribute previusly defined at: " +
+								  params.file_is_a_directory_page_position.to_string() + '\n'));
 	}
 	if (i == tokens.size())
 	{

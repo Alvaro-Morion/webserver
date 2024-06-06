@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/26 00:53:43                                            */
-/*   Updated:  2024/06/05 08:42:24                                            */
+/*   Updated:  2024/06/06 10:25:48                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,31 +39,46 @@
 
 static std::vector<t_c_individual_server_config_token> decuple(t_c_server_config_token const &server_config)
 {
-	for (std::string 
+	std::vector<t_c_individual_server_config_token> individual_server_configs;
 
+	for (std::string const *host_name : server_config.get_host_names())
+	{
+		for (uint16_t port_num : server_config.get_ports())
+		{
+			individual_server_configs.push_back(t_c_individual_server_config_token(
+				t_c_individual_server_config(host_name, port_num, server_config.get_router(),
+											 server_config.get_default_error_pages(),
+											 server_config.get_client_body_size_limit()),
+				server_config.get_position()));
+		}
+	}
+	return (individual_server_configs);
 }
 
-static t_c_server_config_token add_defaults(t_c_server_constructor_params &params, t_c_position const &server_token_position, char const *config_file)
+static t_c_server_config_token add_defaults(t_c_server_constructor_params &params,
+											t_c_position const &server_token_position, char const *config_file)
 {
 	if (params.host_names_position.is_valid() == false)
 	{
-		throw (std::invalid_argument(std::string(config_file) + ":" + server_token_position.to_string() + ": error: server doees not define host_names attribute\n"));
+		throw(std::invalid_argument(std::string(config_file) + ":" + server_token_position.to_string() +
+									": error: server doees not define host_names attribute\n"));
 	}
 	if (params.ports_position.is_valid() == false)
 	{
-		throw (std::invalid_argument(std::string(config_file) + ":" + server_token_position.to_string() + ": error: server doees not define ports attribute\n"));
+		throw(std::invalid_argument(std::string(config_file) + ":" + server_token_position.to_string() +
+									": error: server doees not define ports attribute\n"));
 	}
-	return (t_c_server_config_token(t_c_server_config(params.host_names, params.ports, params.router, 
-							new t_c_default_error_pages(params.default_error_params.http_version_not_supported,
-										 params.default_error_params.not_implemeted,
-										 params.default_error_params.internal_server_error,
-										 params.default_error_params.uri_too_long,
-										 params.default_error_params.content_too_large,
-										 params.default_error_params.length_requiered,
-										 params.default_error_params.request_timeout,
-										 params.default_error_params.not_found,
-										 params.default_error_params.forbidden,
-										 params.default_error_params.bad_request), params.client_body_size_limit), server_token_position));
+	return (t_c_server_config_token(
+		t_c_server_config(
+			params.host_names, params.ports, params.router,
+			new t_c_default_error_pages(
+				params.default_error_params.http_version_not_supported, params.default_error_params.not_implemeted,
+				params.default_error_params.internal_server_error, params.default_error_params.uri_too_long,
+				params.default_error_params.content_too_large, params.default_error_params.length_requiered,
+				params.default_error_params.request_timeout, params.default_error_params.not_found,
+				params.default_error_params.forbidden, params.default_error_params.bad_request),
+			params.client_body_size_limit),
+		server_token_position));
 }
 
 static t_c_server_config_token get_server_config(std::vector<t_c_token> &tokens, size_t &i, char const *config_file)
@@ -120,9 +135,9 @@ static t_c_server_config_token get_server_config(std::vector<t_c_token> &tokens,
 
 t_c_global_config *get_config(char const *config_file)
 {
-	std::vector<t_c_token>                              tokens = get_tokens(config_file);
+	std::vector<t_c_token>                                    tokens = get_tokens(config_file);
 	std::set<t_c_individual_server_config_token, std::less<>> individual_server_config_set;
-	size_t                                              i;
+	size_t                                                    i;
 
 	i = 0;
 	while (i < tokens.size())
@@ -143,16 +158,18 @@ t_c_global_config *get_config(char const *config_file)
 			throw(std::invalid_argument(std::string(config_file) + ": " + tokens[i].get_position().to_string() +
 										" : error: expected '{', found: " + tokens[i].get_token() + '\n'));
 		}
-		for (t_c_individual_server_config const &indvidual_config_token : decuple(get_server_config(tokens, i, config_file))) // will update i to refer to the closing }
+		for (t_c_individual_server_config_token const &indvidual_config_token :
+			 decuple(get_server_config(tokens, i, config_file))) // will update i to refer to the closing }
 		{
-
+			individual_server_config_set.insert(indvidual_config_token);
 		}
 		if (i < tokens.size())
 		{
 			i++;
 		}
 	}
-	return (new t_c_global_config(std::set<t_c_individual_server_config, std::less<>>(individual_server_config_set.begin(), individual_server_config_set.end())));
+	return (new t_c_global_config(std::set<t_c_individual_server_config, std::less<>>(
+		individual_server_config_set.begin(), individual_server_config_set.end())));
 }
 
 #pragma GCC diagnostic pop
