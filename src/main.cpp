@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:18:55                                            */
-/*   Updated:  2024/06/06 10:33:45                                            */
+/*   Updated:  2024/06/06 10:49:08                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,8 @@ int main(int argc, char **argv)
 	{
 		config = get_config(DEFAULT_CONFIG);
 	}
-//	std::cout << config->to_string();
-//	pause();
+	std::cout << config->to_string();
+	pause();
 	signal(SIGPIPE, SIG_IGN);
 	Server server(config);
 	// Server server(&config); //For test

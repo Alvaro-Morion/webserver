@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/03 08:33:11                                            */
-/*   Updated:  2024/06/05 07:45:41                                            */
+/*   Updated:  2024/06/06 11:07:36                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,6 +207,12 @@ static t_c_route_token get_route(std::vector<t_c_token> &tokens, size_t &i, char
 		throw(std::invalid_argument(std::string(config_file) + ": error, expected }, to match { at " +
 									opening_key_position.to_string() + ", but found end of file\n"));
 	}
+	if (tokens[i].get_token()[0] != '}')
+	{
+		
+		throw(std::invalid_argument(std::string(config_file) + ": error, expected }, to match { at " +
+									opening_key_position.to_string() + ", but found: " + tokens[i].get_token() + '\n'));
+	}
 	return (t_c_route_token(t_c_route(path, resource), position));
 }
 
@@ -231,7 +237,7 @@ void get_router(t_c_server_constructor_params &params, std::vector<t_c_token> &t
 		if (routes.insert(aux).second == false)
 		{
 			throw(std::invalid_argument(std::string(config_file) + ":" + aux.get_position().to_string() +
-										": error: route's path was already defined by at: " +
+										": error: route's path was already defined by route at: " +
 										routes.insert(aux).first->get_position().to_string() + '\n'));
 		}
 		if (i < tokens.size())

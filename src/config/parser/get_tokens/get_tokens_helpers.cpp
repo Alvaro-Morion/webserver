@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/27 08:02:34                                            */
-/*   Updated:  2024/06/06 10:12:29                                            */
+/*   Updated:  2024/06/06 16:00:13                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,15 +35,14 @@ size_t find_char_after_unscaped_quotation(char const *str, size_t &colum, size_t
 	size_t back_slash_count;
 	size_t i;
 
-	res = 1;
-	colum++;
+	res = 0;
 	while (str[res] != '\0')
 	{
 		if (str[res] == '\"')
 		{
 			if (res == 0)
 			{
-				return (res);
+				return (res + 1);
 			}
 			back_slash_count = 0;
 			i = res;
@@ -84,8 +83,7 @@ size_t find_nl(char const *str, size_t &colum, __attribute((unused)) size_t &row
 {
 	size_t res;
 
-	res = 1;
-	colum++;
+	res = 0;
 	while (str[res] != '\0')
 	{
 		if (str[res] == ('\n'))
@@ -116,8 +114,7 @@ size_t find_space_unscaped_quote_pound_or_separator(char const *str, size_t &col
 
 	colum = original_colum;
 	row = original_row;
-	res = 1;
-	colum++;
+	res = 0;
 	while (res < unscaped_quote_pos)
 	{
 		if (std::isspace(str[res]) != 0)
@@ -158,7 +155,7 @@ size_t find_first_non_space(char const *str, size_t &colum, size_t &row)
 	size_t res;
 
 	res = 0;
-	while (str[res] != 0)
+	while (str[res] != '\0')
 	{
 		if (std::isspace(str[res]) == 0)
 		{
@@ -214,7 +211,7 @@ size_t find_token_end(char const *str, e_token_type token_type, size_t &colum, s
 
 #pragma GCC diagnostic pop
 
-e_token_type get_token_type(char const *buffer)
+e_token_type get_token_type(char *buffer)
 {
 	if (buffer[0] == '#')
 	{
@@ -222,6 +219,7 @@ e_token_type get_token_type(char const *buffer)
 	}
 	if (buffer[0] == '\"')
 	{
+		buffer[0] = 'a'; // any non null character
 		return (e_token_type::quoted);
 	}
 	if (std::isspace(buffer[0]) != 0)

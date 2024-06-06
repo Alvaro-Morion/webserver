@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/28 17:58:15                                            */
-/*   Updated:  2024/06/05 07:41:49                                            */
+/*   Updated:  2024/06/06 16:13:20                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void remove_quotes_if_present(std::vector<t_c_token> &tokens, size_t &i, char co
 		if ((tokens[i].get_token().empty() == true) ||
 			(tokens[i].get_token()[tokens[i].get_token().size() - 1] != '\"'))
 		{
-			throw(std::invalid_argument(std::string(config_file) + ": error, expected a \", to end match \" font at " +
+			throw(std::invalid_argument(std::string(config_file) + ": error, expected a \", to end match \" found at " +
 										tokens[i].get_position().to_string() + "\n"));
 		}
 		tokens[i].get_token_non_const().erase(tokens[i].get_token().size() - 1, 1);
@@ -56,19 +56,19 @@ static void get_error_page_internal(std::pair<std::string, std::pair<std::string
 {
 	if (elem.second.second->is_valid() == true)
 	{
-		throw(std::invalid_argument(std::string(config_file) + ": " + tokens[i - 1].get_position().to_string() +
+		throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i - 1].get_position().to_string() +
 									" : error: redefinition of " + tokens[i - 1].get_token() +
 									" attribute previusly defined at: " + (*elem.second.second).to_string() + '\n'));
 	}
 	if (i == tokens.size())
 	{
-		throw(std::invalid_argument(std::string(config_file) + ": " + position.to_string() + " : error: after" +
+		throw(std::invalid_argument(std::string(config_file) + ":" + position.to_string() + " : error: after" +
 									tokens[i - 1].to_string() + ", expected filename but found end of file\n"));
 	}
 	remove_quotes_if_present(tokens, i, config_file);
 	if (access(tokens[i].get_token().c_str(), R_OK) == -1)
 	{
-		throw(std::invalid_argument(std::string(config_file) + ": " + tokens[i].get_position().to_string() +
+		throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i].get_position().to_string() +
 									" : error: " + tokens[i].to_string() + ", does not exist or cannot be read\n"));
 	}
 	i++;

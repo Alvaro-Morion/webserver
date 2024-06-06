@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/27 07:58:56                                            */
-/*   Updated:  2024/06/01 04:19:09                                            */
+/*   Updated:  2024/06/06 15:54:45                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,10 @@ static void insert_token_if_needed(e_token_type &token_type, std::vector<t_c_tok
 {
 	if (token_type != e_token_type::none)
 	{
+		if (token_type == e_token_type::quoted)
+		{
+			current_token[0] = '\"';
+		}
 		tokens.push_back(t_c_token(t_c_position(beginning_column, beginning_row), current_token));
 		current_token.erase();
 	}

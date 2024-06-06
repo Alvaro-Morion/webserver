@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/27 08:00:02                                            */
-/*   Updated:  2024/05/28 18:23:27                                            */
+/*   Updated:  2024/06/06 15:53:24                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ enum class e_token_type
 	none
 };
 
-e_token_type get_token_type(char const *buffer);
+e_token_type get_token_type(char *buffer);
 size_t       find_token_end(char const *str, e_token_type token_type, size_t &colum, size_t &row);
 size_t       find_first_non_space(char const *str, size_t &colum, size_t &row);
 size_t       find_space_unscaped_quote_pound_or_separator(char const *str, size_t &colum, size_t &row);

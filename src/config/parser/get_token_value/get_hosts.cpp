@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/28 03:29:23                                            */
-/*   Updated:  2024/06/06 10:14:01                                            */
+/*   Updated:  2024/06/06 16:15:35                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static void last_checks(std::vector<t_c_token> const &tokens, size_t &i, t_c_pos
 	}
 	if (hosts.empty() == true)
 	{
-		throw(std::invalid_argument(std::string(config_file) + " " + position.to_string() +
+		throw(std::invalid_argument(std::string(config_file) + ":" + position.to_string() +
 									": error, hosts attribute defines nothing\n"));
 	}
 }
@@ -59,7 +59,7 @@ void get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> con
 	if (params.host_names_position.is_valid() == true)
 	{
 		throw(std::invalid_argument(
-			std::string(config_file) + ": " + tokens[i].get_position().to_string() +
+			std::string(config_file) + ":" + tokens[i].get_position().to_string() +
 			" : error: redefinition of hosts attribute previusly defined at: " + position.to_string() + '\n'));
 	}
 	params.host_names_position = position;
@@ -70,7 +70,7 @@ void get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> con
 		{
 			if (tokens[i].get_token()[0] != ',')
 			{
-				throw(std::invalid_argument(std::string(config_file) + ": " + tokens[i].get_position().to_string() +
+				throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i].get_position().to_string() +
 											" : error: expected a comma, found: " + tokens[i].get_token() + '\n'));
 			}
 			comma_found = true;
@@ -79,7 +79,7 @@ void get_hosts(t_c_server_constructor_params &params, std::vector<t_c_token> con
 		}
 		if (is_valid_hostname(tokens[i].get_token()) == false)
 		{
-			throw(std::invalid_argument(std::string(config_file) + ": " + tokens[i].to_string() +
+			throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i].to_string() +
 										" : error: token is not a valid hostname\n"));
 		}
 		hosts.push_back(new std::string(tokens[i].get_token()));

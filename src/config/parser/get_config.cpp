@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/26 00:53:43                                            */
-/*   Updated:  2024/06/06 10:25:48                                            */
+/*   Updated:  2024/06/06 16:13:47                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,19 +144,19 @@ t_c_global_config *get_config(char const *config_file)
 	{
 		if (tokens[i].get_token() != "server")
 		{
-			throw(std::invalid_argument(std::string(config_file) + ": " + tokens[i].get_position().to_string() +
+			throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i].get_position().to_string() +
 										" : error: expected server, found: " + tokens[i].get_token() + '\n'));
 		}
 		if (i + 1 == tokens.size())
 		{
 			throw(std::invalid_argument(std::string(config_file) +
-										": error, after: " + tokens[i - 1].get_position().to_string() + " " +
+										": error, after: " + tokens[i].get_position().to_string() + " " +
 										tokens[i - 1].get_token() + ", expected {, but found end of file\n"));
 		}
 		if (tokens[i + 1].get_token()[0] != '{')
 		{
-			throw(std::invalid_argument(std::string(config_file) + ": " + tokens[i].get_position().to_string() +
-										" : error: expected '{', found: " + tokens[i].get_token() + '\n'));
+			throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i + 1].get_position().to_string() +
+										" : error: expected '{', found: " + tokens[i + 1].get_token() + '\n'));
 		}
 		for (t_c_individual_server_config_token const &indvidual_config_token :
 			 decuple(get_server_config(tokens, i, config_file))) // will update i to refer to the closing }
