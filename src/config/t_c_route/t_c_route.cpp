@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/16 16:25:01                                            */
-/*   Updated:  2024/06/03 09:00:38                                            */
+/*   Updated:  2024/06/07 17:01:18                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,27 @@ bool t_c_route::operator>(t_c_route const &comparator) const
 bool t_c_route::operator<(t_c_route const &comparator) const
 {
 	return (path > comparator.path);
+}
+
+bool                operator<(std::string const &comparand, t_c_route const &comparator)
+{
+	std::string mutable_comparand = comparand;
+	std::string mutable_comparator = comparator.get_path();
+
+	if ((mutable_comparator.empty() == true)
+		|| (mutable_comparator[mutable_comparator.size() - 1] != '/'))
+	{
+		mutable_comparator.append("/");
+	}
+	if (mutable_comparand[mutable_comparand.size() - 1] != '/')
+	{
+		mutable_comparand.append("/");
+	}
+	if (mutable_comparand == mutable_comparator)
+	{
+		return (false);
+	}
+
 }
 
 #pragma GCC diagnostic pop

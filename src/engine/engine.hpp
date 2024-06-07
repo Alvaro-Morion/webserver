@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 11:48:31                                            */
-/*   Updated:  2024/06/07 12:55:40                                            */
+/*   Updated:  2024/06/07 16:45:37                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ class ReturnType
 {
 	private:
 		int   fd;
-		pid_t child_pid; // 0 != cgi
+		pid_t child_pid; // value will be NO_CHILD if it was not a cgi
 
 	public:
 		ReturnType(int fd_param, pid_t child_pid_param);
@@ -52,6 +52,6 @@ class ReturnType
 
 ReturnType handle_invalid_request(void);
 ReturnType handle_error(int error_code, t_c_individual_server_config const &config);
-ReturnType handle_request(std::string const &request, t_c_individual_server_config &config);
+ReturnType handle_request(std::string const &request, t_c_individual_server_config const &config);
 
 #pragma GCC diagnostic pop

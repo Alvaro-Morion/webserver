@@ -6,13 +6,14 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 18:17:27                                            */
-/*   Updated:  2024/06/03 08:51:04                                            */
+/*   Updated:  2024/06/07 16:23:37                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "t_c_router.hpp"
 #include "../config.hpp"
 #include <cstddef>
+#include <functional>
 #include <stdexcept>
 #include <string>
 
@@ -32,7 +33,7 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-t_c_router::t_c_router(std::set<t_c_route> const &routes_param) : routes(routes_param)
+t_c_router::t_c_router(std::set<t_c_route, std::less<>> const &routes_param) : routes(routes_param)
 {
 }
 
@@ -57,7 +58,7 @@ bool t_c_router::operator==(t_c_router const &comparator) const
 	return (true);
 }
 
-std::set<t_c_route> const &t_c_router::get_routes(void) const
+std::set<t_c_route, std::less<>> const &t_c_router::get_routes(void) const
 {
 	return (routes);
 }

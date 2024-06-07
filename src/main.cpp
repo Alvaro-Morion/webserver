@@ -6,11 +6,12 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:18:55                                            */
-/*   Updated:  2024/06/07 10:57:34                                            */
+/*   Updated:  2024/06/07 16:44:37                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "config/config.hpp"
+#include "engine/engine.hpp"
 #include "io/io.hpp"
 #include <csignal>
 #include <cstdint>
@@ -66,9 +67,11 @@ int main(int argc, char **argv)
 		config = get_config(DEFAULT_CONFIG);
 	}
 	std::cout << config->to_string();
-	pause();
+//	pause();
 	signal(SIGPIPE, SIG_IGN);
-	Server server(config);
+	handle_request("GET /hola HTTP/1.1\r\n\r\n", *config->get_servers().begin());
+
+//	Server server(config);
 	// Server server(&config); //For test
 	return (EXIT_FAILURE);
 }

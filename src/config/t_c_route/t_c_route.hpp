@@ -6,13 +6,14 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/16 16:22:19                                            */
-/*   Updated:  2024/06/03 08:59:23                                            */
+/*   Updated:  2024/06/07 16:35:58                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "../t_c_resource/t_c_resource.hpp"
+#include <string>
 
 ;
 #pragma GCC diagnostic push
@@ -50,5 +51,7 @@ class t_c_route
 		t_c_resource const &get_resource(void) const;
 		std::string         to_string(void) const;
 };
+
+bool                operator<(std::string const &comparand, t_c_route const &comparator);
 
 #pragma GCC diagnostic pop
