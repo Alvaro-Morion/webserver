@@ -1,20 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                                            */
-/*   Filename: engine.hpp                                                     */
+/*   Filename: handle_invalid_request.cpp                                     */
 /*   Author:   Peru Riezu <riezumunozperu@gmail.com>                          */
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
-/*   Created:  2024/06/07 11:48:31                                            */
-/*   Updated:  2024/06/07 12:55:40                                            */
+/*   Created:  2024/06/07 11:53:58                                            */
+/*   Updated:  2024/06/07 13:34:58                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-
-#include "../config/t_c_individual_server_config/t_c_individual_server_config.hpp"
-#include <string>
-#include <unistd.h>
+#include "engine.hpp"
+#include <fcntl.h>
 
 ;
 #pragma GCC diagnostic push
@@ -32,26 +29,11 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-#define NO_CHILD 0
-
-class ReturnType
+ReturnType handle_invalid_request(void)
 {
-	private:
-		int   fd;
-		pid_t child_pid; // 0 != cgi
+	const int fd = open("default_error_pages/400", O_RDONLY);
 
-	public:
-		ReturnType(int fd_param, pid_t child_pid_param);
-		~ReturnType(void);
-
-		int   get_fd(void) const;
-		pid_t get_child_pid(void) const;
-		bool  is_cgi(void) const;
-		bool  has_unrecoverable_error(void) const;
-};
-
-ReturnType handle_invalid_request(void);
-ReturnType handle_error(int error_code, t_c_individual_server_config const &config);
-ReturnType handle_request(std::string const &request, t_c_individual_server_config &config);
+	return (ReturnType(fd, NO_CHILD));
+}
 
 #pragma GCC diagnostic pop

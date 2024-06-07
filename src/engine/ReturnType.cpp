@@ -1,21 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                                            */
-/*   Filename: engine.hpp                                                     */
+/*   Filename: ReturnType.cpp                                                 */
 /*   Author:   Peru Riezu <riezumunozperu@gmail.com>                          */
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
-/*   Created:  2024/06/07 11:48:31                                            */
-/*   Updated:  2024/06/07 12:55:40                                            */
+/*   Created:  2024/06/07 11:48:15                                            */
+/*   Updated:  2024/06/07 12:56:30                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-
-#include "../config/t_c_individual_server_config/t_c_individual_server_config.hpp"
-#include <string>
-#include <unistd.h>
-
+#include <cstdio>
 ;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpragmas"
@@ -32,26 +27,33 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-#define NO_CHILD 0
+#include "engine.hpp"
 
-class ReturnType
+ReturnType::ReturnType(int fd_param, pid_t child_pid_param) : fd(fd_param), child_pid(child_pid_param)
 {
-	private:
-		int   fd;
-		pid_t child_pid; // 0 != cgi
+}
 
-	public:
-		ReturnType(int fd_param, pid_t child_pid_param);
-		~ReturnType(void);
+ReturnType::~ReturnType()
+{
+}
 
-		int   get_fd(void) const;
-		pid_t get_child_pid(void) const;
-		bool  is_cgi(void) const;
-		bool  has_unrecoverable_error(void) const;
-};
+int ReturnType::get_fd(void) const
+{
+	return (fd);
+}
 
-ReturnType handle_invalid_request(void);
-ReturnType handle_error(int error_code, t_c_individual_server_config const &config);
-ReturnType handle_request(std::string const &request, t_c_individual_server_config &config);
+pid_t ReturnType::get_child_pid(void) const
+{
+	return (child_pid);
+}
+
+bool ReturnType::is_cgi(void) const
+{
+	return (child_pid != NO_CHILD);
+}
+bool  ReturnType::has_unrecoverable_error(void) const
+{
+	return (fd == -1);
+}
 
 #pragma GCC diagnostic pop
