@@ -68,7 +68,7 @@ void get_file_is_a_directory_page(t_c_resource_constructor_params &params, std::
 	}
 	if (tokens[i].get_token()[0] != ';')
 	{
-		throw(std::invalid_argument(std::string(config_file) + ":" +  tokens[i].get_position().to_string() +
+		throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i].get_position().to_string() +
 									": error, expected a semicolon, to end the file_is_a_directory_page attribute at " +
 									position.to_string() + ", but found: " + tokens[i].get_token() + '\n'));
 	}

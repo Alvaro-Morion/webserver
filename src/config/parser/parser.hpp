@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/24 18:43:50                                            */
-/*   Updated:  2024/06/05 08:43:02                                            */
+/*   Updated:  2024/06/07 11:15:46                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,7 +142,7 @@ class t_c_token
 		}
 };
 
-struct t_c_default_error_pages_constructor_params
+struct t_c_error_pages_constructor_params
 {
 		t_c_position router_position;
 		std::string  http_version_not_supported = "default_error_pages/505";
@@ -169,15 +169,15 @@ struct t_c_default_error_pages_constructor_params
 
 struct t_c_server_constructor_params
 {
-		std::vector<std::string *>                 host_names;
-		t_c_position                               host_names_position;
-		std::vector<uint16_t>                      ports; // must be in network format (big endian)
-		t_c_position                               ports_position;
-		t_c_default_error_pages_constructor_params default_error_params;
-		uint64_t                                   client_body_size_limit = UINT64_MAX; // UINT64_MAX to disable
-		t_c_position                               client_body_size_limit_position;
-		t_c_router                                *router = nullptr;
-		t_c_position                               router_position;
+		std::vector<std::string *>         host_names;
+		t_c_position                       host_names_position;
+		std::vector<uint16_t>              ports; // must be in network format (big endian)
+		t_c_position                       ports_position;
+		t_c_error_pages_constructor_params error_params;
+		uint64_t                           client_body_size_limit = UINT64_MAX; // UINT64_MAX to disable
+		t_c_position                       client_body_size_limit_position;
+		t_c_router                        *router = nullptr;
+		t_c_position                       router_position;
 };
 
 class t_c_route_token : public t_c_route

@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 04:00:48                                            */
-/*   Updated:  2024/06/03 08:53:10                                            */
+/*   Updated:  2024/06/07 11:11:59                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,36 +35,35 @@ class t_c_individual_server_config // perfoms no validity checks on construction
 								   // construction
 {
 	private:
-		std::string const             *host_name;
-		uint16_t                       port;
-		t_c_router const              *router;
-		t_c_default_error_pages const *default_error_pages;
-		uint64_t                       client_body_size_limit = UINT64_MAX; // UINT64_MAX to disable
+		std::string const     *host_name;
+		uint16_t               port;
+		t_c_router const      *router;
+		t_c_error_pages const *error_pages;
+		uint64_t               client_body_size_limit = UINT64_MAX; // UINT64_MAX to disable
 
 	public:
 		class t_c_light_key;
 		explicit t_c_individual_server_config(std::string const *host_name_param, uint16_t port_param,
-											  t_c_router const              *router_param,
-											  t_c_default_error_pages const *default_error_pages_param,
-											  uint64_t                       client_body_size_limit_param);
+											  t_c_router const *router_param, t_c_error_pages const *error_pages_param,
+											  uint64_t client_body_size_limit_param);
 		t_c_individual_server_config(std::string const host_nname, int port); // NOLINT For test only
 		t_c_individual_server_config(t_c_individual_server_config const &copy);
 		~t_c_individual_server_config(void);
 		t_c_individual_server_config const &operator=(t_c_individual_server_config const &copy);
 		bool                                operator==(t_c_individual_server_config const &comparator) const;
-		bool                           operator==(t_c_individual_server_config::t_c_light_key const &comparator) const;
-		bool                           operator>(t_c_individual_server_config const &comparator) const;
-		bool                           operator>(t_c_individual_server_config::t_c_light_key const &comparator) const;
-		bool                           operator<(t_c_individual_server_config const &comparator) const;
-		bool                           operator<(t_c_individual_server_config::t_c_light_key const &comparator) const;
+		bool                   operator==(t_c_individual_server_config::t_c_light_key const &comparator) const;
+		bool                   operator>(t_c_individual_server_config const &comparator) const;
+		bool                   operator>(t_c_individual_server_config::t_c_light_key const &comparator) const;
+		bool                   operator<(t_c_individual_server_config const &comparator) const;
+		bool                   operator<(t_c_individual_server_config::t_c_light_key const &comparator) const;
 
-		std::string const             *get_host_name(void) const;
-		uint16_t                       get_port(void) const;
-		t_c_router const              *get_router(void) const;
-		t_c_default_error_pages const *get_default_error_pages(void) const;
-		uint64_t                       get_client_body_size_limit(void) const;
+		std::string const     *get_host_name(void) const;
+		uint16_t               get_port(void) const;
+		t_c_router const      *get_router(void) const;
+		t_c_error_pages const *get_error_pages(void) const;
+		uint64_t               get_client_body_size_limit(void) const;
 
-		std::string                    to_string(void) const;
+		std::string            to_string(void) const;
 };
 
 class t_c_individual_server_config::t_c_light_key

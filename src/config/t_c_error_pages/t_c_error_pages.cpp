@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                                            */
-/*   Filename: t_c_default_error_pages.cpp                                    */
+/*   Filename: t_c_error_pages.cpp                                            */
 /*   Author:   Peru Riezu <riezumunozperu@gmail.com>                          */
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 17:41:28                                            */
-/*   Updated:  2024/05/14 04:08:04                                            */
+/*   Updated:  2024/06/07 11:12:21                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,12 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-t_c_default_error_pages::t_c_default_error_pages(
-	std::string const &http_version_not_supported_param, std::string const &not_implemeted_param,
-	std::string const &internal_server_error_param, std::string const &uri_too_long_param,
-	std::string const &content_too_large_param, std::string const &length_requiered_param,
-	std::string const &request_timeout_param, std::string const &not_found_param, std::string const &forbidden_param,
-	std::string const &bad_request_param)
+t_c_error_pages::t_c_error_pages(std::string const &http_version_not_supported_param,
+								 std::string const &not_implemeted_param,
+								 std::string const &internal_server_error_param, std::string const &uri_too_long_param,
+								 std::string const &content_too_large_param, std::string const &length_requiered_param,
+								 std::string const &request_timeout_param, std::string const &not_found_param,
+								 std::string const &forbidden_param, std::string const &bad_request_param)
 	: http_version_not_supported(http_version_not_supported_param), not_implemeted(not_implemeted_param),
 	  internal_server_error(internal_server_error_param), uri_too_long(uri_too_long_param),
 	  content_too_large(content_too_large_param), length_requiered(length_requiered_param),
@@ -82,7 +82,7 @@ t_c_default_error_pages::t_c_default_error_pages(
 	}
 }
 
-t_c_default_error_pages::t_c_default_error_pages(t_c_default_error_pages const &copy)
+t_c_error_pages::t_c_error_pages(t_c_error_pages const &copy)
 	: http_version_not_supported(copy.http_version_not_supported), not_implemeted(copy.not_implemeted),
 	  uri_too_long(copy.uri_too_long), content_too_large(copy.content_too_large),
 	  length_requiered(copy.length_requiered), request_timeout(copy.request_timeout), not_found(copy.not_found),
@@ -90,7 +90,7 @@ t_c_default_error_pages::t_c_default_error_pages(t_c_default_error_pages const &
 {
 }
 
-t_c_default_error_pages::t_c_default_error_pages(void)
+t_c_error_pages::t_c_error_pages(void)
 {
 	if (access(http_version_not_supported.c_str(), R_OK) == -1)
 	{
@@ -130,7 +130,7 @@ t_c_default_error_pages::t_c_default_error_pages(void)
 	}
 }
 
-bool t_c_default_error_pages::operator==(t_c_default_error_pages const &comparator) const
+bool t_c_error_pages::operator==(t_c_error_pages const &comparator) const
 {
 	if (this == &comparator)
 	{
@@ -148,61 +148,61 @@ bool t_c_default_error_pages::operator==(t_c_default_error_pages const &comparat
 	return (true);
 }
 
-t_c_default_error_pages::~t_c_default_error_pages(void)
+t_c_error_pages::~t_c_error_pages(void)
 {
 }
 
-std::string const &t_c_default_error_pages::get_http_version_not_supported(void) const
+std::string const &t_c_error_pages::get_http_version_not_supported(void) const
 {
 	return (http_version_not_supported);
 }
 
-std::string const &t_c_default_error_pages::get_not_implemeted(void) const
+std::string const &t_c_error_pages::get_not_implemeted(void) const
 {
 	return (not_implemeted);
 }
 
-std::string const &t_c_default_error_pages::get_internal_server_error(void) const
+std::string const &t_c_error_pages::get_internal_server_error(void) const
 {
 	return (internal_server_error);
 }
 
-std::string const &t_c_default_error_pages::get_uri_too_long(void) const
+std::string const &t_c_error_pages::get_uri_too_long(void) const
 {
 	return (uri_too_long);
 }
 
-std::string const &t_c_default_error_pages::get_content_too_large(void) const
+std::string const &t_c_error_pages::get_content_too_large(void) const
 {
 	return (content_too_large);
 }
 
-std::string const &t_c_default_error_pages::get_length_requiered(void) const
+std::string const &t_c_error_pages::get_length_requiered(void) const
 {
 	return (length_requiered);
 }
 
-std::string const &t_c_default_error_pages::get_request_timeout(void) const
+std::string const &t_c_error_pages::get_request_timeout(void) const
 {
 	return (request_timeout);
 }
 
-std::string const &t_c_default_error_pages::get_not_found(void) const
+std::string const &t_c_error_pages::get_not_found(void) const
 {
 	return (not_found);
 }
 
-std::string const &t_c_default_error_pages::get_forbidden(void) const
+std::string const &t_c_error_pages::get_forbidden(void) const
 {
 	return (forbidden);
 }
 
-std::string const &t_c_default_error_pages::get_bad_request(void) const
+std::string const &t_c_error_pages::get_bad_request(void) const
 {
 	return (bad_request);
 }
 
-std::string t_c_default_error_pages::to_string(void) const
+std::string t_c_error_pages::to_string(void) const
 {
 	return ("\t\thttp version not supported: " + http_version_not_supported + "\n\t\tnot implemeted: " +
 			not_implemeted + "\n\t\turi too long: " + uri_too_long + "\n\t\tcontent too large: " + content_too_large +

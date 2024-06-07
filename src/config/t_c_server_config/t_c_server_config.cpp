@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:19:46                                            */
-/*   Updated:  2024/06/06 10:10:39                                            */
+/*   Updated:  2024/06/07 11:11:19                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,10 +74,9 @@ bool is_valid_hostname(std::string const &host_name)
 
 t_c_server_config::t_c_server_config(std::vector<std::string *> const &host_names_param,
 									 std::vector<uint16_t> const &ports_param, t_c_router const *router_param,
-									 t_c_default_error_pages const *default_error_pages_param,
-									 uint64_t                       client_body_size_limit_param)
-	: host_names(host_names_param), ports(ports_param), router(router_param),
-	  default_error_pages(default_error_pages_param), client_body_size_limit(client_body_size_limit_param)
+									 t_c_error_pages const *error_pages_param, uint64_t client_body_size_limit_param)
+	: host_names(host_names_param), ports(ports_param), router(router_param), error_pages(error_pages_param),
+	  client_body_size_limit(client_body_size_limit_param)
 {
 	if (host_names.empty() == true || ports.empty() == true)
 	{
@@ -99,8 +98,8 @@ t_c_server_config::t_c_server_config(std::vector<std::string *> const &host_name
 }
 
 t_c_server_config::t_c_server_config(t_c_server_config const &copy)
-	: host_names(copy.host_names), ports(copy.ports), router(copy.router),
-	  default_error_pages(copy.default_error_pages), client_body_size_limit(copy.client_body_size_limit)
+	: host_names(copy.host_names), ports(copy.ports), router(copy.router), error_pages(copy.error_pages),
+	  client_body_size_limit(copy.client_body_size_limit)
 {
 }
 
@@ -123,9 +122,9 @@ t_c_router const *t_c_server_config::get_router(void) const
 	return (router);
 }
 
-t_c_default_error_pages const *t_c_server_config::get_default_error_pages(void) const
+t_c_error_pages const *t_c_server_config::get_error_pages(void) const
 {
-	return (default_error_pages);
+	return (error_pages);
 }
 
 uint64_t t_c_server_config::get_client_body_size_limit(void) const

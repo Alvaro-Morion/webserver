@@ -6,13 +6,13 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 03:58:30                                            */
-/*   Updated:  2024/06/06 10:10:49                                            */
+/*   Updated:  2024/06/07 11:11:17                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "../t_c_default_error_pages/t_c_default_error_pages.hpp"
+#include "../t_c_error_pages/t_c_error_pages.hpp"
 #include "../t_c_router/t_c_router.hpp"
 #include <vector>
 
@@ -35,24 +35,23 @@
 class t_c_server_config // binds to objects recived in construction
 {
 	private:
-		std::vector<std::string *>     host_names;
-		std::vector<uint16_t>          ports; // must be in network format (big endian)
-		t_c_router const              *router;
-		t_c_default_error_pages const *default_error_pages;
-		uint64_t                       client_body_size_limit = UINT64_MAX; // UINT64_MAX to disable
+		std::vector<std::string *> host_names;
+		std::vector<uint16_t>      ports; // must be in network format (big endian)
+		t_c_router const          *router;
+		t_c_error_pages const     *error_pages;
+		uint64_t                   client_body_size_limit = UINT64_MAX; // UINT64_MAX to disable
 
 	public:
 		explicit t_c_server_config(std::vector<std::string *> const &host_names_param,
 								   std::vector<uint16_t> const &ports_param, t_c_router const *router_param,
-								   t_c_default_error_pages const *default_error_pages_param,
-								   uint64_t                       client_body_size_limit_param);
+								   t_c_error_pages const *error_pages_param, uint64_t client_body_size_limit_param);
 		t_c_server_config(t_c_server_config const &copy);
 		~t_c_server_config(void);
 
 		std::vector<std::string *> const &get_host_names(void) const;
 		std::vector<uint16_t> const      &get_ports(void) const;
 		t_c_router const                 *get_router(void) const;
-		t_c_default_error_pages const    *get_default_error_pages(void) const;
+		t_c_error_pages const            *get_error_pages(void) const;
 		uint64_t                          get_client_body_size_limit(void) const;
 };
 

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                                            */
-/*   Filename: t_c_default_error_pages.hpp                                    */
+/*   Filename: t_c_error_pages.hpp                                            */
 /*   Author:   Peru Riezu <riezumunozperu@gmail.com>                          */
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 03:56:06                                            */
-/*   Updated:  2024/05/14 06:39:54                                            */
+/*   Updated:  2024/06/07 11:13:54                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-class t_c_default_error_pages
+class t_c_error_pages
 {
 	private:
 		std::string http_version_not_supported = "default_error_pages/505"; // 505
@@ -45,18 +45,16 @@ class t_c_default_error_pages
 		std::string bad_request = "default_error_pages/400";                // 400
 
 	public:
-		explicit t_c_default_error_pages(std::string const &http_version_not_supported_param,
-										 std::string const &not_implemeted_param,
-										 std::string const &internal_server_error_param,
-										 std::string const &uri_too_long_param,
-										 std::string const &content_too_large_param,
-										 std::string const &length_requiered_param,
-										 std::string const &request_timeout_param, std::string const &not_found_param,
-										 std::string const &forbidden_param, std::string const &bad_request_param);
-		t_c_default_error_pages(t_c_default_error_pages const &copy);
-		t_c_default_error_pages(void);
-		~t_c_default_error_pages(void);
-		bool               operator==(t_c_default_error_pages const &comparator) const;
+		explicit t_c_error_pages(std::string const &http_version_not_supported_param,
+								 std::string const &not_implemeted_param,
+								 std::string const &internal_server_error_param, std::string const &uri_too_long_param,
+								 std::string const &content_too_large_param, std::string const &length_requiered_param,
+								 std::string const &request_timeout_param, std::string const &not_found_param,
+								 std::string const &forbidden_param, std::string const &bad_request_param);
+		t_c_error_pages(t_c_error_pages const &copy);
+		t_c_error_pages(void);
+		~t_c_error_pages(void);
+		bool               operator==(t_c_error_pages const &comparator) const;
 
 		std::string const &get_http_version_not_supported(void) const;
 		std::string const &get_not_implemeted(void) const;

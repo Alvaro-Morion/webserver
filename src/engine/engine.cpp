@@ -18,15 +18,15 @@ static FILE *write_response(std::string head, std::string file)
 ReturnType handle_invalid_request(void)
 {
 
-	t_c_default_error_pages default_errors;
+	t_c_error_pages errors;
 	std::string             head = "HTTP/1.1 400 Bad Request\r\n\r\n";
-	return (ReturnType(write_response(head, default_errors.get_bad_request()), 0));
+	return (ReturnType(write_response(head, errors.get_bad_request()), 0));
 }
 
 ReturnType handle_error(int error_code, t_c_individual_server_config const &config)
 {
 	FILE                          *file;
-	t_c_default_error_pages const *error_pages = config.get_default_error_pages();
+	t_c_error_pages const *error_pages = config.get_error_pages();
 	std::stringstream              head;
 	head << "HTTP/1.1 " << error_code << " ";
 	switch (error_code)

@@ -209,7 +209,7 @@ static t_c_route_token get_route(std::vector<t_c_token> &tokens, size_t &i, char
 	}
 	if (tokens[i].get_token()[0] != '}')
 	{
-		
+
 		throw(std::invalid_argument(std::string(config_file) + ": error, expected }, to match { at " +
 									opening_key_position.to_string() + ", but found: " + tokens[i].get_token() + '\n'));
 	}

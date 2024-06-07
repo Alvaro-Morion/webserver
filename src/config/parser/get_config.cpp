@@ -6,11 +6,12 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/26 00:53:43                                            */
-/*   Updated:  2024/06/06 16:13:47                                            */
+/*   Updated:  2024/06/07 11:15:21                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.hpp"
+#include <arpa/inet.h>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
@@ -47,7 +48,7 @@ static std::vector<t_c_individual_server_config_token> decuple(t_c_server_config
 		{
 			individual_server_configs.push_back(t_c_individual_server_config_token(
 				t_c_individual_server_config(host_name, port_num, server_config.get_router(),
-											 server_config.get_default_error_pages(),
+											 server_config.get_error_pages(),
 											 server_config.get_client_body_size_limit()),
 				server_config.get_position()));
 		}
@@ -71,12 +72,11 @@ static t_c_server_config_token add_defaults(t_c_server_constructor_params &param
 	return (t_c_server_config_token(
 		t_c_server_config(
 			params.host_names, params.ports, params.router,
-			new t_c_default_error_pages(
-				params.default_error_params.http_version_not_supported, params.default_error_params.not_implemeted,
-				params.default_error_params.internal_server_error, params.default_error_params.uri_too_long,
-				params.default_error_params.content_too_large, params.default_error_params.length_requiered,
-				params.default_error_params.request_timeout, params.default_error_params.not_found,
-				params.default_error_params.forbidden, params.default_error_params.bad_request),
+			new t_c_error_pages(params.error_params.http_version_not_supported, params.error_params.not_implemeted,
+								params.error_params.internal_server_error, params.error_params.uri_too_long,
+								params.error_params.content_too_large, params.error_params.length_requiered,
+								params.error_params.request_timeout, params.error_params.not_found,
+								params.error_params.forbidden, params.error_params.bad_request),
 			params.client_body_size_limit),
 		server_token_position));
 }
@@ -161,7 +161,17 @@ t_c_global_config *get_config(char const *config_file)
 		for (t_c_individual_server_config_token const &indvidual_config_token :
 			 decuple(get_server_config(tokens, i, config_file))) // will update i to refer to the closing }
 		{
-			individual_server_config_set.insert(indvidual_config_token);
+			if (individual_server_config_set.insert(indvidual_config_token).second == false)
+			{
+				throw(std::invalid_argument(
+					std::string(config_file) + ":" + indvidual_config_token.get_position().to_string() +
+					": error: redefinition of handler for: " +
+					*indvidual_config_token.get_server_config().get_host_name() + ":" +
+					std::to_string(ntohs(indvidual_config_token.get_server_config().get_port())) +
+					" was already defined by server at: " +
+					individual_server_config_set.insert(indvidual_config_token).first->get_position().to_string() +
+					'\n'));
+			}
 		}
 		if (i < tokens.size())
 		{

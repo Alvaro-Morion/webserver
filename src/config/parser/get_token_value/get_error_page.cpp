@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/28 17:58:15                                            */
-/*   Updated:  2024/06/06 16:13:20                                            */
+/*   Updated:  2024/06/07 11:16:37                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,24 +94,18 @@ void get_error_page(t_c_server_constructor_params &params, std::vector<t_c_token
 	t_c_position                                                     position = tokens[i].get_position();
 	std::pair<std::string, std::pair<std::string *, t_c_position *>> table[] = {
 		{"http_version_not_supported",
-		 {&params.default_error_params.http_version_not_supported,
-         &params.default_error_params.http_version_not_supported_position}                                                          },
-		{			"not_implemeted",
-		 {&params.default_error_params.not_implemeted, &params.default_error_params.not_implemeted_position}                        },
+		 {&params.error_params.http_version_not_supported, &params.error_params.http_version_not_supported_position}          },
+		{			"not_implemeted",     {&params.error_params.not_implemeted, &params.error_params.not_implemeted_position}},
 		{     "internal_server_error",
-		 {&params.default_error_params.internal_server_error,
-         &params.default_error_params.internal_server_error_position}                                                               },
-		{			  "uri_too_long",
-		 {&params.default_error_params.uri_too_long, &params.default_error_params.uri_too_long_position}                            },
+		 {&params.error_params.internal_server_error, &params.error_params.internal_server_error_position}                    },
+		{			  "uri_too_long",         {&params.error_params.uri_too_long, &params.error_params.uri_too_long_position}},
 		{		 "content_too_large",
-		 {&params.default_error_params.content_too_large, &params.default_error_params.content_too_large_position}                  },
-		{		  "length_requiered",
-		 {&params.default_error_params.length_requiered, &params.default_error_params.length_requiered_position}                    },
-		{		   "request_timeout",
-		 {&params.default_error_params.request_timeout, &params.default_error_params.request_timeout_position}                      },
-		{				 "not_found",     {&params.default_error_params.not_found, &params.default_error_params.not_found_position}},
-		{				 "forbidden",     {&params.default_error_params.forbidden, &params.default_error_params.forbidden_position}},
-		{			   "bad_request", {&params.default_error_params.bad_request, &params.default_error_params.bad_request_position}}
+		 {&params.error_params.content_too_large, &params.error_params.content_too_large_position}                            },
+		{		  "length_requiered", {&params.error_params.length_requiered, &params.error_params.length_requiered_position}},
+		{		   "request_timeout",   {&params.error_params.request_timeout, &params.error_params.request_timeout_position}},
+		{				 "not_found",               {&params.error_params.not_found, &params.error_params.not_found_position}},
+		{				 "forbidden",               {&params.error_params.forbidden, &params.error_params.forbidden_position}},
+		{			   "bad_request",           {&params.error_params.bad_request, &params.error_params.bad_request_position}}
     };
 
 	for (std::pair<std::string, std::pair<std::string *, t_c_position *>> &elem : table)

@@ -1,0 +1,65 @@
+server
+{
+	ports 100, 80, 90; # can be ommited 80 by default
+	hosts localhost, test.com, sub.test.com;
+	http_version_not_supported "default_error_pages/505"; # can be ommited defaults exist
+	not_implemeted "default_error_pages/501";
+	internal_server_error "default_error_pages/500";
+	uri_too_long "default_error_pages/414";
+	content_too_large "default_error_pages/413";
+	length_requiered "default_error_pages/411";
+	request_timeout "default_error_pages/408";
+	not_found "default_error_pages/404";
+	forbidden "default_error_pages/403";
+	bad_request "default_error_pages/400";
+	client_body_size_limit 1024; # in bytes, can be ommited for no limit
+	router
+	{
+		route # any number of routes may be defined (limited by aviable memory), even zero
+		{
+			path "/";
+			resource
+			{
+				root "/www";
+				is_redirect false; # can be ommited false by default
+				methods GET, POST, DELETE; # can be ommited, GET by default, can be left empty for none allowed
+				directory_listing off; # can be ommited off by default
+				resource_is_a_directory_error_page "default_error_pages/403"; # can be ommited default exists
+				is_cgi false; # can be ommited false by default
+			}
+		}
+	}
+}
+
+server
+{
+	ports 101, 81, 91; # can be ommited 80 by default
+	hosts localhost, test.com, sub.test.com;
+	http_version_not_supported "default_error_pages/505"; # can be ommited defaults exist
+	not_implemeted "default_error_pages/501";
+	internal_server_error "default_error_pages/500";
+	uri_too_long "default_error_pages/414";
+	content_too_large "default_error_pages/413";
+	length_requiered "default_error_pages/411";
+	request_timeout "default_error_pages/408";
+	not_found "default_error_pages/404";
+	forbidden "default_error_pages/403";
+	bad_request "default_error_pages/400";
+	client_body_size_limit 1024; # in bytes, can be ommited for no limit
+	router
+	{
+		route # any number of routes may be defined (limited by aviable memory), even zero
+		{
+			path "/";
+			resource
+			{
+				root "/www";
+				is_redirect false; # can be ommited false by default
+				methods GET, POST, DELETE; # can be ommited, GET by default, can be left empty for none allowed
+				directory_listing off; # can be ommited off by default
+				resource_is_a_directory_error_page "default_error_pages/403"; # can be ommited default exists
+				is_cgi false; # can be ommited false by default
+			}
+		}
+	}
+}
