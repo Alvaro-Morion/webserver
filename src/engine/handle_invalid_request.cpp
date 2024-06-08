@@ -31,7 +31,7 @@
 
 ReturnType handle_invalid_request(void)
 {
-	const int fd = open("default_error_pages/400", O_RDONLY);
+	int const fd = open("default_error_pages/400", O_RDONLY);
 
 	return (ReturnType(fd, NO_CHILD));
 }

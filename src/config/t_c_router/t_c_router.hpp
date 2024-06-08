@@ -44,10 +44,10 @@ class t_c_router
 		explicit t_c_router(std::set<t_c_route, std::less<>> const &routes_param);
 		t_c_router(t_c_router const &copy);
 		~t_c_router(void);
-		bool                       operator==(t_c_router const &comparator) const;
+		bool                                    operator==(t_c_router const &comparator) const;
 
 		std::set<t_c_route, std::less<>> const &get_routes(void) const;
-		std::string                to_string(void) const;
+		std::string                             to_string(void) const;
 };
 
 #pragma GCC diagnostic pop

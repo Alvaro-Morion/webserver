@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:18:55                                            */
-/*   Updated:  2024/06/07 16:44:37                                            */
+/*   Updated:  2024/06/08 11:32:11                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,7 @@ static void print_usage(void)
 
 int main(int argc, char **argv)
 {
-	// t_c_global_config config; //For test
-
-	t_c_global_config *config;
+	t_c_global_config *config; // NOLINT
 
 	if (argc > 2)
 	{
@@ -66,13 +64,11 @@ int main(int argc, char **argv)
 	{
 		config = get_config(DEFAULT_CONFIG);
 	}
-	std::cout << config->to_string();
-//	pause();
 	signal(SIGPIPE, SIG_IGN);
-	handle_request("GET /hola HTTP/1.1\r\n\r\n", *config->get_servers().begin());
-
-//	Server server(config);
-	// Server server(&config); //For test
+	//	std::cout << config->to_string();
+	//	pause();
+	//	Server server(config);
+	//	Server server(&config); //For test
 	return (EXIT_FAILURE);
 }
 

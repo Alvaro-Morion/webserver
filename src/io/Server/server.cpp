@@ -214,11 +214,11 @@ void Server::send_response(ReturnType response, int socketfd)
 		ssize_t           bytes_sent = 0;
 		ssize_t           bytes_read = 0;
 
-/*		while (std::fgets(buffer, BUFFER_SIZE, response.getFile()) != NULL)
-		{
-			response_str << buffer;
-			bytes_read += nbytes;
-		}*/
+		/*		while (std::fgets(buffer, BUFFER_SIZE, response.getFile()) != NULL)
+				{
+					response_str << buffer;
+					bytes_read += nbytes;
+				}*/
 		response_string = response_str.str();
 		bytes_read = response_string.length();
 		std::cout << response_string.c_str();

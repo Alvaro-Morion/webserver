@@ -51,7 +51,8 @@ bool ReturnType::is_cgi(void) const
 {
 	return (child_pid != NO_CHILD);
 }
-bool  ReturnType::has_unrecoverable_error(void) const
+
+bool ReturnType::has_unrecoverable_error(void) const
 {
 	return (fd == -1);
 }

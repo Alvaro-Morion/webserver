@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/03 08:33:11                                            */
-/*   Updated:  2024/06/07 16:24:29                                            */
+/*   Updated:  2024/06/08 11:49:59                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,6 +156,10 @@ static std::string get_path(std::vector<t_c_token> &tokens, size_t &i, char cons
 	}
 	remove_quotes_if_present(tokens, i, config_file);
 	path = tokens[i].get_token();
+	if (path[path.size() - 1] != '/')
+	{
+		path.append("/");
+	}
 	i++;
 	if (i == tokens.size())
 	{

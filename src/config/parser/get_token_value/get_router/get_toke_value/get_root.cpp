@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/02 08:36:42                                            */
-/*   Updated:  2024/06/06 17:57:36                                            */
+/*   Updated:  2024/06/08 15:32:28                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,10 @@ void get_root(t_c_resource_constructor_params &params, std::vector<t_c_token> &t
 	}
 	remove_quotes_if_present(tokens, i, config_file);
 	params.root = tokens[i].get_token();
+	if (params.root.end()[-1] != '/') 
+	{
+		params.root.push_back('/');
+	}
 	params.root_position = position;
 	i++;
 	if (i == tokens.size())

@@ -34,11 +34,13 @@ ReturnType handle_error(int error_code, t_c_individual_server_config const &conf
 	switch (error_code) // NOLINT
 	{
 		case 505:
-			return (ReturnType(open(config.get_error_pages()->get_http_version_not_supported().c_str(), O_RDONLY), NO_CHILD));
+			return (ReturnType(open(config.get_error_pages()->get_http_version_not_supported().c_str(), O_RDONLY),
+							   NO_CHILD));
 		case 501:
 			return (ReturnType(open(config.get_error_pages()->get_not_implemeted().c_str(), O_RDONLY), NO_CHILD));
 		case 500:
-			return (ReturnType(open(config.get_error_pages()->get_internal_server_error().c_str(), O_RDONLY), NO_CHILD));
+			return (
+				ReturnType(open(config.get_error_pages()->get_internal_server_error().c_str(), O_RDONLY), NO_CHILD));
 		case 414:
 			return (ReturnType(open(config.get_error_pages()->get_uri_too_long().c_str(), O_RDONLY), NO_CHILD));
 		case 413:
@@ -57,6 +59,7 @@ ReturnType handle_error(int error_code, t_c_individual_server_config const &conf
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
 }
+
 #pragma GCC diagnostic pop
 
 #pragma GCC diagnostic pop
