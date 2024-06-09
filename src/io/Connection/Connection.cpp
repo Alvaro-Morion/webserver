@@ -1,0 +1,255 @@
+#include "./Connection.hpp"
+
+static std::string tolower_str(std::string input)
+{
+	std::string result;
+	for(std::string::iterator it = input.begin(); it != input.end(); it++)
+	{
+		result.push_back(tolower(*it));
+	}
+	return result;
+}
+
+static std::string get_header_value(std::string name, std::string request) // Gets the trimmed value of a header.
+{
+        size_t      start, end;
+        std::string value;
+
+        if ((start = tolower_str(request).find(tolower_str(name) + ":")) == std::string::npos)
+        {
+                return (std::string());
+        }
+        start += std::string(name).length() + 1;
+        end = request.find("\r\n", start);
+        value = request.substr(start, end - start);
+        while (isspace(value.front()))
+        {
+                value.erase(0, 1);
+        }
+        while (isspace(value.back()))
+        {
+                value.erase(value.length() - 1, 1);
+        }
+		std::cout << value << std::endl;
+        return (value);
+}
+
+Connection::Connection(int epollfd, uint16_t port, t_c_global_config *global_config, ReturnType &resp) : 
+	epollfd(epollfd), port(port), response(resp)
+{
+	this->global_config = global_config;
+	sent_response = false;
+	header_sent = false;
+}
+
+Connection::~Connection()
+{
+		std::cout << "Connection in fd " << confd << "closed\n";
+	close(confd);
+}
+
+int Connection::accept_connection(int sockfd)
+{
+	int size = 1;
+	confd = accept(sockfd, NULL, NULL);
+	if (confd < 0)
+	{
+		perror("Accept connection");
+	}
+	else
+	{
+		setsockopt(confd, SOL_SOCKET, SOCK_NONBLOCK, &size, sizeof(int));
+		std::cout << "New connection accepted in port " << port << " fd: " << confd << std::endl;
+	}
+	return (confd);
+}
+
+void Connection::read_request(void)
+{
+	ssize_t nbytes;
+	char	buffer[BUFFER_SIZE];
+
+	if((nbytes = recv(confd, buffer, BUFFER_SIZE - 1, MSG_DONTWAIT)) > 0)
+	{
+		buffer[nbytes] = 0;
+		request_buffer += buffer;
+	}
+	std::cout << nbytes << "bytes read\n";
+	std::cout << "Current buffer: " << request_buffer << std::endl;
+}
+
+void Connection::select_config(void)
+{
+	std::string hostname = get_header_value("host", request_buffer);
+        if (hostname == "")
+        {
+                throw handle_invalid_request();
+        }
+        hostname = hostname.substr(0, hostname.find(":"));
+        try
+		{
+			t_c_individual_server_config::t_c_light_key key(&hostname, port);
+			 std::set<t_c_individual_server_config, std::less<>>::iterator config_it = global_config->get_servers().find(key);
+        	if (config_it == global_config->get_servers().end())
+        	{
+                throw handle_invalid_request();
+        	}
+       		config = &(*config_it);
+		}
+		catch(...)
+		{
+			throw handle_invalid_request();
+		}
+}
+
+void Connection::generate_response(void)
+{
+	std::cout << "Processing request..." << std::endl;
+	std::cout << request_buffer << std::endl;
+	std::cout << "This is the end of the request\n";
+	try
+	{
+		select_config();
+		check_body_length();
+		check_not_chunked();
+		response = handle_request(request_buffer, *config);
+	}
+	catch (ReturnType &error_response)
+	{
+		response = error_response;
+	}
+	std::cout << "error response generated\n";
+}
+
+void Connection::send_response(void)
+{
+	ssize_t	nbytes;
+	char	buffer[BUFFER_SIZE];
+	if (response.is_cgi())
+	{
+		//CGI.
+	}
+	while(!header_sent && bytes_sent < response.get_headers().length())
+	{
+		nbytes = send(confd, response.get_headers().c_str(), response.get_headers().length(), MSG_DONTWAIT);
+		if (nbytes < 0)
+		{
+			perror("Send");
+			return;
+		}
+		bytes_sent += nbytes;
+	}
+	if (!header_sent)
+	{
+		bytes_sent = 0;
+	}
+	header_sent = true;
+	if (response.get_fd() > 0 && response_buffer.empty())
+	{
+		while((nbytes = read(response.get_fd(), buffer, BUFFER_SIZE - 1)) != 0)
+		{
+			if (nbytes < 0)
+			{
+				perror("Response fd");
+				response_buffer.clear();
+				return;
+			}
+			buffer[nbytes] = 0;
+			response_buffer.append(buffer, nbytes);
+		}
+	}
+	while(!sent_response && bytes_sent < response_buffer.length())
+	{
+		nbytes = send(confd, response_buffer.c_str(), response_buffer.length(), MSG_DONTWAIT);
+		if (nbytes < 0)
+		{
+			perror("Send");
+			return;
+		}
+		bytes_sent += nbytes;
+	}
+	sent_response = true;
+}
+
+void Connection::check_body_length(void) const
+{
+        if (config->get_client_body_size_limit() != UINT64_MAX &&
+                        get_header_value("content-length", request_buffer) != "")
+        {
+                size_t content_length = std::atol(get_header_value("content-length", request_buffer).c_str());
+                if (content_length > config->get_client_body_size_limit())
+                {
+                        throw handle_error(413, *config);
+                }
+        }
+}
+
+void Connection::check_not_chunked(void) const
+{
+	std::string te = get_header_value("transfer-encoding", request_buffer);
+	if (te != "" && te.find("chunked") != std::string::npos)
+	{
+		throw handle_error(411, *config);
+	}
+}
+
+bool Connection::headers_read(void) const
+{
+	return (request_buffer.find("\r\n\r\n") != std::string::npos);
+}
+
+bool Connection::request_read(void)
+{
+	if (!headers_read())
+	{
+		std::cout << "Still reading headers\n";
+		return (false);
+	}
+	size_t content_length = std::atoll(get_header_value("content-length", request_buffer).c_str());
+	size_t body_length = request_buffer.length() - request_buffer.find("\r\n\r\n") - 4;
+	std::cout << "Content-length:" << content_length << "body_length:" << body_length << std::endl;
+	if (content_length > body_length)
+	{
+		std::cout << "Not finished: " << request_buffer << std::endl;
+		return(false);
+	}
+	else if (content_length < body_length)
+	{
+		request_buffer.erase(request_buffer.find("\r\n\r\n") + 4 + content_length);
+		return (true);
+	}
+	else
+	{
+		return (true);
+	}
+}
+
+bool Connection::response_sent(void) const
+{
+	return (sent_response);
+}
+
+int Connection::getEpollFd(void) const
+{
+	return (epollfd);
+}
+
+int Connection::getConFd(void) const
+{
+	return (confd);
+}
+
+std::string Connection::getRequestBuffer(void) const
+{
+	return (request_buffer);
+}
+
+t_c_global_config const *Connection::getGlobalConfig(void) const
+{
+	return (global_config);
+}
+
+t_c_individual_server_config const *Connection::getConfig(void) const
+{
+	return (config);
+}

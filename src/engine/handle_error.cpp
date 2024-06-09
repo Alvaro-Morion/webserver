@@ -34,9 +34,9 @@ static ReturnType handle_error_internal_internal(std::string const &error_file, 
 	int const         fd = open(error_file.c_str(), O_RDONLY);
 	ssize_t const     file_size = get_file_size(fd);
 	std::string const current_time = get_current_time_as_string();
-	std::string const headers = status_line + "Server: webserv/0.1\n\r" + "Date: " + current_time + "\n\r" +
-								"Content-Type: text/html\n\r" + "Content-Length: " + std::to_string(file_size) +
-								"\n\r" + "Connection: close" + "\n\r\n\r";
+	std::string const headers = status_line + "Server: webserv/0.1\r\n" + "Date: " + current_time + "\r\n" +
+								"Content-Type: text/html\r\n" + "Content-Length: " + std::to_string(file_size) +
+								"\r\n" + "Connection: close" + "\r\n\r\n";
 
 	if (fd == -1)
 	{
@@ -58,43 +58,43 @@ static ReturnType handle_error_internal(int error_code, t_c_individual_server_co
 	{
 		case 505:
 			file_name = config.get_error_pages()->get_http_version_not_supported();
-			status_line = "HTTP/1.1 505 HTTP Version Not Supported";
+			status_line = "HTTP/1.1 505 HTTP Version Not Supported\r\n";
 			break;
 		case 501:
 			file_name = config.get_error_pages()->get_not_implemeted();
-			status_line = "HTTP/1.1 501 Not Implemented";
+			status_line = "HTTP/1.1 501 Not Implemented\r\n";
 			break;
 		case 500:
 			file_name = config.get_error_pages()->get_internal_server_error();
-			status_line = "HTTP/1.1 500 Internal Server Error";
+			status_line = "HTTP/1.1 500 Internal Server Error\r\n";
 			break;
 		case 414:
 			file_name = config.get_error_pages()->get_uri_too_long();
-			status_line = "HTTP/1.1 414 URI Too Long";
+			status_line = "HTTP/1.1 414 URI Too Long\r\n";
 			break;
 		case 413:
 			file_name = config.get_error_pages()->get_content_too_large();
-			status_line = "HTTP/1.1 413 Content Too Large";
+			status_line = "HTTP/1.1 413 Content Too Large\r\n";
 			break;
 		case 411:
 			file_name = config.get_error_pages()->get_length_requiered();
-			status_line = "HTTP/1.1 411 Length Required";
+			status_line = "HTTP/1.1 411 Length Required\r\n";
 			break;
 		case 408:
 			file_name = config.get_error_pages()->get_request_timeout();
-			status_line = "HTTP/1.1 408 Request Timeout";
+			status_line = "HTTP/1.1 408 Request Timeout\r\n";
 			break;
 		case 404:
 			file_name = config.get_error_pages()->get_not_found();
-			status_line = "HTTP/1.1 404 Not Found";
+			status_line = "HTTP/1.1 404 Not Found\r\n";
 			break;
 		case 403:
 			file_name = config.get_error_pages()->get_forbidden();
-			status_line = "HTTP/1.1 403 Forbidden";
+			status_line = "HTTP/1.1 403 Forbidden\r\n";
 			break;
 		case 400:
 			file_name = config.get_error_pages()->get_bad_request();
-			status_line = "HTTP/1.1 400 Bad Request";
+			status_line = "HTTP/1.1 400 Bad Request\r\n";
 	}
 	return (handle_error_internal_internal(file_name, status_line));
 }

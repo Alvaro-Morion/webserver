@@ -34,12 +34,12 @@ void Server::config_epoll(std::set<uint16_t> ports)
 	{
 		MySocket *socket = new MySocket(*iter);
 		std::cout << "Socket for port: " << *iter << " created with fd " << socket->getSockfd() << std::endl;
-		epoll_add(socket->getSockfd(), EPOLLIN | EPOLLOUT);
+		manage_epoll(socket->getSockfd(), EPOLL_CTL_ADD, EPOLLIN);
 		socket_map[socket->getSockfd()] = socket;
 	}
 }
 
-void Server::epoll_add(int fd, uint32_t mask)
+void Server::manage_epoll(int fd, int op, uint32_t mask)
 {
 	struct epoll_event event;
 
@@ -47,17 +47,16 @@ void Server::epoll_add(int fd, uint32_t mask)
 	event.events = mask;
 	event.data.fd = fd;
 
-	if (epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &event) == -1)
+	if (epoll_ctl(epollfd, op, fd, &event) == -1)
 	{
 		perror("Epoll_ctl");
-		exit(EXIT_FAILURE);
+		close(fd);
 	}
-	std::cout << fd << " added to poll" << std::endl;
+	std::cout << fd << " to poll" << std::endl;
 }
 
 void Server::server_loop(void)
 {
-	int                confd;
 	int                sockfd;
 	struct epoll_event events[MAX_EVENTS];
 	int                nevents;
@@ -78,161 +77,42 @@ void Server::server_loop(void)
 			std::cout << "event " << events[n].events << " in: " << sockfd << std::endl;
 			if (socket_map.find(sockfd) != socket_map.end())
 			{
-				int size = 1;
-				std::cout << "Accepting new connection...\n";
-				confd = accept(sockfd, NULL, NULL);
-				if (confd < 0)
+				ReturnType resp(-1, "", NO_CHILD);
+				Connection *connection = new Connection(epollfd, socket_map[sockfd]->getPort(),
+						global_config, resp);
+				if(connection->accept_connection(sockfd) < 0)
+					delete connection;
+				else
 				{
-					perror("Accept");
-					exit(EXIT_FAILURE);
+					connection_map[connection->getConFd()] = connection;
+					manage_epoll(connection->getConFd(), EPOLL_CTL_ADD, EPOLLIN | EPOLLRDHUP | EPOLLHUP);
 				}
-				setsockopt(confd, SOL_SOCKET, SOCK_NONBLOCK, &size, sizeof(int));
-				epoll_add(confd, EPOLLIN | EPOLLRDHUP | EPOLLHUP);
-				client_port_map[confd] = socket_map[sockfd]->getPort();
-				std::cout << "New client: " << confd << " Accepted in port " << socket_map[sockfd]->getPort()
-						  << std::endl;
 			}
-			else if (events[n].events && EPOLLIN)
+			else if ((events[n].events & EPOLLIN) == EPOLLIN)
 			{
-				std::cout << "A request has been received...\n";
-				manage_request(sockfd);
-				socket_map.erase(sockfd);
-				close(sockfd);
+				Connection *connection = connection_map[sockfd];
+				connection->read_request();
+				if (connection->request_read())
+				{
+					connection->generate_response();
+					manage_epoll(connection->getConFd(), EPOLL_CTL_MOD, EPOLLOUT | EPOLLRDHUP | EPOLLHUP);
+				}
+			}
+			else if ((events[n].events & EPOLLOUT) == EPOLLOUT)
+			{
+				connection_map[sockfd]->send_response();
+				if (connection_map[sockfd]->response_sent())
+				{
+					delete connection_map[sockfd];
+					connection_map.erase(sockfd);
+				}
+			}
+			else
+			{
+				delete connection_map[sockfd];
+				connection_map.erase(sockfd);
 			}
 			std::cout << "end of the loop" << std::endl;
-		}
-	}
-}
-
-void Server::manage_request(int fd)
-{
-	std::string recv_str;
-	char        buffer[BUFFER_SIZE];
-	int         nbytes;
-	std::string line;
-
-	recv_str.clear();
-	while ((nbytes = recv(fd, buffer, BUFFER_SIZE - 1, MSG_DONTWAIT)) > 0)
-	{
-		buffer[nbytes] = 0;
-		recv_str += buffer;
-	}
-	std::cout << nbytes << std::endl;
-	if (nbytes <= 0 && recv_str.length() > 0) // EWOULDBLOCK y ha terminado de leer.
-	{
-		std::cout << recv_str << std::endl;
-		try
-		{
-			t_c_individual_server_config server_config = select_config(fd, recv_str);
-			// send_response(engine(request, config), fd);
-			send_response(handle_error(501, server_config), fd);
-		}
-		catch (ReturnType &error_response)
-		{
-			send_response(error_response, fd);
-		}
-	}
-	else
-	{
-		perror("recv");
-	}
-}
-
-static std::string get_header_value(std::string name, std::string request) // Gets the trimmed value of a header.
-{
-	size_t      start, end;
-	std::string value;
-
-	if ((start = request.find(name + ":")) == std::string::npos)
-	{
-		return ("");
-	}
-	start += std::string(name + ":").length();
-	end = request.find("\r\n", start);
-	value = request.substr(start, end - start);
-	while (isspace(value.front()))
-	{
-		value.erase(0, 1);
-	}
-	while (isspace(value.back()))
-	{
-		value.erase(value.length() - 1, 1);
-	}
-	return (value);
-}
-
-t_c_individual_server_config const &Server::select_config(int fd, std::string request)
-{
-	int         port = client_port_map[fd];
-	std::string hostname;
-
-	if ((hostname = get_header_value("Host", request)) == "")
-	{
-		throw handle_invalid_request();
-	}
-	hostname = hostname.substr(0, hostname.find(":"));
-	std::cout << "Parsing request. Port: " << port << " Hostname: " << hostname << std::endl;
-
-	std::set<t_c_individual_server_config, std::less<>>           servers = global_config->get_servers();
-	t_c_individual_server_config::t_c_light_key                   key(&hostname, port);
-	std::set<t_c_individual_server_config, std::less<>>::iterator config = servers.find(key);
-
-	if (config != servers.end())
-	{
-		std::cout << "a server was found\n";
-		if (config->get_client_body_size_limit() != UINT64_MAX)
-		{
-			if (get_header_value("Content-length", request) != "")
-			{
-				size_t content_length = std::atoll(get_header_value("Content-length", request).c_str());
-				if (content_length > config->get_client_body_size_limit())
-				{
-					throw handle_error(413, *config);
-				}
-				return (*config);
-			}
-		}
-		return (*config);
-	}
-	throw handle_invalid_request();
-}
-
-void Server::send_response(ReturnType response, int socketfd)
-{
-	std::string response_str = "";
-	if (response.is_cgi())
-	{
-		// do 	CGI		stuff.
-		return;
-	}
-	else
-	{
-		std::stringstream response_str;
-		char              buffer[BUFFER_SIZE];
-		std::string       response_string;
-		ssize_t           nbytes = 0;
-		ssize_t           bytes_sent = 0;
-		ssize_t           bytes_read = 0;
-
-		/*		while (std::fgets(buffer, BUFFER_SIZE, response.getFile()) != NULL)
-				{
-					response_str << buffer;
-					bytes_read += nbytes;
-				}*/
-		response_string = response_str.str();
-		bytes_read = response_string.length();
-		std::cout << response_string.c_str();
-		while ((bytes_sent = send(socketfd, response_string.c_str(), bytes_read, MSG_DONTWAIT)) > 0)
-		{
-			nbytes += bytes_sent;
-			if (nbytes == bytes_read)
-			{
-				break;
-			}
-		}
-		if (bytes_sent < 0)
-		{
-			perror("Send Response");
 		}
 	}
 }
@@ -252,7 +132,7 @@ std::map<int, MySocket *> &Server::getSocket_Map(void)
 	return this->socket_map;
 }
 
-std::map<int, uint16_t> &Server::getClientPortMap(void)
+std::map<int, Connection *> &Server::getConnectionMap(void)
 {
-	return client_port_map;
+	return connection_map;
 }

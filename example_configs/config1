@@ -1,6 +1,6 @@
 server
 {
-	ports 100, 80, 90; # can be ommited 80 by default
+	ports 10000, 8000, 9000; # can be ommited 80 by default
 	hosts localhost, test.com, sub.test.com;
 	http_version_not_supported "default_error_pages/505"; # can be ommited defaults exist
 	not_implemeted "default_error_pages/501";

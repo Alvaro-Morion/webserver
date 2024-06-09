@@ -34,10 +34,10 @@ static ReturnType handle_invalid_request_internal(void)
 	int const         fd = open("default_error_pages/400", O_RDONLY);
 	ssize_t const     file_size = get_file_size(fd);
 	std::string const current_time = get_current_time_as_string();
-	std::string const headers = std::string("HTTP/1.1 400 Bad Request\n\r") + "Server: webserv/0.1\n\r" +
-								"Date: " + current_time + "\n\r" + "Content-Type: text/html\n\r" +
-								"Content-Length: " + std::to_string(file_size) + "\n\r" + "Connection: close" +
-								"\n\r\n\r";
+	std::string const headers = std::string("HTTP/1.1 400 Bad Request\r\n") + "Server: webserv/0.1\r\n" +
+								"Date: " + current_time + "\r\n" + "Content-Type: text/html\r\n" +
+								"Content-Length: " + std::to_string(file_size) + "\r\n" + "Connection: close" +
+								"\r\n\r\n";
 
 	if (fd == -1)
 	{

@@ -58,10 +58,10 @@ sockaddr_in MySocket::getAddress(void)
 void MySocket::setAddress(uint16_t port)
 {
 	memset(&address, 0, sizeof(address));
-	std::cout << htons(port) << std::endl;
+	std::cout << ntohs(port) << std::endl;
 	address.sin_family = AF_INET;
-	address.sin_port = htons(port);
+	address.sin_port = port;
 	address.sin_addr.s_addr = INADDR_ANY;
-	std::cout << "Address for port:" << address.sin_family << "\t" << address.sin_port << "\t"
+	std::cout << "Address for port:" << address.sin_family << "\t" << ntohs(address.sin_port) << "\t"
 			  << address.sin_addr.s_addr << "\n";
 }

@@ -42,6 +42,11 @@ int ReturnType::get_fd(void) const
 	return (fd);
 }
 
+std::string const &ReturnType::get_headers(void) const
+{
+	return(headers);
+}
+
 pid_t ReturnType::get_child_pid(void) const
 {
 	return (child_pid);

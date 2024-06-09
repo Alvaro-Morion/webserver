@@ -65,10 +65,10 @@ int main(int argc, char **argv)
 		config = get_config(DEFAULT_CONFIG);
 	}
 	signal(SIGPIPE, SIG_IGN);
-	//	std::cout << config->to_string();
-	//	pause();
-	//	Server server(config);
-	//	Server server(&config); //For test
+		std::cout << config->to_string();
+		//pause();
+		Server server(config);
+		//Server server(&config); //For test
 	return (EXIT_FAILURE);
 }
 
