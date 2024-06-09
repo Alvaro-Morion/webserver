@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 11:48:31                                            */
-/*   Updated:  2024/06/08 16:07:10                                            */
+/*   Updated:  2024/06/08 17:10:06                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,18 +42,20 @@ class ReturnType
 		pid_t       child_pid; // value will be NO_CHILD if it was not a cgi
 
 	public:
-		ReturnType(int fd_param, char const &headers_param, pid_t child_pid_param);
+		ReturnType(int fd_param, std::string const &headers_param, pid_t child_pid_param);
 		~ReturnType(void);
 
-		int   get_fd(void) const;
+		int                get_fd(void) const;
 		std::string const &get_headers(void) const;
-		pid_t get_child_pid(void) const;
-		bool  is_cgi(void) const;
-		bool  has_unrecoverable_error(void) const;
+		pid_t              get_child_pid(void) const;
+		bool               is_cgi(void) const;
+		bool               has_unrecoverable_error(void) const;
 };
 
-ReturnType handle_invalid_request(void);
-ReturnType handle_error(int error_code, t_c_individual_server_config const &config);
-ReturnType handle_request(std::string const &request, t_c_individual_server_config const &config);
+ReturnType  handle_invalid_request(void);
+ReturnType  handle_error(int error_code, t_c_individual_server_config const &config);
+ReturnType  handle_request(std::string const &request, t_c_individual_server_config const &config);
+std::string get_current_time_as_string(void);
+ssize_t     get_file_size(int fd);
 
 #pragma GCC diagnostic pop

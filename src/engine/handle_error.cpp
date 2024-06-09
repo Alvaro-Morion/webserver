@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 13:33:33                                            */
-/*   Updated:  2024/06/07 14:34:20                                            */
+/*   Updated:  2024/06/09 12:46:23                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,37 +29,86 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-ReturnType handle_error(int error_code, t_c_individual_server_config const &config)
+static ReturnType handle_error_internal_internal(std::string const &error_file, std::string const &status_line)
 {
+	int const         fd = open(error_file.c_str(), O_RDONLY);
+	ssize_t const     file_size = get_file_size(fd);
+	std::string const current_time = get_current_time_as_string();
+	std::string const headers = status_line + "Server: webserv/0.1\n\r" + "Date: " + current_time + "\n\r" +
+								"Content-Type: text/html\n\r" + "Content-Length: " + std::to_string(file_size) +
+								"\n\r" + "Connection: close" + "\n\r\n\r";
+
+	if (fd == -1)
+	{
+		return (ReturnType(-1, std::string(""), NO_CHILD));
+	}
+	if (file_size == -1 || current_time.empty() == true)
+	{
+		return (ReturnType(-1, std::string(""), NO_CHILD));
+	}
+	return (ReturnType(fd, headers, NO_CHILD));
+}
+
+static ReturnType handle_error_internal(int error_code, t_c_individual_server_config const &config)
+{
+	std::string file_name;
+	std::string status_line;
+
 	switch (error_code) // NOLINT
 	{
 		case 505:
-			return (ReturnType(open(config.get_error_pages()->get_http_version_not_supported().c_str(), O_RDONLY),
-							   NO_CHILD));
+			file_name = config.get_error_pages()->get_http_version_not_supported();
+			status_line = "HTTP/1.1 505 HTTP Version Not Supported";
+			break;
 		case 501:
-			return (ReturnType(open(config.get_error_pages()->get_not_implemeted().c_str(), O_RDONLY), NO_CHILD));
+			file_name = config.get_error_pages()->get_not_implemeted();
+			status_line = "HTTP/1.1 501 Not Implemented";
+			break;
 		case 500:
-			return (
-				ReturnType(open(config.get_error_pages()->get_internal_server_error().c_str(), O_RDONLY), NO_CHILD));
+			file_name = config.get_error_pages()->get_internal_server_error();
+			status_line = "HTTP/1.1 500 Internal Server Error";
+			break;
 		case 414:
-			return (ReturnType(open(config.get_error_pages()->get_uri_too_long().c_str(), O_RDONLY), NO_CHILD));
+			file_name = config.get_error_pages()->get_uri_too_long();
+			status_line = "HTTP/1.1 414 URI Too Long";
+			break;
 		case 413:
-			return (ReturnType(open(config.get_error_pages()->get_content_too_large().c_str(), O_RDONLY), NO_CHILD));
+			file_name = config.get_error_pages()->get_content_too_large();
+			status_line = "HTTP/1.1 413 Content Too Large";
+			break;
 		case 411:
-			return (ReturnType(open(config.get_error_pages()->get_length_requiered().c_str(), O_RDONLY), NO_CHILD));
+			file_name = config.get_error_pages()->get_length_requiered();
+			status_line = "HTTP/1.1 411 Length Required";
+			break;
 		case 408:
-			return (ReturnType(open(config.get_error_pages()->get_request_timeout().c_str(), O_RDONLY), NO_CHILD));
+			file_name = config.get_error_pages()->get_request_timeout();
+			status_line = "HTTP/1.1 408 Request Timeout";
+			break;
 		case 404:
-			return (ReturnType(open(config.get_error_pages()->get_not_found().c_str(), O_RDONLY), NO_CHILD));
+			file_name = config.get_error_pages()->get_not_found();
+			status_line = "HTTP/1.1 404 Not Found";
+			break;
 		case 403:
-			return (ReturnType(open(config.get_error_pages()->get_forbidden().c_str(), O_RDONLY), NO_CHILD));
+			file_name = config.get_error_pages()->get_forbidden();
+			status_line = "HTTP/1.1 403 Forbidden";
+			break;
 		case 400:
-			return (ReturnType(open(config.get_error_pages()->get_bad_request().c_str(), O_RDONLY), NO_CHILD));
+			file_name = config.get_error_pages()->get_bad_request();
+			status_line = "HTTP/1.1 400 Bad Request";
 	}
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wreturn-type"
+	return (handle_error_internal_internal(file_name, status_line));
 }
 
-#pragma GCC diagnostic pop
+ReturnType handle_error(int error_code, const t_c_individual_server_config &config)
+{
+	try
+	{
+		return (handle_error_internal(error_code, config));
+	}
+	catch (...)
+	{
+		return (ReturnType(-1, "", NO_CHILD));
+	}
+}
 
 #pragma GCC diagnostic pop

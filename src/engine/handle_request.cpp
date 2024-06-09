@@ -6,18 +6,22 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 14:41:43                                            */
-/*   Updated:  2024/06/08 15:32:41                                            */
+/*   Updated:  2024/06/09 17:30:43                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
+#include <cerrno>
 #include <cstddef>
 #include <ctime>
+#include <fcntl.h>
 #include <functional>
 #include <set>
 #include <string>
 #include <sys/mman.h>
-
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 ;
 #pragma GCC diagnostic push
@@ -71,8 +75,8 @@ static std::string get_body(std::string const &request, size_t &i)
 						request.begin() + static_cast<std::string::difference_type>(end)));
 }
 
-
-static std::pair<t_c_route, bool> get_resource_rules(std::string resource, std::set<t_c_route, std::less<>> const &routes)
+static std::pair<t_c_route, bool> get_resource_rules(std::string                             resource,
+													 std::set<t_c_route, std::less<>> const &routes)
 {
 	std::set<t_c_route, std::less<>>::const_iterator it;
 	size_t                                           i;
@@ -132,15 +136,14 @@ static bool method_allowed(std::string const &method, t_c_resource const &resour
 	return (true);
 }
 
-static std::string get_current_time_as_string(void)
+std::string get_current_time_as_string(void)
 {
-	time_t t = time(NULL);
-	struct tm tm;
-	const size_t buffer_size = 200;
-	char   buff[buffer_size];
+	time_t       t = time(NULL);
+	struct tm    tm;
+	size_t const buffer_size = 200;
+	char         buff[buffer_size];
 
-	if ((t == -1)
-		 || (gmtime_r(&t, &tm) == nullptr))
+	if ((t == -1) || (gmtime_r(&t, &tm) == nullptr))
 	{
 		return ("");
 	}
@@ -155,64 +158,145 @@ static std::string get_new_location(std::string resource, t_c_route const &route
 	return (resource);
 }
 
+ssize_t get_file_size(int fd)
+{
+	struct stat statbuf;
+
+	if (fstat(fd, &statbuf) == -1)
+	{
+		return (-1);
+	}
+	return (statbuf.st_size);
+}
+
 static ReturnType handle_redirect(std::string const &resource, t_c_route const &route)
 {
-	const std::string content = "<html>\n\r" \
-								"<head><title>301 Moved Permanently</title></head>\n\r" \
-								"<body>\n\r" \
-								"<center><h1>301 Moved Permanently</h1></center>\n\r" \
-								"<hr><center>webserv/0.1</center>\n\r" \
-								"</body>\n\r" \
-								"</html>\n\r";
-	const std::string current_time = get_current_time_as_string();
-	const std::string headers = std::string("HTTP/1.1 301 Moved Permanently\n\r") +
-								"Server: webserv/0.1\n\r" +
-								"Date: " +
-								current_time +
-								"\n\r" +
-								"Content-Type: text/html\n\r" +
-								"Content-Length: "  +
-								std::to_string(content.size()) +
-								"\n\r" +
-								"Location: " +
-								get_new_location(resource, route) +
-								"\n\r\n\r";
-	const int fd = memfd_create("", 0);
-	ssize_t   write_ret;
-	size_t    i;
+	int const         fd = open("default_error_pages/301", O_RDONLY);
+	ssize_t const     file_size = get_file_size(fd);
+	std::string const current_time = get_current_time_as_string();
+	std::string const headers =
+		std::string("HTTP/1.1 301 Moved Permanently\n\r") + "Server: webserv/0.1\n\r" + "Date: " + current_time +
+		"\n\r" + "Content-Type: text/html\n\r" + "Content-Length: " + std::to_string(file_size) + "\n\r" +
+		"Location: " + get_new_location(resource, route) + "\r\n" + "Connection: close" + "\n\r\n\r";
 
 	if (fd == -1)
 	{
-		return (ReturnType(-1, NO_CHILD));
+		return (ReturnType(-1, std::string(""), NO_CHILD));
 	}
-	if (current_time.empty() == true)
+	if (file_size == -1 || current_time.empty() == true)
 	{
-		close(fd);
-		return (ReturnType(-1, NO_CHILD));
+		return (ReturnType(-1, std::string(""), NO_CHILD));
 	}
-	i = 0;
-	while (i < headers.size())
+	return (ReturnType(fd, headers, NO_CHILD));
+}
+
+static std::vector<std::string> split(std::string const &s)
+{
+	size_t pos_start = 0;
+	size_t pos_end;
+	std::string token;
+	std::vector<std::string> res;
+
+	pos_end = s.find('/', pos_start);
+	while (pos_end != std::string::npos)
 	{
-		write_ret = write(fd, headers.c_str() + i, headers.size() - i);
-		if (write_ret == -1)
+		token = s.substr(pos_start, pos_end - pos_start);
+		pos_start = pos_end + 1;
+		if (token.empty() == false)
 		{
-			close(fd);
-			return (ReturnType(-1, NO_CHILD));
+			res.push_back(token);
 		}
-		i += static_cast<size_t>(write_ret);
+		pos_end = s.find('/', pos_start);
 	}
-	i = 0;
-	while (i < content.size())
+	if (s.substr(pos_start).empty() == false)
 	{
-		write_ret = write(fd, content.c_str() + i, headers.size() - i);
-		if (write_ret == -1)
-		{
-			close(fd);
-			return (ReturnType(-1, NO_CHILD));
-		}
-		i += static_cast<size_t>(write_ret);
+		res.push_back(s.substr(pos_start));
 	}
-	return (ReturnType(fd, NO_CHILD));
+	return res;
+}
+
+static std::string normalize_resource(std::string const &resource)
+{
+	std::vector<std::string> tokens = split(resource);
+	std::string              res = "/";
+	size_t                   i;
+
+	i = 0;
+	while (i < tokens.size())
+	{
+		if (tokens[i] == ".")
+		{
+			tokens.erase(tokens.begin() + static_cast<std::vector<std::string>::difference_type>(i));
+			continue;
+		}
+		if (tokens[i] == "..")
+		{
+			if (i == 0)
+			{
+				return ("");
+			}
+			tokens.erase(tokens.begin() + static_cast<std::vector<std::string>::difference_type>(i));
+			i--;
+			tokens.erase(tokens.begin() + static_cast<std::vector<std::string>::difference_type>(i));
+			continue;
+		}
+		i++;
+	}
+	for (std::string const &s : tokens)
+	{
+		res += s;
+		res += "/";
+	}
+	return (res);
+}
+
+static bool resource_in_route(std::string const &resource, std::string const &route)
+{
+	const size_t res = resource.find(route.c_str(), 0, route.size());
+
+	return (res == 0);
+}
+
+static ReturnType handle_normal(std::string &resource, t_c_route const &route, t_c_individual_server_config const &config)
+{
+	std::string       headers;
+	std::string const current_time = get_current_time_as_string();
+	ssize_t           file_size;
+    std::string target_file;
+	int         fd;
+
+	resource = normalize_resource(resource);
+	if (resource_in_route(resource, route.get_path()) == false)
+	{
+		return (handle_error(403, config)); // forbidden
+	}
+	target_file = get_new_location(resource, route);
+	if (access(target_file.c_str(), R_OK) != 0)
+	{
+		if (errno == ENOENT)
+		{
+			return (handle_error(404, config)); // not found
+		}
+		if (errno == EACCES)
+		{
+			return (handle_error(404, config)); // forbidden
+		}
+		return (handle_error(500, config)); // internal server error
+	}
+	fd = open(resource.c_str(), O_RDONLY);
+	if (fd == -1 || current_time.empty() == true)
+	{
+		return (handle_error(500, config)); // internal server error
+	}
+	file_size = get_file_size(fd);
+	headers = std::string("HTTP/1.1 301 Moved Permanently\n\r") + "Server: webserv/0.1\n\r" + "Date: " + current_time +
+		"\n\r" + "Content-Type: text/html\n\r" + "Content-Length: " + std::to_string(file_size) + "\n\r" +
+		"Connection: close" + "\n\r\n\r";
+	if (file_size == -1 || current_time.empty() == true)
+	{
+		return (ReturnType(-1, std::string(""), NO_CHILD));
+	}
+	return (ReturnType(fd, headers, NO_CHILD));
 }
 
 static ReturnType handle_request_internal(std::string const &request, t_c_individual_server_config const &config)
@@ -254,6 +338,11 @@ static ReturnType handle_request_internal(std::string const &request, t_c_indivi
 	{
 		return (handle_redirect(resource, resource_rules.first));
 	}
+	if (resource_rules.first.get_resource().get_is_cgi())
+	{
+		//return (handle_cgi(resource, resource_rules.first));
+	}
+	return (handle_normal(resource, resource_rules.first, config));
 }
 
 ReturnType handle_request(std::string const &request, t_c_individual_server_config const &config)

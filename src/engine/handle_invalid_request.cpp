@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 11:53:58                                            */
-/*   Updated:  2024/06/07 13:34:58                                            */
+/*   Updated:  2024/06/09 12:47:45                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,37 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-ReturnType handle_invalid_request(void)
+static ReturnType handle_invalid_request_internal(void)
 {
-	int const fd = open("default_error_pages/400", O_RDONLY);
+	int const         fd = open("default_error_pages/400", O_RDONLY);
+	ssize_t const     file_size = get_file_size(fd);
+	std::string const current_time = get_current_time_as_string();
+	std::string const headers = std::string("HTTP/1.1 400 Bad Request\n\r") + "Server: webserv/0.1\n\r" +
+								"Date: " + current_time + "\n\r" + "Content-Type: text/html\n\r" +
+								"Content-Length: " + std::to_string(file_size) + "\n\r" + "Connection: close" +
+								"\n\r\n\r";
 
-	return (ReturnType(fd, NO_CHILD));
+	if (fd == -1)
+	{
+		return (ReturnType(-1, std::string(""), NO_CHILD));
+	}
+	if (file_size == -1 || current_time.empty() == true)
+	{
+		return (ReturnType(-1, std::string(""), NO_CHILD));
+	}
+	return (ReturnType(fd, headers, NO_CHILD));
 }
 
+
+ReturnType handle_invalid_request(void)
+{
+	try
+	{
+		return (handle_invalid_request_internal());
+	}
+	catch (...)
+	{
+		return (ReturnType(-1, "", NO_CHILD));
+	}
+}
 #pragma GCC diagnostic pop

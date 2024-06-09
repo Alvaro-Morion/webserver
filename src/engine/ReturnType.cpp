@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 11:48:15                                            */
-/*   Updated:  2024/06/07 12:56:30                                            */
+/*   Updated:  2024/06/09 17:32:58                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 
 #include "engine.hpp"
 
-ReturnType::ReturnType(int fd_param, pid_t child_pid_param) : fd(fd_param), child_pid(child_pid_param)
+ReturnType::ReturnType(int fd_param, std::string const &headers_param, pid_t child_pid_param) : fd(fd_param), headers(headers_param), child_pid(child_pid_param)
 {
 }
 

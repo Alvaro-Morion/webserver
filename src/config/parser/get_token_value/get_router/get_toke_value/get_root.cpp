@@ -48,7 +48,7 @@ void get_root(t_c_resource_constructor_params &params, std::vector<t_c_token> &t
 	}
 	remove_quotes_if_present(tokens, i, config_file);
 	params.root = tokens[i].get_token();
-	if (params.root.end()[-1] != '/') 
+	if (params.root.end()[-1] != '/')
 	{
 		params.root.push_back('/');
 	}
