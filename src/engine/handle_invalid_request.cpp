@@ -50,7 +50,6 @@ static ReturnType handle_invalid_request_internal(void)
 	return (ReturnType(fd, headers, NO_CHILD));
 }
 
-
 ReturnType handle_invalid_request(void)
 {
 	try
@@ -62,4 +61,5 @@ ReturnType handle_invalid_request(void)
 		return (ReturnType(-1, "", NO_CHILD));
 	}
 }
+
 #pragma GCC diagnostic pop

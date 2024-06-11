@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 11:48:31                                            */
-/*   Updated:  2024/06/08 17:10:06                                            */
+/*   Updated:  2024/06/11 17:46:01                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include "../config/t_c_individual_server_config/t_c_individual_server_config.hpp"
 #include <string>
 #include <unistd.h>
+#include <netinet/in.h>
+
 
 ;
 #pragma GCC diagnostic push
@@ -54,7 +56,7 @@ class ReturnType
 
 ReturnType  handle_invalid_request(void);
 ReturnType  handle_error(int error_code, t_c_individual_server_config const &config);
-ReturnType  handle_request(std::string const &request, t_c_individual_server_config const &config);
+ReturnType  handle_request(std::string const &request, t_c_individual_server_config const &config, struct in_addr ip);
 std::string get_current_time_as_string(void);
 ssize_t     get_file_size(int fd);
 

@@ -29,7 +29,8 @@
 
 #include "engine.hpp"
 
-ReturnType::ReturnType(int fd_param, std::string const &headers_param, pid_t child_pid_param) : fd(fd_param), headers(headers_param), child_pid(child_pid_param)
+ReturnType::ReturnType(int fd_param, std::string const &headers_param, pid_t child_pid_param)
+	: fd(fd_param), headers(headers_param), child_pid(child_pid_param)
 {
 }
 

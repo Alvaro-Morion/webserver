@@ -99,7 +99,7 @@ static ReturnType handle_error_internal(int error_code, t_c_individual_server_co
 	return (handle_error_internal_internal(file_name, status_line));
 }
 
-ReturnType handle_error(int error_code, const t_c_individual_server_config &config)
+ReturnType handle_error(int error_code, t_c_individual_server_config const &config)
 {
 	try
 	{

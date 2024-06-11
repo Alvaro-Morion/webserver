@@ -6,13 +6,15 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 14:41:43                                            */
-/*   Updated:  2024/06/09 17:30:43                                            */
+/*   Updated:  2024/06/11 18:00:47                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
+#include <cctype>
 #include <cerrno>
 #include <cstddef>
+#include <cstdint>
 #include <ctime>
 #include <fcntl.h>
 #include <functional>
@@ -38,6 +40,16 @@
 #pragma GCC diagnostic ignored "-Wc++20-designator"
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
+
+static void remove_query(std::string &uri)
+{
+	size_t const pos = uri.find(-'?');
+
+	if (pos != std::string::npos)
+	{
+		uri.erase(pos, uri.size() - pos);
+	}
+}
 
 static std::string get_method(std::string const &request, size_t &i)
 {
@@ -153,6 +165,7 @@ std::string get_current_time_as_string(void)
 
 static std::string get_new_location(std::string resource, t_c_route const &route)
 {
+	remove_query(resource);
 	resource.erase(0, route.get_path().size());
 	resource.insert(0, route.get_resource().get_root(), route.get_resource().get_root().size());
 	return (resource);
@@ -192,9 +205,9 @@ static ReturnType handle_redirect(std::string const &resource, t_c_route const &
 
 static std::vector<std::string> split(std::string const &s)
 {
-	size_t pos_start = 0;
-	size_t pos_end;
-	std::string token;
+	size_t                   pos_start = 0;
+	size_t                   pos_end;
+	std::string              token;
 	std::vector<std::string> res;
 
 	pos_end = s.find('/', pos_start);
@@ -215,12 +228,68 @@ static std::vector<std::string> split(std::string const &s)
 	return res;
 }
 
-static std::string normalize_resource(std::string const &resource)
+static int_fast8_t get_hex_char_value(char c)
 {
-	std::vector<std::string> tokens = split(resource);
-	std::string              res = "/";
+	if (c >= 'a' && c <= 'f')
+	{
+		return (static_cast<int_fast8_t>(c - 'a' + 10));
+	}
+	if (c >= 'A' && c <= 'F')
+	{
+		return (static_cast<int_fast8_t>(c - 'A' + 10));
+	}
+	if (c >= '0')
+	{
+		return (static_cast<int_fast8_t>(c - '0'));
+	}
+	return (-1);
+}
+
+static void decode_uri(std::string &uri)
+{
+	size_t i;
+
+	i = 0;
+	while (i < uri.size())
+	{
+		if (uri[i] == '%')
+		{
+			if (i + 2 < uri.size())
+			{
+				int_fast8_t c1 = static_cast<int_fast8_t>(get_hex_char_value(uri[i + 1]) * 16);
+				int_fast8_t c2 = get_hex_char_value(uri[i + 2]);
+
+				if (c1 == -1 || c2 == -1)
+				{
+					uri = "";
+					return;
+				}
+				uri.erase(i, 3);
+				uri.insert(i, 1, static_cast<char>(c1 + c2));
+			}
+			else
+			{
+				uri = "";
+				return;
+			}
+		}
+		i++;
+	}
+}
+
+static void normalize_resource(std::string resource)
+{
+	std::vector<std::string> tokens;
 	size_t                   i;
 
+	if (resource.find('#') != std::string::npos ||
+		resource.find_first_not_of(
+			"%:/?#[]@!$&'()*+,;=-._~abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456") != std::string::npos)
+	{
+		resource = "";
+		return;
+	}
+	tokens = split(resource);
 	i = 0;
 	while (i < tokens.size())
 	{
@@ -233,7 +302,8 @@ static std::string normalize_resource(std::string const &resource)
 		{
 			if (i == 0)
 			{
-				return ("");
+				resource = "";
+				return;
 			}
 			tokens.erase(tokens.begin() + static_cast<std::vector<std::string>::difference_type>(i));
 			i--;
@@ -242,34 +312,29 @@ static std::string normalize_resource(std::string const &resource)
 		}
 		i++;
 	}
+	resource = "/";
 	for (std::string const &s : tokens)
 	{
-		res += s;
-		res += "/";
+		resource += s;
+		resource += "/";
 	}
-	return (res);
+	i = resource.find('?');
+	if (i != std::string::npos)
+	{
+		resource[i] = -'?';
+	}
+	decode_uri(resource);
 }
 
-static bool resource_in_route(std::string const &resource, std::string const &route)
-{
-	const size_t res = resource.find(route.c_str(), 0, route.size());
-
-	return (res == 0);
-}
-
-static ReturnType handle_normal(std::string &resource, t_c_route const &route, t_c_individual_server_config const &config)
+static ReturnType handle_normal(std::string &resource, t_c_route const &route,
+								t_c_individual_server_config const &config)
 {
 	std::string       headers;
 	std::string const current_time = get_current_time_as_string();
 	ssize_t           file_size;
-    std::string target_file;
-	int         fd;
+	std::string       target_file;
+	int               fd;
 
-	resource = normalize_resource(resource);
-	if (resource_in_route(resource, route.get_path()) == false)
-	{
-		return (handle_error(403, config)); // forbidden
-	}
 	target_file = get_new_location(resource, route);
 	if (access(target_file.c_str(), R_OK) != 0)
 	{
@@ -289,9 +354,9 @@ static ReturnType handle_normal(std::string &resource, t_c_route const &route, t
 		return (handle_error(500, config)); // internal server error
 	}
 	file_size = get_file_size(fd);
-	headers = std::string("HTTP/1.1 301 Moved Permanently\r\n") + "Server: webserv/0.1\r\n" + "Date: " + current_time +
-		"\r\n" + "Content-Type: text/html\r\n" + "Content-Length: " + std::to_string(file_size) + "\r\n" +
-		"Connection: close" + "\r\n\r\n";
+	headers = std::string("HTTP/1.1 301 Moved Permanently\n\r") + "Server: webserv/0.1\n\r" + "Date: " + current_time +
+			  "\n\r" + "Content-Type: text/html\n\r" + "Content-Length: " + std::to_string(file_size) + "\n\r" +
+			  "Connection: close" + "\n\r\n\r";
 	if (file_size == -1 || current_time.empty() == true)
 	{
 		return (ReturnType(-1, std::string(""), NO_CHILD));
@@ -299,7 +364,7 @@ static ReturnType handle_normal(std::string &resource, t_c_route const &route, t
 	return (ReturnType(fd, headers, NO_CHILD));
 }
 
-static ReturnType handle_request_internal(std::string const &request, t_c_individual_server_config const &config)
+static ReturnType handle_request_internal(std::string const &request, t_c_individual_server_config const &config, struct in_addr ip)
 {
 	size_t                     i;
 	std::string                method;
@@ -310,16 +375,17 @@ static ReturnType handle_request_internal(std::string const &request, t_c_indivi
 
 	i = 0;
 	method = get_method(request, i);
-	resource = get_resource(request, i);
-	protocol = get_protocol(request, i);
 	if (method != "GET" && method != "POST" && method != "DELETE")
 	{
 		return (handle_error(501, config)); // not implemented
 	}
+	resource = get_resource(request, i);
+	normalize_resource(resource);
 	if (resource[0] != '/')
 	{
 		return (handle_error(400, config)); // bad request
 	}
+	protocol = get_protocol(request, i);
 	if (protocol != "HTTP/1.1")
 	{
 		return (handle_error(505, config)); // protocol not supported
@@ -340,16 +406,30 @@ static ReturnType handle_request_internal(std::string const &request, t_c_indivi
 	}
 	if (resource_rules.first.get_resource().get_is_cgi())
 	{
-		//return (handle_cgi(resource, resource_rules.first));
+		// std::string CONTENT_LENGTH = std::to_string(body.size());
+		// std::string GATEWAY_INTERFACE = "1.1";
+		// std::string PATH_INFO = "/";
+		// std::string PATH_TRANSLATED = remove_filename(get_new_location(...));
+		// std::string QUERY_STRING = get_query_string(...);
+		// std::string REMOTE_ADDR = ip_to_string(ip) there is a standar function for this, use it instead
+		// std::string REQUEST_METHOD = method
+		// std::string SCRIPT_NAME = get_filename(get_new_location(...));
+		// std::string SERVER_NAME = *config.host_name
+		// std::string SERVER_PORT = config.port
+		// std::string SERVER_PROTOCOL = "HTTP/1.1"
+		// std::string SERVER_SOFTWARE = "webserv/0.1"
+		// int memfd = //create memfd and populate it whit the contents of body
+		//
+		// return (handle_cgi(resource, resource_rules.first));
 	}
 	return (handle_normal(resource, resource_rules.first, config));
 }
 
-ReturnType handle_request(std::string const &request, t_c_individual_server_config const &config)
+ReturnType handle_request(std::string const &request, t_c_individual_server_config const &config, struct in_addr ip)
 {
 	try
 	{
-		return (handle_request_internal(request, config));
+		return (handle_request_internal(request, config, ip));
 	}
 	catch (...)
 	{
