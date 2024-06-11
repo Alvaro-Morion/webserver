@@ -28,10 +28,10 @@ class Connection
 		~Connection();
 
 		int									accept_connection(int sockfd);
-		void								read_request(void);
+		int								read_request(void);
 		void								select_config(void);
 		void								generate_response(void);
-		void								send_response(void);
+		int								send_response(void);
 		void								check_body_length(void) const;
 		void								check_not_chunked(void) const;
 		bool								headers_read(void) const;

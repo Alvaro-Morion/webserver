@@ -30,12 +30,12 @@ static std::string get_header_value(std::string name, std::string request) // Ge
         {
                 value.erase(value.length() - 1, 1);
         }
-		std::cout << value << std::endl;
+	//std::cout << value << std::endl;
         return (value);
 }
 
 Connection::Connection(int epollfd, uint16_t port, t_c_global_config *global_config, ReturnType &resp) : 
-	epollfd(epollfd), port(port), response(resp)
+	epollfd(epollfd), port(port), response(resp), bytes_sent(0)
 {
 	this->global_config = global_config;
 	sent_response = false;
@@ -44,7 +44,7 @@ Connection::Connection(int epollfd, uint16_t port, t_c_global_config *global_con
 
 Connection::~Connection()
 {
-		std::cout << "Connection in fd " << confd << "closed\n";
+	//std::cout << "Connection in fd " << confd << "closed\n";
 	close(confd);
 }
 
@@ -59,12 +59,12 @@ int Connection::accept_connection(int sockfd)
 	else
 	{
 		setsockopt(confd, SOL_SOCKET, SOCK_NONBLOCK, &size, sizeof(int));
-		std::cout << "New connection accepted in port " << port << " fd: " << confd << std::endl;
+		//std::cout << "New connection accepted in port " << port << " fd: " << confd << std::endl;
 	}
 	return (confd);
 }
 
-void Connection::read_request(void)
+int Connection::read_request(void)
 {
 	ssize_t nbytes;
 	char	buffer[BUFFER_SIZE];
@@ -74,8 +74,13 @@ void Connection::read_request(void)
 		buffer[nbytes] = 0;
 		request_buffer += buffer;
 	}
-	std::cout << nbytes << "bytes read\n";
-	std::cout << "Current buffer: " << request_buffer << std::endl;
+	if (nbytes < 0)
+	{
+		return (-1);
+	}
+	//std::cout << nbytes << "bytes read\n";
+	//std::cout << "Current buffer: " << request_buffer << std::endl;
+	return(0);
 }
 
 void Connection::select_config(void)
@@ -87,26 +92,26 @@ void Connection::select_config(void)
         }
         hostname = hostname.substr(0, hostname.find(":"));
         try
-		{
-			t_c_individual_server_config::t_c_light_key key(&hostname, port);
-			 std::set<t_c_individual_server_config, std::less<>>::iterator config_it = global_config->get_servers().find(key);
+	{
+		t_c_individual_server_config::t_c_light_key key(&hostname, port);
+		std::set<t_c_individual_server_config, std::less<>>::iterator config_it = global_config->get_servers().find(key);
         	if (config_it == global_config->get_servers().end())
         	{
-                throw handle_invalid_request();
+                	throw handle_invalid_request();
         	}
        		config = &(*config_it);
-		}
-		catch(...)
-		{
-			throw handle_invalid_request();
-		}
+	}
+	catch(...)
+	{
+		throw handle_invalid_request();
+	}
 }
 
 void Connection::generate_response(void)
 {
-	std::cout << "Processing request..." << std::endl;
-	std::cout << request_buffer << std::endl;
-	std::cout << "This is the end of the request\n";
+	//std::cout << "Processing request..." << std::endl;
+	//std::cout << request_buffer << std::endl;
+	//std::cout << "This is the end of the request\n";
 	try
 	{
 		select_config();
@@ -121,30 +126,87 @@ void Connection::generate_response(void)
 	std::cout << "error response generated\n";
 }
 
-void Connection::send_response(void)
+int Connection::send_response(void)
 {
 	ssize_t	nbytes;
 	char	buffer[BUFFER_SIZE];
 	if (response.is_cgi())
 	{
-		//CGI.
+		//waitpid(response.get_child(), NULL, 0);
 	}
-	while(!header_sent && bytes_sent < response.get_headers().length())
+	if (!header_sent)
+	{
+		if (bytes_sent < response.get_headers().length())
+		{
+			// Send headers check errors.
+			nbytes = send(confd, response.get_headers().c_str(), response.get_headers().length(), MSG_DONTWAIT);
+                	if (nbytes < 0)
+                	{	
+                        	perror("Send");
+                        	return (-1);
+                	}
+                	bytes_sent += nbytes;
+		}
+		if (bytes_sent == response.get_headers().length())
+		{
+			//Headers finished -> prepare to send body
+			bytes_sent = 0;
+			header_sent = true;
+			response_buffer.clear();
+		}
+	}
+	else if(!sent_response)
+	{
+		if (response_buffer.empty() && response.get_fd() > 0)
+		{
+			//Read response fd to buffer.
+			while((nbytes = read(response.get_fd(), buffer, BUFFER_SIZE - 1)) != 0)
+                	{
+                        	if (nbytes < 0)
+                        	{		
+                                	perror("Response fd");
+                                	response_buffer.clear();
+                                	return (-1);
+                        	}
+                        	buffer[nbytes] = 0;
+                        	response_buffer.append(buffer, nbytes);
+                	}
+		}
+		if (bytes_sent < response_buffer.length())
+		{
+			//Send buffer to socket.
+			nbytes = send(confd, response_buffer.c_str(), response_buffer.length(), MSG_DONTWAIT);
+                	if (nbytes < 0)
+                	{
+                        	perror("Send");
+                        	return (-1);
+                	}
+                	bytes_sent += nbytes;
+		}
+		if (bytes_sent == response_buffer.length())
+		{
+			//All has been sent.
+			sent_response = true;
+		}
+	}
+	return(0);
+	/*if (!header_sent && bytes_sent < response.get_headers().length())
 	{
 		nbytes = send(confd, response.get_headers().c_str(), response.get_headers().length(), MSG_DONTWAIT);
 		if (nbytes < 0)
 		{
 			perror("Send");
-			return;
+			return (-1);
 		}
 		bytes_sent += nbytes;
 	}
-	if (!header_sent)
+	if (!header_sent && bytes_sent == response.get_headers().length()) // Headers sent successfully.
 	{
 		bytes_sent = 0;
+		header_sent = true;
+		response_buffer.clear();
 	}
-	header_sent = true;
-	if (response.get_fd() > 0 && response_buffer.empty())
+	if (header_sent && response.get_fd() > 0 && response_buffer.empty()) //Read response file.
 	{
 		while((nbytes = read(response.get_fd(), buffer, BUFFER_SIZE - 1)) != 0)
 		{
@@ -152,23 +214,27 @@ void Connection::send_response(void)
 			{
 				perror("Response fd");
 				response_buffer.clear();
-				return;
+				return (-1);
 			}
 			buffer[nbytes] = 0;
 			response_buffer.append(buffer, nbytes);
 		}
 	}
-	while(!sent_response && bytes_sent < response_buffer.length())
+	if (!sent_response && header_sent && bytes_sent < response_buffer.length())
 	{
 		nbytes = send(confd, response_buffer.c_str(), response_buffer.length(), MSG_DONTWAIT);
 		if (nbytes < 0)
 		{
 			perror("Send");
-			return;
+			return (-1);
 		}
 		bytes_sent += nbytes;
 	}
-	sent_response = true;
+	if (header_sent && bytes_sent == response_buffer.length())
+	{
+		sent_response = true;
+	}
+	return (0);*/
 }
 
 void Connection::check_body_length(void) const
@@ -202,12 +268,12 @@ bool Connection::request_read(void)
 {
 	if (!headers_read())
 	{
-		std::cout << "Still reading headers\n";
+		//std::cout << "Still reading headers\n";
 		return (false);
 	}
 	size_t content_length = std::atoll(get_header_value("content-length", request_buffer).c_str());
 	size_t body_length = request_buffer.length() - request_buffer.find("\r\n\r\n") - 4;
-	std::cout << "Content-length:" << content_length << "body_length:" << body_length << std::endl;
+	//std::cout << "Content-length:" << content_length << "body_length:" << body_length << std::endl;
 	if (content_length > body_length)
 	{
 		std::cout << "Not finished: " << request_buffer << std::endl;
