@@ -1,4 +1,5 @@
 #include "./Connection.hpp"
+#include <sys/socket.h>
 
 static std::string tolower_str(std::string input)
 {
@@ -51,6 +52,7 @@ Connection::~Connection()
 int Connection::accept_connection(int sockfd)
 {
 	int size = 1;
+
 	confd = accept(sockfd, NULL, NULL);
 	if (confd < 0)
 	{
@@ -59,6 +61,7 @@ int Connection::accept_connection(int sockfd)
 	else
 	{
 		setsockopt(confd, SOL_SOCKET, SOCK_NONBLOCK, &size, sizeof(int));
+		setsockopt(confd, SOL_SOCKET, SOCK_CLOEXEC, &size, sizeof(int));
 		//std::cout << "New connection accepted in port " << port << " fd: " << confd << std::endl;
 	}
 	return (confd);
@@ -117,7 +120,7 @@ void Connection::generate_response(void)
 		select_config();
 		check_body_length();
 		check_not_chunked();
-		response = handle_request(request_buffer, *config);
+		response = handle_request(request_buffer, *config, (struct in_addr){0});
 	}
 	catch (ReturnType &error_response)
 	{

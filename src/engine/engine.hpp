@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 11:48:31                                            */
-/*   Updated:  2024/06/11 18:20:24                                            */
+/*   Updated:  2024/06/12 15:28:26                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,20 +39,19 @@
 class ReturnType
 {
 	private:
-		int         out_fd;
-		int         in_fd; // only used if is_cgi() == true
+		int         fd;
 		std::string headers;
-		std::string body; // only used if is_cgi() == true
 		pid_t       child_pid; // value will be NO_CHILD if it was not a cgi
 
 	public:
 		ReturnType(int fd_param, std::string const &headers_param, pid_t child_pid_param);
+		ReturnType(ReturnType const &copy);
 		~ReturnType(void);
 
-		int                get_out_fd(void) const;
-		int                get_in_fd(void) const;
+		ReturnType const &operator=(ReturnType const &copy);
+
+		int                get_fd(void) const;
 		std::string const &get_headers(void) const;
-		std::string const &get_body(void) const;
 		pid_t              get_child_pid(void) const;
 		bool               is_cgi(void) const;
 		bool               has_unrecoverable_error(void) const;

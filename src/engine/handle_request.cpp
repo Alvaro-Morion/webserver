@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 14:41:43                                            */
-/*   Updated:  2024/06/11 18:00:47                                            */
+/*   Updated:  2024/06/12 15:53:30                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -334,19 +334,32 @@ static ReturnType handle_normal(std::string &resource, t_c_route const &route,
 	ssize_t           file_size;
 	std::string       target_file;
 	int               fd;
+	struct stat       statbuf;
 
 	target_file = get_new_location(resource, route);
-	if (access(target_file.c_str(), R_OK) != 0)
+	if (stat(target_file.c_str(), &statbuf) == -1)
 	{
-		if (errno == ENOENT)
+		if (errno == ENOENT || errno == ENOTDIR)
 		{
 			return (handle_error(404, config)); // not found
 		}
 		if (errno == EACCES)
 		{
-			return (handle_error(404, config)); // forbidden
+			return (handle_error(403, config)); // forbidden
 		}
 		return (handle_error(500, config)); // internal server error
+	}
+	if (S_ISDIR(statbuf.st_mode) != 0)
+	{
+		if (route.get_resource().get_direcory_listing() == false)
+		{
+			return (handle_error(403, config)); // forbidden
+		}
+		//return (handle_dir);
+	}
+	if (((statbuf.st_mode & S_IRUSR) == 0) && ((statbuf.st_mode & S_IRGRP) == 0))
+	{
+		return (handle_error(403, config)); // forbidden
 	}
 	fd = open(resource.c_str(), O_RDONLY);
 	if (fd == -1 || current_time.empty() == true)
@@ -354,9 +367,9 @@ static ReturnType handle_normal(std::string &resource, t_c_route const &route,
 		return (handle_error(500, config)); // internal server error
 	}
 	file_size = get_file_size(fd);
-	headers = std::string("HTTP/1.1 301 Moved Permanently\n\r") + "Server: webserv/0.1\n\r" + "Date: " + current_time +
-			  "\n\r" + "Content-Type: text/html\n\r" + "Content-Length: " + std::to_string(file_size) + "\n\r" +
-			  "Connection: close" + "\n\r\n\r";
+	headers = std::string("HTTP/1.1 301 Moved Permanently\r\n") + "Server: webserv/0.1\r\n" + "Date: " + current_time +
+			  "\r\n" + "Content-Type: text/html\r\n" + "Content-Length: " + std::to_string(file_size) + "\r\n" +
+			  "Connection: close" + "\r\n\r\n";
 	if (file_size == -1 || current_time.empty() == true)
 	{
 		return (ReturnType(-1, std::string(""), NO_CHILD));
