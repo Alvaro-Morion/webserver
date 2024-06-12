@@ -78,8 +78,7 @@ void Server::server_loop(void)
 			if (socket_map.find(sockfd) != socket_map.end())
 			{
 				ReturnType resp(-1, "", NO_CHILD);
-				Connection *connection = new Connection(epollfd, socket_map[sockfd]->getPort(),
-						global_config, resp);
+				Connection *connection = new Connection(socket_map[sockfd]->getPort(), global_config, resp);
 				if(connection->accept_connection(sockfd) < 0)
 					delete connection;
 				else
