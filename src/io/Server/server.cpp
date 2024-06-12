@@ -104,17 +104,17 @@ void Server::server_loop(void)
 				}
 				if (connection->request_read())
 				{
-					//std::cout << "Request read. Generating response...\n";
+					std::cout << "Request read. Generating response...\n";
 					connection->generate_response();
 				}
 			}
-			else if (connection_map[sockfd]->request_read() && (events[n].events & EPOLLOUT) == EPOLLOUT)
+			else if (connection_map[sockfd]->response_ready() && (events[n].events & EPOLLOUT) == EPOLLOUT)
 			{
 				//std::cout << "Writing\n";
 				//std::cout << connection_map[sockfd]->send_response() << "\t"<< connection_map[sockfd]->response_sent() << std::endl;
 				if (connection_map[sockfd]->send_response() < 0 || connection_map[sockfd]->response_sent())
 				{
-					std::cout << "Response sent, closing...\n";
+					//std::cout << "Response sent, closing...\n";
 					delete connection_map[sockfd];
 					connection_map.erase(sockfd);
 				}

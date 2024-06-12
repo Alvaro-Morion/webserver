@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                                            */
-/*   Filename: ReturnType.cpp                                                 */
+/*   ReturnType.cpp                                     :+:      :+:    :+:   */
 /*   Author:   Peru Riezu <riezumunozperu@gmail.com>                          */
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 11:48:15                                            */
-/*   Updated:  2024/06/09 17:32:58                                            */
+/*   Updated: 2024/06/12 18:48:13 by amorion-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,23 @@ ReturnType::ReturnType(int fd_param, std::string const &headers_param, pid_t chi
 {
 }
 
+ReturnType::ReturnType(ReturnType const &copy)
+{
+	fd = copy.get_fd();
+	headers = copy.get_headers();
+	child_pid = copy.get_child_pid();
+}
+
 ReturnType::~ReturnType()
 {
+}
+
+ReturnType const &ReturnType::operator=(ReturnType const &copy)
+{
+	fd = copy.get_fd();
+	headers = copy.get_headers();
+	child_pid = copy.get_child_pid();
+	return(*this);
 }
 
 int ReturnType::get_fd(void) const

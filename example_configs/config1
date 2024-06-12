@@ -20,7 +20,7 @@ server
 			path "/";
 			resource
 			{
-				root "/www";
+				root "/home/amorion-/www";
 				is_redirect false; # can be ommited false by default
 				methods GET, POST, DELETE; # can be ommited, GET by default, can be left empty for none allowed
 				directory_listing off; # can be ommited off by default

@@ -1,5 +1,4 @@
 #include "./Connection.hpp"
-#include <sys/socket.h>
 
 static std::string tolower_str(std::string input)
 {
@@ -39,7 +38,9 @@ Connection::Connection(uint16_t port, t_c_global_config *global_config, ReturnTy
 	port(port), response(resp), bytes_sent(0)
 {
 	this->global_config = global_config;
+	this->config = NULL;
 	memset(&address, 0, sizeof(address));
+	ready_to_send = false;
 	sent_response = false;
 	header_sent = false;
 }
@@ -117,18 +118,14 @@ void Connection::generate_response(void)
 	//std::cout << "Processing request..." << std::endl;
 	//std::cout << request_buffer << std::endl;
 	//std::cout << "This is the end of the request\n";
-	try
+	if (response.get_fd() == -1 && response.get_headers().empty() && response.get_child_pid() == NO_CHILD)
 	{
-		select_config();
-		check_body_length();
-		check_not_chunked();
+		// Change if condition with == operator when overloaded.
+		// If ReturnType != {-1, "", NO_CHILD} -> omit handle_request
+		// There is a response already (error from config and header checks).
 		response = handle_request(request_buffer, *config, ((struct sockaddr_in *)(&address))->sin_addr);
 	}
-	catch (ReturnType &error_response)
-	{
-		response = error_response;
-	}
-	std::cout << "error response generated\n";
+	ready_to_send = true;
 }
 
 int Connection::send_response(void)
@@ -187,7 +184,7 @@ int Connection::send_response(void)
                         	return (-1);
                 	}
                 	bytes_sent += nbytes;
-		}
+	}
 		if (bytes_sent == response_buffer.length())
 		{
 			//All has been sent.
@@ -234,9 +231,27 @@ bool Connection::request_read(void)
 	size_t content_length = std::atoll(get_header_value("content-length", request_buffer).c_str());
 	size_t body_length = request_buffer.length() - request_buffer.find("\r\n\r\n") - 4;
 	//std::cout << "Content-length:" << content_length << "body_length:" << body_length << std::endl;
+	if (!config) 
+	{
+		// The headers are read -> choose config and check headers.
+		try
+		{
+			select_config();
+			check_body_length();
+			check_not_chunked();
+		}
+		catch (ReturnType &error_response)
+		{	
+			//Error in checks or config -> error response -> don't read body.
+			std::cout << "Error response set\n";
+			response = error_response;
+			return(true);
+		}
+	}
+	//std::cout << "Field: " << content_length << "\t body: " << body_length << std::endl;
 	if (content_length > body_length)
 	{
-		std::cout << "Not finished: " << request_buffer << std::endl;
+		//std::cout << "Not finished: " << request_buffer << std::endl;
 		return(false);
 	}
 	else if (content_length < body_length)
@@ -258,6 +273,11 @@ bool Connection::response_sent(void) const
 int Connection::getConFd(void) const
 {
 	return (confd);
+}
+
+bool Connection::response_ready(void) const
+{
+	return (ready_to_send);
 }
 
 struct sockaddr const &Connection::getAddress(void) const

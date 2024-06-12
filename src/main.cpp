@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                                            */
-/*   Filename: main.cpp                                                       */
+/*   main.cpp                                           :+:      :+:    :+:   */
 /*   Author:   Peru Riezu <riezumunozperu@gmail.com>                          */
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:18:55                                            */
-/*   Updated:  2024/06/09 17:40:39                                            */
+/*   Updated: 2024/06/12 18:33:20 by amorion-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 	signal(SIGPIPE, SIG_IGN);
 	std::cout << config->to_string();
 	//	pause();
-	//	Server server(config);
+		Server server(config);
 	//	Server server(&config); //For test
 	return (EXIT_FAILURE);
 }

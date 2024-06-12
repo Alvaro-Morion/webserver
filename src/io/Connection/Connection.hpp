@@ -19,6 +19,7 @@ class Connection
 		std::string				response_buffer;
 		ReturnType				response;
 		size_t					bytes_sent;
+		bool					ready_to_send;
 		bool					header_sent;
 		bool					sent_response;
 		t_c_global_config const 		*global_config;
@@ -35,6 +36,7 @@ class Connection
 		void					check_body_length(void) const;
 		void					check_not_chunked(void) const;
 		bool					headers_read(void) const;
+		bool					response_ready(void) const;
 		bool					request_read(void);
 		bool					response_sent(void) const;
 		int					getConFd(void) const;
