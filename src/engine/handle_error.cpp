@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 13:33:33                                            */
-/*   Updated:  2024/06/09 12:46:23                                            */
+/*   Updated:  2024/06/12 17:42:35                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-static ReturnType handle_error_internal_internal(std::string const &error_file, std::string const &status_line)
+ReturnType handle_error_internal_internal(std::string const &error_file, std::string const &status_line)
 {
 	int const         fd = open(error_file.c_str(), O_RDONLY);
 	ssize_t const     file_size = get_file_size(fd);
