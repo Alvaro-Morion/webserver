@@ -53,6 +53,15 @@ ReturnType const &ReturnType::operator=(ReturnType const &copy)
 	return(*this);
 }
 
+bool ReturnType::operator==(ReturnType const &rhs) const
+{
+	if (fd == rhs.get_fd() && headers == rhs.get_headers() && child_pid == rhs.get_child_pid())
+	{
+		return (true);
+	}
+	return (false);
+}
+
 int ReturnType::get_fd(void) const
 {
 	return (fd);

@@ -49,6 +49,7 @@ class ReturnType
 		~ReturnType(void);
 
 		ReturnType const &operator=(ReturnType const &copy);
+		bool			  operator==(ReturnType const &rhs) const;
 
 		int                get_fd(void) const;
 		std::string const &get_headers(void) const;

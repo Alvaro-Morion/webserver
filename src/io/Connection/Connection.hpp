@@ -6,8 +6,9 @@
 #include <cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/wait.h>
 
-#define BUFFER_SIZE 100000
+#define BUFFER_SIZE 10000
 
 class Connection
 {

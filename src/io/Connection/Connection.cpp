@@ -65,7 +65,7 @@ int Connection::accept_connection(int sockfd)
 	{
 		setsockopt(confd, SOL_SOCKET, SOCK_NONBLOCK, &size, sizeof(int));
 		setsockopt(confd, SOL_SOCKET, SOCK_CLOEXEC, &size, sizeof(int));
-		//std::cout << "New connection accepted in port " << port << " fd: " << confd << std::endl;
+		std::cout << "New connection accepted in port " << port << " fd: " << confd << std::endl;
 	}
 	return (confd);
 }
@@ -115,14 +115,9 @@ void Connection::select_config(void)
 
 void Connection::generate_response(void)
 {
-	//std::cout << "Processing request..." << std::endl;
-	//std::cout << request_buffer << std::endl;
-	//std::cout << "This is the end of the request\n";
-	if (response.get_fd() == -1 && response.get_headers().empty() && response.get_child_pid() == NO_CHILD)
+	std::cout << "request:" << request_buffer << std::endl;
+	if (response == ReturnType(-1, "", NO_CHILD))
 	{
-		// Change if condition with == operator when overloaded.
-		// If ReturnType != {-1, "", NO_CHILD} -> omit handle_request
-		// There is a response already (error from config and header checks).
 		response = handle_request(request_buffer, *config, ((struct sockaddr_in *)(&address))->sin_addr);
 	}
 	ready_to_send = true;
@@ -134,7 +129,7 @@ int Connection::send_response(void)
 	char	buffer[BUFFER_SIZE];
 	if (response.is_cgi())
 	{
-		//CGI
+		waitpid(response.get_child_pid(), NULL, 0);
 	}
 	if (!header_sent)
 	{
@@ -151,7 +146,7 @@ int Connection::send_response(void)
 		}
 		if (bytes_sent == response.get_headers().length())
 		{
-			//Headers finished -> prepare to send body
+			//Headers finished -> prepare to send body.
 			bytes_sent = 0;
 			header_sent = true;
 			response_buffer.clear();

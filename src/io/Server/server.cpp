@@ -33,8 +33,8 @@ void Server::config_epoll(std::set<uint16_t> ports)
 	for (std::set<uint16_t>::iterator iter = ports.begin(); iter != ports.end(); iter++)
 	{
 		MySocket *socket = new MySocket(*iter);
-		//std::cout << "Socket for port: " << *iter << " created with fd " << socket->getSockfd() << std::endl;
-		manage_epoll(socket->getSockfd(), EPOLL_CTL_ADD, EPOLLIN | EPOLLOUT);
+		std::cout << "Socket for port: " << ntohs(*iter) << " created with fd " << socket->getSockfd() << std::endl;
+		manage_epoll(socket->getSockfd(), EPOLL_CTL_ADD, EPOLLIN);
 		socket_map[socket->getSockfd()] = socket;
 	}
 }
@@ -75,7 +75,13 @@ void Server::server_loop(void)
 			sockfd = events[n].data.fd;
 			//std::cout << sockfd << std::endl;
 			//std::cout << "event " << events[n].events << " in: " << sockfd << std::endl;
-			if (socket_map.find(sockfd) != socket_map.end())
+			if ((events[n].events & EPOLLERR) == EPOLLERR || (events[n].events & EPOLLHUP) == EPOLLHUP ||
+					(events[n].events & EPOLLRDHUP) == EPOLLRDHUP)
+			{
+				delete connection_map[sockfd];
+				connection_map.erase(sockfd);
+			}
+			else if (socket_map.find(sockfd) != socket_map.end())
 			{
 				ReturnType resp(-1, "", NO_CHILD);
 				Connection *connection = new Connection(socket_map[sockfd]->getPort(), global_config, resp);
@@ -87,12 +93,6 @@ void Server::server_loop(void)
 					manage_epoll(connection->getConFd(), EPOLL_CTL_ADD, EPOLLIN | EPOLLOUT | EPOLLHUP | EPOLLRDHUP);
 				}
 			}
-			else if ((events[n].events & EPOLLERR) == EPOLLERR || (events[n].events & EPOLLHUP) == EPOLLHUP ||
-					(events[n].events & EPOLLRDHUP) == EPOLLRDHUP)
-			{
-				delete connection_map[sockfd];
-				connection_map.erase(sockfd);
-			}	
 			else if ((events[n].events & EPOLLIN) == EPOLLIN)
 			{
 				Connection *connection = connection_map[sockfd];
@@ -104,8 +104,11 @@ void Server::server_loop(void)
 				}
 				if (connection->request_read())
 				{
-					std::cout << "Request read. Generating response...\n";
+					std::cout << "Request read. Generating response for ";
 					connection->generate_response();
+					//It'd be much more efficient (and illegal I think) to add EPOLLOUT at this point.
+					//Now it constantly returns EPOLLOUT for the clients since they can receive info
+					//all the time.
 				}
 			}
 			else if (connection_map[sockfd]->response_ready() && (events[n].events & EPOLLOUT) == EPOLLOUT)
@@ -114,7 +117,7 @@ void Server::server_loop(void)
 				//std::cout << connection_map[sockfd]->send_response() << "\t"<< connection_map[sockfd]->response_sent() << std::endl;
 				if (connection_map[sockfd]->send_response() < 0 || connection_map[sockfd]->response_sent())
 				{
-					//std::cout << "Response sent, closing...\n";
+					std::cout << "Response sent, closing...\n";
 					delete connection_map[sockfd];
 					connection_map.erase(sockfd);
 				}
