@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 14:41:43                                            */
-/*   Updated:  2024/06/12 16:51:31                                            */
+/*   Updated:  2024/06/13 19:35:18                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,8 +192,7 @@ static ReturnType handle_request_internal(std::string const &request, t_c_indivi
 		// std::string SERVER_PROTOCOL = "HTTP/1.1"
 		// std::string SERVER_SOFTWARE = "webserv/0.1"
 		// int memfd = //create memfd and populate it whit the contents of body
-		//
-		// return (handle_cgi(resource, resource_rules.first));
+		return (handle_cgi(resource, resource_rules.first));
 	}
 	return (handle_normal(resource, resource_rules.first, config));
 }
