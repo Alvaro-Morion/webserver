@@ -6,14 +6,16 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/13 19:35:27                                            */
-/*   Updated:  2024/06/13 21:22:56                                            */
+/*   Updated:  2024/06/14 17:25:20                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <netinet/in.h>
 #include <string>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -44,49 +46,36 @@
 
 static std::string get_query_string(std::string const &resource)
 {
+	const size_t pos = resource.find(-'?');
 
+	if (pos == std::string::npos)
+	{
+		return ("");
+	}
+	return (resource.substr(pos + 1, resource.size() - (pos + 1)));
 }
 
 static std::string remove_filename(std::string const &target_file)
 {
+	const size_t pos = target_file.find_last_of('/');
 
+	return (target_file.substr(0, pos + 1));
 }
 
 static std::string get_filename(std::string const &target_file)
 {
+	const size_t pos = target_file.find_last_of('/');
 
+	return (target_file.substr(pos, target_file.size() - pos));
 }
 
-static ReturnType handle_cgi_internal(std::string const &target_file, std::string const &resource, std::string const &body, std::string const &method, t_c_individual_server_config const &config,
-		struct in_addr ip)
+static ReturnType handle_cgi_internal_internal(std::string const &target_file, std::string const &body, t_c_individual_server_config const &config,
+		char const **new_env, char const **new_argv )
 {
-	char dst[16];
 	int const   memfd = memfd_create("", 0);
 	int         pipefds[2];
 	pid_t       c_pid;
-	std::string const content_length_var = std::string("CONTENT_LENGTH=") + std::to_string(body.size());
-	std::string const path_translated_var = std::string("PATH_TRANSLATED=") + remove_filename(target_file);
-	std::string const query_string_var = std::string("QUERY_STRING=") + get_query_string(resource);
-	std::string const remote_addr_var = std::string("REMOTE_ADDR=") + inet_ntop(AF_INET, &ip, dst, sizeof(dst));
-	std::string const method_var = std::string("REQUEST_METHOD=") + method;
-	std::string const script_name_var = std::string("SCRIPT_NAME=") + get_filename(target_file);
-	std::string const server_name_var = std::string("SERVER_NAME=") + *config.get_host_name();
-	std::string const server_port_var = std::string("SERVER_PORT=") +  std::to_string(config.get_port());
-	char const *new_argv[] = {target_file.c_str(), nullptr};
-	char const *new_env[] = {
-	content_length_var.c_str(),
-	"GATEWAY_INTERFACE=1.1",
-	"PATH_INFO=/",
-	path_translated_var.c_str(),
-	query_string_var.c_str(),
-	remote_addr_var.c_str(),
-	method_var.c_str(),
-	script_name_var.c_str(),
-	server_name_var.c_str(),
-	server_port_var.c_str(),
-	"SERVER_PROTOCOL=HTTP/1.1",
-	"SERVER_SOFTWARE=webserv/0.1",
-	nullptr};
+
 
 	if (memfd == -1)
 	{
@@ -133,10 +122,41 @@ static ReturnType handle_cgi_internal(std::string const &target_file, std::strin
 	return (ReturnType(pipefds[READ_END], "", c_pid));
 }
 
-ReturnType handle_cgi(std::string &resource, const t_c_route &route,
-								t_c_individual_server_config const &config)
+static ReturnType handle_cgi_internal(std::string const &target_file, std::string const &resource, std::string const &body, std::string const &method, t_c_individual_server_config const &config,
+		struct in_addr ip)
 {
-	ssize_t           file_size;
+	char dst[16];
+	std::string const content_length_var = std::string("CONTENT_LENGTH=") + std::to_string(body.size());
+	std::string const path_translated_var = std::string("PATH_TRANSLATED=") + remove_filename(target_file);
+	std::string const query_string_var = std::string("QUERY_STRING=") + get_query_string(resource);
+	std::string const remote_addr_var = std::string("REMOTE_ADDR=") + inet_ntop(AF_INET, &ip, dst, sizeof(dst));
+	std::string const method_var = std::string("REQUEST_METHOD=") + method;
+	std::string const script_name_var = std::string("SCRIPT_NAME=") + get_filename(target_file);
+	std::string const server_name_var = std::string("SERVER_NAME=") + *config.get_host_name();
+	std::string const server_port_var = std::string("SERVER_PORT=") +  std::to_string(config.get_port());
+	char const *new_argv[] = {target_file.c_str(), nullptr};
+	char const *new_env[] = {
+	content_length_var.c_str(),
+	"GATEWAY_INTERFACE=1.1",
+	"PATH_INFO=/",
+	path_translated_var.c_str(),
+	query_string_var.c_str(),
+	remote_addr_var.c_str(),
+	method_var.c_str(),
+	script_name_var.c_str(),
+	server_name_var.c_str(),
+	server_port_var.c_str(),
+	"SERVER_PROTOCOL=HTTP/1.1",
+	"SERVER_SOFTWARE=webserv/0.1",
+	nullptr};
+
+	return (handle_cgi_internal_internal(target_file, body, config, new_env, new_argv));
+}
+
+
+ReturnType handle_cgi(std::string &resource, const t_c_route &route,
+								t_c_individual_server_config const &config, std::string const &body, std::string const &method, struct in_addr ip)
+{
 	std::string       target_file;
 	struct stat       statbuf;
 
@@ -161,7 +181,7 @@ ReturnType handle_cgi(std::string &resource, const t_c_route &route,
 	{
 		return (handle_error(403, config)); // forbidden
 	}
-	return (handle_cgi_internal(target_file, , ));
+	return (handle_cgi_internal(target_file, resource, body, method, config, ip));
 }
 
 #pragma GCC diagnostic pop

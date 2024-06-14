@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/03 08:33:11                                            */
-/*   Updated:  2024/06/08 11:49:59                                            */
+/*   Updated:  2024/06/14 17:35:59                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,11 @@ static t_c_resource add_defaults_and_construct_resource(t_c_resource_constructor
 	{
 		throw(std::invalid_argument(std::string(config_file) + ": error: in resource defined at: " +
 									position.to_string() + ": is_cgi and is_redirect set to true sinmultaniusly\n"));
+	}
+	if (params.directory_listing == true && params.file_is_a_directory_page_position.is_valid() == true)
+	{
+		throw(std::invalid_argument(std::string(config_file) + ": error: in resource defined at: " +
+									position.to_string() + ": when is_redirect is set to true file_is_a_directory_page is never used\n"));
 	}
 	if (params.root_position.is_valid() == false)
 	{

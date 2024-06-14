@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 14:41:43                                            */
-/*   Updated:  2024/06/13 19:35:18                                            */
+/*   Updated:  2024/06/14 17:28:27                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,20 +179,7 @@ static ReturnType handle_request_internal(std::string const &request, t_c_indivi
 	}
 	if (resource_rules.first.get_resource().get_is_cgi())
 	{
-		// std::string CONTENT_LENGTH = std::to_string(body.size());
-		// std::string GATEWAY_INTERFACE = "1.1";
-		// std::string PATH_INFO = "/";
-		// std::string PATH_TRANSLATED = remove_filename(get_new_location(...));
-		// std::string QUERY_STRING = get_query_string(...);
-		// std::string REMOTE_ADDR = ip_to_string(ip) there is a standar function for this, use it instead
-		// std::string REQUEST_METHOD = method
-		// std::string SCRIPT_NAME = get_filename(get_new_location(...));
-		// std::string SERVER_NAME = *config.host_name
-		// std::string SERVER_PORT = config.port
-		// std::string SERVER_PROTOCOL = "HTTP/1.1"
-		// std::string SERVER_SOFTWARE = "webserv/0.1"
-		// int memfd = //create memfd and populate it whit the contents of body
-		return (handle_cgi(resource, resource_rules.first));
+		return (handle_cgi(resource, resource_rules.first, config, body, method, ip));
 	}
 	return (handle_normal(resource, resource_rules.first, config));
 }

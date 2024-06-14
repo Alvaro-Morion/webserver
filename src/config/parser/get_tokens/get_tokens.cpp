@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/27 07:58:56                                            */
-/*   Updated:  2024/06/06 15:54:45                                            */
+/*   Updated:  2024/06/14 17:46:31                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,8 @@ static void remove_comments_and_normalize(std::vector<t_c_token> &tokens, char c
 	size_t i;
 	size_t j;
 
-	for (i = 0; i < tokens.size(); i++)
+	i = 0;
+	while (i < tokens.size())
 	{
 		if (tokens[i].get_token()[0] == '#')
 		{
@@ -118,6 +119,7 @@ static void remove_comments_and_normalize(std::vector<t_c_token> &tokens, char c
 				j++;
 			}
 		}
+		i++;
 	}
 }
 

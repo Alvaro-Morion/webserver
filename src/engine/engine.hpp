@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 11:48:31                                            */
-/*   Updated:  2024/06/13 19:38:25                                            */
+/*   Updated:  2024/06/14 17:27:41                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,9 @@ void        normalize_resource(std::string resource);
 std::string get_new_location(std::string resource, t_c_route const &route);
 void        remove_query(std::string &uri);
 ReturnType  handle_redirect(std::string const &resource, t_c_route const &route);
-ReturnType  handle_cgi(std::string &resource, const t_c_route &route,
-								t_c_individual_server_config const &config);
 ReturnType  handle_dir(std::string &resource, t_c_route const &route, t_c_individual_server_config const &config, struct stat statbuf);
 ReturnType  handle_error_internal_internal(std::string const &error_file, std::string const &status_line);
+ReturnType handle_cgi(std::string &resource, const t_c_route &route,
+								t_c_individual_server_config const &config, std::string const &body, std::string const &method, struct in_addr ip);
 
 #pragma GCC diagnostic pop
