@@ -39,10 +39,8 @@ Connection::Connection(uint16_t port, t_c_global_config *global_config, ReturnTy
 {
 	this->global_config = global_config;
 	this->config = NULL;
-	memset(&address, 0, sizeof(address));
 	ready_to_send = false;
 	sent_response = false;
-	header_sent = false;
 }
 
 Connection::~Connection()
@@ -54,9 +52,9 @@ Connection::~Connection()
 int Connection::accept_connection(int sockfd)
 {
 	int size = 1;
-	socklen_t addrlen;
+	socklen_t addrlen = sizeof(address);
 
-	confd = accept(sockfd, &address, &addrlen);
+	confd = accept(sockfd, (struct sockaddr *)&address, &addrlen);
 	if (confd < 0)
 	{
 		perror("Accept connection");
@@ -113,78 +111,79 @@ void Connection::select_config(void)
 	}
 }
 
-void Connection::generate_response(void)
+int Connection::generate_response(void)
 {
 	std::cout << "request:" << request_buffer << std::endl;
 	if (response == ReturnType(-1, "", NO_CHILD))
 	{
-		response = handle_request(request_buffer, *config, ((struct sockaddr_in *)(&address))->sin_addr);
+		response = handle_request(request_buffer, *config, ((struct sockaddr_in *)&address)->sin_addr);
 	}
-	ready_to_send = true;
+	ready_to_send = response.get_fd() < 0;
+	response_buffer = response.get_headers();
+	if (!ready_to_send && !response.is_cgi())
+	{
+		return(build_response(response.get_fd()));
+	}
+	return(response.get_fd());
+}
+
+int Connection::build_response(void) //For CGI (goes through epoll)
+{
+	char buffer[BUFFER_SIZE];
+	ssize_t nbytes;
+	if ((nbytes = read(response.get_fd(), buffer, BUFFER_SIZE)) > 0)
+	{
+		buffer[nbytes] = 0;
+		response_buffer.append(buffer);
+	}
+	else if (nbytes == 0)
+	{
+		close(response.get_fd());
+		ready_to_send = true;
+	}
+	else
+	{
+		close(response.get_fd()); 
+		perror("Response file");
+	}
+	return(nbytes);
+}
+
+int Connection::build_response(int fd)
+{
+	char buffer[BUFFER_SIZE];
+	ssize_t nbytes;
+	while((nbytes = read(fd, buffer, BUFFER_SIZE)) > 0)
+	{
+		buffer[nbytes] = 0;
+		response_buffer.append(buffer);
+	}
+	close(fd);
+	if (nbytes == 0)
+	{
+		
+		ready_to_send = true;
+	}
+	else
+	{
+		perror("Response file");
+	}
+	return(nbytes);
 }
 
 int Connection::send_response(void)
 {
 	ssize_t	nbytes;
-	char	buffer[BUFFER_SIZE];
-	if (response.is_cgi())
+	nbytes = send(confd, response_buffer.c_str(), response_buffer.length(), MSG_DONTWAIT);
+	if (nbytes < 0)
 	{
-		waitpid(response.get_child_pid(), NULL, 0);
+		perror("Send");
+		return(-1);
 	}
-	if (!header_sent)
+	bytes_sent += nbytes;
+	if (bytes_sent == response_buffer.length())
 	{
-		if (bytes_sent < response.get_headers().length())
-		{
-			// Send headers check errors.
-			nbytes = send(confd, response.get_headers().c_str(), response.get_headers().length(), MSG_DONTWAIT);
-                	if (nbytes < 0)
-                	{	
-                        	perror("Send");
-                        	return (-1);
-                	}
-                	bytes_sent += nbytes;
-		}
-		if (bytes_sent == response.get_headers().length())
-		{
-			//Headers finished -> prepare to send body.
-			bytes_sent = 0;
-			header_sent = true;
-			response_buffer.clear();
-		}
-	}
-	else if(!sent_response)
-	{
-		if (response_buffer.empty() && response.get_fd() > 0)
-		{
-			//Read response fd to buffer.
-			while((nbytes = read(response.get_fd(), buffer, BUFFER_SIZE - 1)) != 0)
-                	{
-                        	if (nbytes < 0)
-                        	{		
-                                	perror("Response fd");
-                                	response_buffer.clear();
-                                	return (-1);
-                        	}
-                        	buffer[nbytes] = 0;
-                        	response_buffer.append(buffer, nbytes);
-                	}
-		}
-		if (bytes_sent < response_buffer.length())
-		{
-			//Send buffer to socket.
-			nbytes = send(confd, response_buffer.c_str(), response_buffer.length(), MSG_DONTWAIT);
-                	if (nbytes < 0)
-                	{
-                        	perror("Send");
-                        	return (-1);
-                	}
-                	bytes_sent += nbytes;
-	}
-		if (bytes_sent == response_buffer.length())
-		{
-			//All has been sent.
-			sent_response = true;
-		}
+		sent_response = true;
 	}
 	return(0);
 }
@@ -275,7 +274,7 @@ bool Connection::response_ready(void) const
 	return (ready_to_send);
 }
 
-struct sockaddr const &Connection::getAddress(void) const
+struct sockaddr_in const &Connection::getAddress(void) const
 {
 	return (address);
 }
@@ -284,6 +283,12 @@ std::string Connection::getRequestBuffer(void) const
 {
 	return (request_buffer);
 }
+
+std::string Connection::getResponseBuffer(void) const
+{
+	return (response_buffer);
+}
+
 
 ReturnType const &Connection::getResponse(void) const
 {

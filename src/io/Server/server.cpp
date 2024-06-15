@@ -93,22 +93,44 @@ void Server::server_loop(void)
 					manage_epoll(connection->getConFd(), EPOLL_CTL_ADD, EPOLLIN | EPOLLOUT | EPOLLHUP | EPOLLRDHUP);
 				}
 			}
+			else if ((connection_map.find(sockfd) == connection_map.end()) && (events[n].events & EPOLLIN) == EPOLLIN) 
+			{
+				//CGI pipe is ready.
+				int status = connection_response_map[sockfd]->build_response();
+				if (status <= 0)
+				{
+					if (status < 0)
+					{
+						//Error -> cierre de conexión
+						connection_map.erase(connection_response_map[sockfd]->getConFd());
+						delete connection_response_map[sockfd];	
+					}
+					connection_response_map.erase(sockfd); //Respuesta construida.
+				}
+			}
 			else if ((events[n].events & EPOLLIN) == EPOLLIN)
 			{
 				Connection *connection = connection_map[sockfd];
 				if (connection->read_request() < 0)
 				{
-					//std::cout << "Error while reading. Clossing...\n";
+					//std::cout << "Error while reading\n";
 					delete connection;
 					connection_map.erase(sockfd);
 				}
 				if (connection->request_read())
 				{
 					std::cout << "Request read. Generating response for ";
-					connection->generate_response();
-					//It'd be much more efficient (and illegal I think) to add EPOLLOUT at this point.
-					//Now it constantly returns EPOLLOUT for the clients since they can receive info
-					//all the time.
+					int fd = connection->generate_response();
+					if (fd > 0 && connection->getResponse().is_cgi())
+					{
+						manage_epoll(fd, EPOLL_CTL_ADD, EPOLLIN);
+						connection_response_map[fd] = connection;
+					}
+					else if (fd < 0 && !connection->response_ready())
+					{
+						delete connection;
+						connection_map.erase(sockfd);
+					}
 				}
 			}
 			else if (connection_map[sockfd]->response_ready() && (events[n].events & EPOLLOUT) == EPOLLOUT)
@@ -117,7 +139,8 @@ void Server::server_loop(void)
 				//std::cout << connection_map[sockfd]->send_response() << "\t"<< connection_map[sockfd]->response_sent() << std::endl;
 				if (connection_map[sockfd]->send_response() < 0 || connection_map[sockfd]->response_sent())
 				{
-					std::cout << "Response sent, closing...\n";
+					std::cout << "Response sent:\n";
+					std::cout << connection_map[sockfd]->getResponseBuffer() << std::endl;
 					delete connection_map[sockfd];
 					connection_map.erase(sockfd);
 				}

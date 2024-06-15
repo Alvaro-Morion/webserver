@@ -10,7 +10,7 @@ MySocket::MySocket(uint16_t port)
 	this->port = port;
 	//std::cout << "Puerto" << port << std::endl;
 	bind_socket(port);
-	test_connection(listen(this->sockfd, 1000), "Listen"); // no sé que número poner aquí.
+	test_connection(listen(this->sockfd, BACKLOG), "Listen"); // no sé que número poner aquí.
 	//std::cout << "Socket listening\n";
 }
 

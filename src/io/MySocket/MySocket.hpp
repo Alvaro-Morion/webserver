@@ -12,6 +12,8 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#define BACKLOG 1000
+
 class MySocket
 {
 	private:
