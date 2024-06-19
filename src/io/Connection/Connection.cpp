@@ -127,24 +127,30 @@ int Connection::generate_response(void)
 	return(response.get_fd());
 }
 
+void Connection::reap_cgi(void)
+{
+	waitpid(response.get_child_pid(), NULL, 0);
+	close(response.get_fd());
+}
+
 int Connection::build_response(void) //For CGI (goes through epoll)
 {
 	char buffer[BUFFER_SIZE];
 	ssize_t nbytes;
+
 	if ((nbytes = read(response.get_fd(), buffer, BUFFER_SIZE)) > 0)
 	{
 		buffer[nbytes] = 0;
 		response_buffer.append(buffer);
 	}
-	else if (nbytes == 0)
-	{
-		close(response.get_fd());
-		ready_to_send = true;
-	}
 	else
 	{
-		close(response.get_fd()); 
-		perror("Response file");
+		if (nbytes < 0)
+		{
+			perror("Response file");
+		}
+		reap_cgi();
+		ready_to_send = !nbytes;
 	}
 	return(nbytes);
 }

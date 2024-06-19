@@ -34,6 +34,7 @@ class Connection
 		int					generate_response(void);
 		int					build_response(void); // For CGI (designed to pass though epoll)
 		int					build_response(int fd); // For regular files.
+		void					reap_cgi(void);
 		int					send_response(void);
 		void					check_body_length(void) const;
 		void					check_not_chunked(void) const;
