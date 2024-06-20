@@ -38,5 +38,6 @@ class Server
 		int                                 getEpoll(void);
 		std::map<int, MySocket *>          &getSocket_Map(void);
 		std::map<int, Connection *>        &getConnectionMap(void);
-		void				    delete_connection(int fd);
+		void				    			delete_connection(int fd);
+		void								child_reaper(void);
 };

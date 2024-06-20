@@ -4,10 +4,9 @@ MySocket::MySocket(uint16_t port)
 {
 	int optval = 1;
 
-	this->sockfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_TCP);
+	this->sockfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
 	test_connection(this->sockfd, "Socket");
 	test_connection(setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)), "Sockoptions");
-	test_connection(setsockopt(sockfd, SOL_SOCKET, SOCK_CLOEXEC, &optval, sizeof(optval)), "Sockoptions");
 	this->port = port;
 	//std::cout << "Puerto" << port << std::endl;
 	bind_socket(port);

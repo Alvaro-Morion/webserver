@@ -119,6 +119,7 @@ int Connection::generate_response(void)
 		response = handle_request(request_buffer, *config, ((struct sockaddr_in *)&address)->sin_addr);
 	}
 	ready_to_send = response.get_fd() < 0;
+	reaped_child = !response.is_cgi();
 	response_buffer = response.get_headers();
 	if (!ready_to_send && !response.is_cgi())
 	{
@@ -129,8 +130,7 @@ int Connection::generate_response(void)
 
 void Connection::reap_cgi(void)
 {
-	waitpid(response.get_child_pid(), NULL, 0);
-	close(response.get_fd());
+	reaped_child = (waitpid(response.get_child_pid(), NULL, WNOHANG) == response.get_child_pid());
 }
 
 int Connection::build_response(void) //For CGI (goes through epoll)
@@ -149,7 +149,7 @@ int Connection::build_response(void) //For CGI (goes through epoll)
 		{
 			perror("Response file");
 		}
-		reap_cgi();
+		close(response.get_fd());
 		ready_to_send = !nbytes;
 	}
 	return(nbytes);
@@ -268,6 +268,11 @@ bool Connection::request_read(void)
 bool Connection::response_sent(void) const
 {
 	return (sent_response);
+}
+
+bool Connection::is_reaped(void) const
+{
+	return(reaped_child);
 }
 
 int Connection::getConFd(void) const
