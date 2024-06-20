@@ -136,8 +136,6 @@ void Server::server_loop(void)
 			}
 			else if (connection_map[sockfd]->response_ready() && (events[n].events & EPOLLOUT) == EPOLLOUT)
 			{
-				//std::cout << "Writing\n";
-				//std::cout << connection_map[sockfd]->send_response() << "\t"<< connection_map[sockfd]->response_sent() << std::endl;
 				if (connection_map[sockfd]->send_response() < 0 || connection_map[sockfd]->response_sent())
 				{
 					std::cout << "Response sent:\n";

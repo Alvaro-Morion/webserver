@@ -45,7 +45,7 @@ Connection::Connection(uint16_t port, t_c_global_config *global_config, ReturnTy
 
 Connection::~Connection()
 {
-	//std::cout << "Connection in fd " << confd << "closed\n";
+	std::cout << "Connection in fd " << confd << "closed\n";
 	close(confd);
 }
 
