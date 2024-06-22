@@ -137,7 +137,8 @@ static bool method_allowed(std::string const &method, t_c_resource const &resour
 	return (true);
 }
 
-static ReturnType handle_request_internal(std::string const &request, t_c_individual_server_config const &config, struct in_addr ip)
+static ReturnType handle_request_internal(std::string const &request, t_c_individual_server_config const &config,
+										  struct in_addr ip)
 {
 	size_t                     i;
 	std::string                method;

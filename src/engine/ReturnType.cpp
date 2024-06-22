@@ -50,7 +50,7 @@ ReturnType const &ReturnType::operator=(ReturnType const &copy)
 	fd = copy.get_fd();
 	headers = copy.get_headers();
 	child_pid = copy.get_child_pid();
-	return(*this);
+	return (*this);
 }
 
 bool ReturnType::operator==(ReturnType const &rhs) const
@@ -69,7 +69,7 @@ int ReturnType::get_fd(void) const
 
 std::string const &ReturnType::get_headers(void) const
 {
-	return(headers);
+	return (headers);
 }
 
 pid_t ReturnType::get_child_pid(void) const

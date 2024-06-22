@@ -52,6 +52,6 @@ class t_c_route
 		std::string         to_string(void) const;
 };
 
-bool operator<(std::string const &comparand, t_c_route const &comparator);
+bool                   operator<(std::string const &comparand, t_c_route const &comparator);
 
 #pragma GCC diagnostic pop

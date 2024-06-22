@@ -11,12 +11,12 @@
 /* ************************************************************************** */
 
 #include "engine.hpp"
-#include <string>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-#include <fcntl.h>
 #include <dirent.h>
+#include <fcntl.h>
+#include <string>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <vector>
 
@@ -43,10 +43,10 @@ static std::string get_relative_directory_name(std::string const &absolute, std:
 
 static std::vector<std::string> get_directory_entries(DIR *dirp)
 {
-	struct dirent            *ent;
+	struct dirent           *ent;
 	std::vector<std::string> directory_entries;
 
-	ent = readdir(dirp); // NOLINT, note: I did not find a better syscall for this 
+	ent = readdir(dirp); // NOLINT, note: I did not find a better syscall for this
 	while (ent != nullptr)
 	{
 		directory_entries.push_back(ent->d_name);
@@ -62,14 +62,15 @@ static std::string compile_body(std::string const &dir_name, std::vector<std::st
 	res += "<html>\r\n<head><title>" + dir_name + "</title></head>\r\n<body>\r\n<h1>" + dir_name + "</h1><hr><pre>\r\n";
 	for (std::string const &entry : directory_entries)
 	{
-		res += "<a href=\""+ entry + "\">";
+		res += "<a href=\"" + entry + "\">";
 		res += entry + "</a>\r\n";
 	}
 	res += "</pre><hr></body>\r\n</html>\r\n";
 	return (res);
 }
 
-static ReturnType handle_dir_internal(std::string const &headers, std::string const &body, t_c_individual_server_config const &config)
+static ReturnType handle_dir_internal(std::string const &headers, std::string const &body,
+									  t_c_individual_server_config const &config)
 {
 	int const memfd = memfd_create("", 0);
 
@@ -82,8 +83,10 @@ static ReturnType handle_dir_internal(std::string const &headers, std::string co
 		close(memfd);
 		return (handle_error(500, config));
 	}
-	if (write(memfd, body.c_str(), body.size()) != static_cast<ssize_t>(body.size())) // due to the trunc the previus trunc the condition will only fail if the syscall
-																					  // is interrupted by a signal or enocounters a error (non should happen)
+	if (write(memfd, body.c_str(), body.size()) !=
+		static_cast<ssize_t>(
+			body.size())) // due to the trunc the previus trunc the condition will only fail if the syscall
+						  // is interrupted by a signal or enocounters a error (non should happen)
 	{
 		close(memfd);
 		return (handle_error(500, config));
@@ -91,9 +94,10 @@ static ReturnType handle_dir_internal(std::string const &headers, std::string co
 	return (ReturnType(memfd, headers, NO_CHILD));
 }
 
-ReturnType handle_dir(std::string &resource, t_c_route const &route, t_c_individual_server_config const &config, struct stat statbuf)
+ReturnType handle_dir(std::string &resource, t_c_route const &route, t_c_individual_server_config const &config,
+					  struct stat statbuf)
 {
-	DIR                      *dirp = opendir(resource.c_str());
+	DIR                     *dirp = opendir(resource.c_str());
 	std::string const        relative_directory_name = get_relative_directory_name(resource, route.get_path());
 	std::vector<std::string> directory_entries;
 	std::string              body;
@@ -106,7 +110,8 @@ ReturnType handle_dir(std::string &resource, t_c_route const &route, t_c_individ
 	}
 	if (route.get_resource().get_direcory_listing() == false)
 	{
-		handle_error_internal_internal(route.get_resource().get_file_is_a_directory_page(), "HTTP/1.1 403 Forbidden\r\n");
+		handle_error_internal_internal(route.get_resource().get_file_is_a_directory_page(),
+									   "HTTP/1.1 403 Forbidden\r\n");
 	}
 	if (dirp == nullptr || current_time.empty() == true)
 	{
@@ -114,9 +119,9 @@ ReturnType handle_dir(std::string &resource, t_c_route const &route, t_c_individ
 	}
 	directory_entries = get_directory_entries(dirp);
 	body = compile_body(relative_directory_name, directory_entries);
-	headers = std::string("HTTP/1.1 200 OK\r\n") + "Server: webserv/0.1\r\n" + "Date: " + + "\r\n" +
-								"Content-Type: text/html\r\n" + "Content-Length: " + std::to_string(body.size()) +
-								"\r\n" + "Connection: close" + "\r\n\r\n";
+	headers = std::string("HTTP/1.1 200 OK\r\n") + "Server: webserv/0.1\r\n" + "Date: " + +"\r\n" +
+			  "Content-Type: text/html\r\n" + "Content-Length: " + std::to_string(body.size()) + "\r\n" +
+			  "Connection: close" + "\r\n\r\n";
 	closedir(dirp);
 	return (handle_dir_internal(headers, body, config));
 }

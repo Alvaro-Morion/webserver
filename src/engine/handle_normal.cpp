@@ -11,9 +11,9 @@
 /* ************************************************************************** */
 
 #include "engine.hpp"
-#include <unistd.h>
-#include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 ;
 #pragma GCC diagnostic push
@@ -31,8 +31,7 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-ReturnType handle_normal(std::string &resource, t_c_route const &route,
-								t_c_individual_server_config const &config)
+ReturnType handle_normal(std::string &resource, t_c_route const &route, t_c_individual_server_config const &config)
 {
 	std::string       headers;
 	std::string const current_time = get_current_time_as_string();

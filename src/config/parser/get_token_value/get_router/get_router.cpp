@@ -44,8 +44,9 @@ static t_c_resource add_defaults_and_construct_resource(t_c_resource_constructor
 	}
 	if (params.directory_listing == true && params.file_is_a_directory_page_position.is_valid() == true)
 	{
-		throw(std::invalid_argument(std::string(config_file) + ": error: in resource defined at: " +
-									position.to_string() + ": when is_redirect is set to true file_is_a_directory_page is never used\n"));
+		throw(std::invalid_argument(std::string(config_file) +
+									": error: in resource defined at: " + position.to_string() +
+									": when is_redirect is set to true file_is_a_directory_page is never used\n"));
 	}
 	if (params.root_position.is_valid() == false)
 	{

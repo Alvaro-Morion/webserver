@@ -55,6 +55,6 @@ class t_c_server_config // binds to objects recived in construction
 		uint64_t                          get_client_body_size_limit(void) const;
 };
 
-bool is_valid_hostname(std::string const &host_name);
+bool                   is_valid_hostname(std::string const &host_name);
 
 #pragma GCC diagnostic pop

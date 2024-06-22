@@ -3,7 +3,7 @@
 static std::string tolower_str(std::string input)
 {
 	std::string result;
-	for(std::string::iterator it = input.begin(); it != input.end(); it++)
+	for (std::string::iterator it = input.begin(); it != input.end(); it++)
 	{
 		result.push_back(tolower(*it));
 	}
@@ -12,30 +12,30 @@ static std::string tolower_str(std::string input)
 
 static std::string get_header_value(std::string name, std::string request) // Gets the trimmed value of a header.
 {
-        size_t      start, end;
-        std::string value;
+	size_t      start, end;
+	std::string value;
 
-        if ((start = tolower_str(request).find(tolower_str(name) + ":")) == std::string::npos)
-        {
-                return (std::string());
-        }
-        start += std::string(name).length() + 1;
-        end = request.find("\r\n", start);
-        value = request.substr(start, end - start);
-        while (isspace(value.front()))
-        {
-                value.erase(0, 1);
-        }
-        while (isspace(value.back()))
-        {
-                value.erase(value.length() - 1, 1);
-        }
-	//std::cout << value << std::endl;
-        return (value);
+	if ((start = tolower_str(request).find(tolower_str(name) + ":")) == std::string::npos)
+	{
+		return (std::string());
+	}
+	start += std::string(name).length() + 1;
+	end = request.find("\r\n", start);
+	value = request.substr(start, end - start);
+	while (isspace(value.front()))
+	{
+		value.erase(0, 1);
+	}
+	while (isspace(value.back()))
+	{
+		value.erase(value.length() - 1, 1);
+	}
+	// std::cout << value << std::endl;
+	return (value);
 }
 
-Connection::Connection(uint16_t port, t_c_global_config *global_config, ReturnType &resp) : 
-	port(port), response(resp), bytes_sent(0), reaped_child(false)
+Connection::Connection(uint16_t port, t_c_global_config *global_config, ReturnType &resp)
+	: port(port), response(resp), bytes_sent(0), reaped_child(false)
 {
 	this->global_config = global_config;
 	this->config = NULL;
@@ -51,7 +51,7 @@ Connection::~Connection()
 
 int Connection::accept_connection(int sockfd)
 {
-	int size = 1;
+	int       size = 1;
 	socklen_t addrlen = sizeof(address);
 
 	confd = accept(sockfd, (struct sockaddr *)&address, &addrlen);
@@ -71,9 +71,9 @@ int Connection::accept_connection(int sockfd)
 int Connection::read_request(void)
 {
 	ssize_t nbytes;
-	char	buffer[BUFFER_SIZE];
+	char    buffer[BUFFER_SIZE];
 
-	if((nbytes = recv(confd, buffer, BUFFER_SIZE - 1, MSG_DONTWAIT)) > 0)
+	if ((nbytes = recv(confd, buffer, BUFFER_SIZE - 1, MSG_DONTWAIT)) > 0)
 	{
 		buffer[nbytes] = 0;
 		request_buffer += buffer;
@@ -82,30 +82,31 @@ int Connection::read_request(void)
 	{
 		return (-1);
 	}
-	//std::cout << nbytes << "bytes read\n";
-	//std::cout << "Current buffer: " << request_buffer << std::endl;
-	return(0);
+	// std::cout << nbytes << "bytes read\n";
+	// std::cout << "Current buffer: " << request_buffer << std::endl;
+	return (0);
 }
 
 void Connection::select_config(void)
 {
 	std::string hostname = get_header_value("host", request_buffer);
-        if (hostname == "")
-        {
-                throw handle_invalid_request();
-        }
-        hostname = hostname.substr(0, hostname.find(":"));
-        try
+	if (hostname == "")
 	{
-		t_c_individual_server_config::t_c_light_key key(&hostname, port);
-		std::set<t_c_individual_server_config, std::less<>>::iterator config_it = global_config->get_servers().find(key);
-        	if (config_it == global_config->get_servers().end())
-        	{
-                	throw handle_invalid_request();
-        	}
-       		config = &(*config_it);
+		throw handle_invalid_request();
 	}
-	catch(...)
+	hostname = hostname.substr(0, hostname.find(":"));
+	try
+	{
+		t_c_individual_server_config::t_c_light_key                   key(&hostname, port);
+		std::set<t_c_individual_server_config, std::less<>>::iterator config_it =
+			global_config->get_servers().find(key);
+		if (config_it == global_config->get_servers().end())
+		{
+			throw handle_invalid_request();
+		}
+		config = &(*config_it);
+	}
+	catch (...)
 	{
 		throw handle_invalid_request();
 	}
@@ -123,9 +124,9 @@ int Connection::generate_response(void)
 	response_buffer = response.get_headers();
 	if (!ready_to_send && !response.is_cgi())
 	{
-		return(build_response(response.get_fd()));
+		return (build_response(response.get_fd()));
 	}
-	return(response.get_fd());
+	return (response.get_fd());
 }
 
 void Connection::reap_cgi(void)
@@ -133,9 +134,9 @@ void Connection::reap_cgi(void)
 	reaped_child = (waitpid(response.get_child_pid(), NULL, WNOHANG) == response.get_child_pid());
 }
 
-int Connection::build_response(void) //For CGI (goes through epoll)
+int Connection::build_response(void) // For CGI (goes through epoll)
 {
-	char buffer[BUFFER_SIZE];
+	char    buffer[BUFFER_SIZE];
 	ssize_t nbytes;
 
 	if ((nbytes = read(response.get_fd(), buffer, BUFFER_SIZE)) > 0)
@@ -152,14 +153,14 @@ int Connection::build_response(void) //For CGI (goes through epoll)
 		close(response.get_fd());
 		ready_to_send = !nbytes;
 	}
-	return(nbytes);
+	return (nbytes);
 }
 
 int Connection::build_response(int fd)
 {
-	char buffer[BUFFER_SIZE];
+	char    buffer[BUFFER_SIZE];
 	ssize_t nbytes;
-	while((nbytes = read(fd, buffer, BUFFER_SIZE)) > 0)
+	while ((nbytes = read(fd, buffer, BUFFER_SIZE)) > 0)
 	{
 		buffer[nbytes] = 0;
 		response_buffer.append(buffer);
@@ -167,44 +168,43 @@ int Connection::build_response(int fd)
 	close(fd);
 	if (nbytes == 0)
 	{
-		
+
 		ready_to_send = true;
 	}
 	else
 	{
 		perror("Response file");
 	}
-	return(nbytes);
+	return (nbytes);
 }
 
 int Connection::send_response(void)
 {
-	ssize_t	nbytes;
+	ssize_t nbytes;
 	nbytes = send(confd, response_buffer.c_str(), response_buffer.length(), MSG_DONTWAIT);
 	if (nbytes < 0)
 	{
 		perror("Send");
-		return(-1);
+		return (-1);
 	}
 	bytes_sent += nbytes;
 	if (bytes_sent == response_buffer.length())
 	{
 		sent_response = true;
 	}
-	return(0);
+	return (0);
 }
 
 void Connection::check_body_length(void) const
 {
-        if (config->get_client_body_size_limit() != UINT64_MAX &&
-                        get_header_value("content-length", request_buffer) != "")
-        {
-                size_t content_length = std::atol(get_header_value("content-length", request_buffer).c_str());
-                if (content_length > config->get_client_body_size_limit())
-                {
-                        throw handle_error(413, *config);
-                }
-        }
+	if (config->get_client_body_size_limit() != UINT64_MAX && get_header_value("content-length", request_buffer) != "")
+	{
+		size_t content_length = std::atol(get_header_value("content-length", request_buffer).c_str());
+		if (content_length > config->get_client_body_size_limit())
+		{
+			throw handle_error(413, *config);
+		}
+	}
 }
 
 void Connection::check_not_chunked(void) const
@@ -225,12 +225,12 @@ bool Connection::request_read(void)
 {
 	if (!headers_read())
 	{
-		//std::cout << "Still reading headers\n";
+		// std::cout << "Still reading headers\n";
 		return (false);
 	}
 	size_t content_length = std::atoll(get_header_value("content-length", request_buffer).c_str());
 	size_t body_length = request_buffer.length() - request_buffer.find("\r\n\r\n") - 4;
-	//std::cout << "Content-length:" << content_length << "body_length:" << body_length << std::endl;
+	// std::cout << "Content-length:" << content_length << "body_length:" << body_length << std::endl;
 	if (config == nullptr)
 	{
 		// The headers are read -> choose config and check headers.
@@ -241,18 +241,18 @@ bool Connection::request_read(void)
 			check_not_chunked();
 		}
 		catch (ReturnType &error_response)
-		{	
-			//Error in checks or config -> error response -> don't read body.
+		{
+			// Error in checks or config -> error response -> don't read body.
 			std::cout << "Error response set\n";
 			response = error_response;
-			return(true);
+			return (true);
 		}
 	}
-	//std::cout << "Field: " << content_length << "\t body: " << body_length << std::endl;
+	// std::cout << "Field: " << content_length << "\t body: " << body_length << std::endl;
 	if (content_length > body_length)
 	{
-		//std::cout << "Not finished: " << request_buffer << std::endl;
-		return(false);
+		// std::cout << "Not finished: " << request_buffer << std::endl;
+		return (false);
 	}
 	if (content_length < body_length)
 	{
@@ -268,7 +268,7 @@ bool Connection::response_sent(void) const
 
 bool Connection::is_reaped(void) const
 {
-	return(reaped_child);
+	return (reaped_child);
 }
 
 int Connection::getConFd(void) const
@@ -296,10 +296,9 @@ std::string Connection::getResponseBuffer(void) const
 	return (response_buffer);
 }
 
-
 ReturnType const &Connection::getResponse(void) const
 {
-	return(response);
+	return (response);
 }
 
 t_c_global_config const *Connection::getGlobalConfig(void) const

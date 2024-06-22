@@ -11,22 +11,22 @@
 /* ************************************************************************** */
 
 #include "engine.hpp"
+#include <arpa/inet.h>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <fcntl.h>
 #include <netinet/in.h>
 #include <string>
+#include <sys/mman.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <arpa/inet.h>
-#include <sys/mman.h>
 
 #define WRITE_END 1
-#define READ_END 0
+#define READ_END  0
 
 ;
 #pragma GCC diagnostic push
@@ -69,13 +69,13 @@ static std::string get_filename(std::string const &target_file)
 	return (target_file.substr(pos, target_file.size() - pos));
 }
 
-static ReturnType handle_cgi_internal_internal(std::string const &target_file, std::string const &body, t_c_individual_server_config const &config,
-		char const **new_env, char const **new_argv )
+static ReturnType handle_cgi_internal_internal(std::string const &target_file, std::string const &body,
+											   t_c_individual_server_config const &config, char const **new_env,
+											   char const **new_argv)
 {
-	int const   memfd = memfd_create("", 0);
-	int         pipefds[2];
-	pid_t       c_pid;
-
+	int const memfd = memfd_create("", 0);
+	int       pipefds[2];
+	pid_t     c_pid;
 
 	if (memfd == -1)
 	{
@@ -107,13 +107,13 @@ static ReturnType handle_cgi_internal_internal(std::string const &target_file, s
 	if (c_pid == 0)
 	{
 		close(pipefds[READ_END]);
-		if ((dup2(WRITE_END, STDOUT_FILENO) == -1) ||
-				(dup2(memfd, STDIN_FILENO) == -1))
+		if ((dup2(WRITE_END, STDOUT_FILENO) == -1) || (dup2(memfd, STDIN_FILENO) == -1))
 		{
 			fprintf(stderr, "fatal error when juking output and input of cgi script");
 			exit(EXIT_FAILURE); // NOLINT
 		}
-		execve(target_file.c_str(), reinterpret_cast<char* const*>(reinterpret_cast<intptr_t>(new_argv)), reinterpret_cast<char* const*>(reinterpret_cast<intptr_t>(new_env)));
+		execve(target_file.c_str(), reinterpret_cast<char *const *>(reinterpret_cast<intptr_t>(new_argv)),
+			   reinterpret_cast<char *const *>(reinterpret_cast<intptr_t>(new_env)));
 		fprintf(stderr, "fatal error when launchinng cgi script");
 		exit(EXIT_FAILURE); // NOLINT
 	}
@@ -122,10 +122,11 @@ static ReturnType handle_cgi_internal_internal(std::string const &target_file, s
 	return (ReturnType(pipefds[READ_END], "", c_pid));
 }
 
-static ReturnType handle_cgi_internal(std::string const &target_file, std::string const &resource, std::string const &body, std::string const &method, t_c_individual_server_config const &config,
-		struct in_addr ip)
+static ReturnType handle_cgi_internal(std::string const &target_file, std::string const &resource,
+									  std::string const &body, std::string const &method,
+									  t_c_individual_server_config const &config, struct in_addr ip)
 {
-	char dst[16];
+	char              dst[16];
 	std::string const content_length_var = std::string("CONTENT_LENGTH=") + std::to_string(body.size());
 	std::string const path_translated_var = std::string("PATH_TRANSLATED=") + remove_filename(target_file);
 	std::string const query_string_var = std::string("QUERY_STRING=") + get_query_string(resource);
@@ -133,32 +134,30 @@ static ReturnType handle_cgi_internal(std::string const &target_file, std::strin
 	std::string const method_var = std::string("REQUEST_METHOD=") + method;
 	std::string const script_name_var = std::string("SCRIPT_NAME=") + get_filename(target_file);
 	std::string const server_name_var = std::string("SERVER_NAME=") + *config.get_host_name();
-	std::string const server_port_var = std::string("SERVER_PORT=") +  std::to_string(config.get_port());
-	char const *new_argv[] = {target_file.c_str(), nullptr};
-	char const *new_env[] = {
-	content_length_var.c_str(),
-	"GATEWAY_INTERFACE=1.1",
-	"PATH_INFO=/",
-	path_translated_var.c_str(),
-	query_string_var.c_str(),
-	remote_addr_var.c_str(),
-	method_var.c_str(),
-	script_name_var.c_str(),
-	server_name_var.c_str(),
-	server_port_var.c_str(),
-	"SERVER_PROTOCOL=HTTP/1.1",
-	"SERVER_SOFTWARE=webserv/0.1",
-	nullptr};
+	std::string const server_port_var = std::string("SERVER_PORT=") + std::to_string(config.get_port());
+	char const       *new_argv[] = {target_file.c_str(), nullptr};
+	char const       *new_env[] = {content_length_var.c_str(),
+								   "GATEWAY_INTERFACE=1.1",
+								   "PATH_INFO=/",
+								   path_translated_var.c_str(),
+								   query_string_var.c_str(),
+								   remote_addr_var.c_str(),
+								   method_var.c_str(),
+								   script_name_var.c_str(),
+								   server_name_var.c_str(),
+								   server_port_var.c_str(),
+								   "SERVER_PROTOCOL=HTTP/1.1",
+								   "SERVER_SOFTWARE=webserv/0.1",
+								   nullptr};
 
 	return (handle_cgi_internal_internal(target_file, body, config, new_env, new_argv));
 }
 
-
-ReturnType handle_cgi(std::string &resource, const t_c_route &route,
-								t_c_individual_server_config const &config, std::string const &body, std::string const &method, struct in_addr ip)
+ReturnType handle_cgi(std::string &resource, t_c_route const &route, t_c_individual_server_config const &config,
+					  std::string const &body, std::string const &method, struct in_addr ip)
 {
-	std::string       target_file;
-	struct stat       statbuf;
+	std::string target_file;
+	struct stat statbuf;
 
 	target_file = get_new_location(resource, route);
 	if (stat(target_file.c_str(), &statbuf) == -1)

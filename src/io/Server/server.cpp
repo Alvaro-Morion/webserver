@@ -52,7 +52,7 @@ void Server::manage_epoll(int fd, int op, uint32_t mask)
 		perror("Epoll_ctl");
 		close(fd);
 	}
-	//std::cout << fd << " to poll" << std::endl;
+	// std::cout << fd << " to poll" << std::endl;
 }
 
 void Server::server_loop(void)
@@ -63,48 +63,52 @@ void Server::server_loop(void)
 
 	while (true)
 	{
-		//std::cout << "epoll waiting ...\n";
+		// std::cout << "epoll waiting ...\n";
 		if ((nevents = epoll_wait(epollfd, events, sizeof(events) / sizeof(events[0]), -1)) == -1)
 		{
 			perror("Epoll wait");
 			exit(EXIT_FAILURE);
 		}
-		//std::cout << "epoll returned " << nevents << " events\n";
+		// std::cout << "epoll returned " << nevents << " events\n";
 		for (int n = 0; n < nevents; n++)
 		{
 			sockfd = events[n].data.fd;
-			//std::cout << sockfd << std::endl;
-			//std::cout << "event " << events[n].events << " in: " << sockfd << std::endl;
-			if (connection_response_map.find(sockfd) != connection_response_map.end() && (events[n].events & EPOLLHUP) == EPOLLHUP)
+			// std::cout << sockfd << std::endl;
+			// std::cout << "event " << events[n].events << " in: " << sockfd << std::endl;
+			if (connection_response_map.find(sockfd) != connection_response_map.end() &&
+				(events[n].events & EPOLLHUP) == EPOLLHUP)
 			{
-				connection_response_map[sockfd]->reap_cgi(); //Here it is OK, the child has exited.
+				connection_response_map[sockfd]->reap_cgi(); // Here it is OK, the child has exited.
 				delete_connection(connection_response_map[sockfd]->getConFd());
 				connection_response_map.erase(sockfd);
-			}	
-			else if((events[n].events & EPOLLERR) == EPOLLERR || (events[n].events & EPOLLHUP) == EPOLLHUP ||
-					(events[n].events & EPOLLRDHUP) == EPOLLRDHUP)
+			}
+			else if ((events[n].events & EPOLLERR) == EPOLLERR || (events[n].events & EPOLLHUP) == EPOLLHUP ||
+					 (events[n].events & EPOLLRDHUP) == EPOLLRDHUP)
 			{
 				delete_connection(sockfd);
 			}
 			else if (socket_map.find(sockfd) != socket_map.end())
 			{
-				ReturnType resp(-1, "", NO_CHILD);
+				ReturnType  resp(-1, "", NO_CHILD);
 				Connection *connection = new Connection(socket_map[sockfd]->getPort(), global_config, resp);
-				if(connection->accept_connection(sockfd) < 0)
+				if (connection->accept_connection(sockfd) < 0)
+				{
 					delete connection;
+				}
 				else
 				{
 					connection_map[connection->getConFd()] = connection;
 					manage_epoll(connection->getConFd(), EPOLL_CTL_ADD, EPOLLIN | EPOLLOUT);
 				}
 			}
-			else if ((connection_response_map.find(sockfd) != connection_response_map.end()) && (events[n].events & EPOLLIN) == EPOLLIN) 
+			else if ((connection_response_map.find(sockfd) != connection_response_map.end()) &&
+					 (events[n].events & EPOLLIN) == EPOLLIN)
 			{
-				//CGI pipe is ready.
+				// CGI pipe is ready.
 				int status = connection_response_map[sockfd]->build_response();
 				if (status <= 0)
 				{
-					if (status < 0) //Error, cierre de conexión
+					if (status < 0) // Error, cierre de conexión
 					{
 						delete_connection(connection_response_map[sockfd]->getConFd());
 						connection_response_map.erase(sockfd);
@@ -116,7 +120,7 @@ void Server::server_loop(void)
 				Connection *connection = connection_map[sockfd];
 				if (connection->read_request() < 0)
 				{
-					//std::cout << "Error while reading\n";
+					// std::cout << "Error while reading\n";
 					delete_connection(sockfd);
 				}
 				if (connection->request_read())
@@ -150,19 +154,19 @@ void Server::server_loop(void)
 
 void Server::child_reaper(void)
 {
-	std::map<int, Connection*>::iterator connection;
+	std::map<int, Connection *>::iterator connection;
 
-	for(connection = connection_map.begin(); connection != connection_map.end(); connection++)
+	for (connection = connection_map.begin(); connection != connection_map.end(); connection++)
 	{
-		if(!connection->second->is_reaped())
+		if (!connection->second->is_reaped())
 		{
 			connection->second->reap_cgi();
-			if(connection->second->is_reaped())
+			if (connection->second->is_reaped())
 			{
 				connection_response_map.erase(connection->second->getResponse().get_fd());
 			}
 		}
-		if(connection->second->is_reaped() && connection->second->response_sent())
+		if (connection->second->is_reaped() && connection->second->response_sent())
 		{
 			delete_connection(connection->first);
 		}
@@ -170,7 +174,7 @@ void Server::child_reaper(void)
 }
 
 void Server::delete_connection(int fd)
-{ 
+{
 	delete connection_map[fd];
 	connection_map.erase(fd);
 }

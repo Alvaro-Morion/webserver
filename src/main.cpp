@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 	signal(SIGPIPE, SIG_IGN);
 	std::cout << config->to_string();
 	//	pause();
-		Server server(config);
+	Server server(config);
 	//	Server server(&config); //For test
 	return (EXIT_FAILURE);
 }
