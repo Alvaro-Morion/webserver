@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/12 16:21:09                                            */
-/*   Updated:  2024/06/12 16:53:54                                            */
+/*   Updated:  2024/06/22 19:41:32                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <ctime>
 
 ;
 #pragma GCC diagnostic push

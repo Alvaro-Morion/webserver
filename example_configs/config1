@@ -20,7 +20,7 @@ server
 			path "/";
 			resource
 			{
-				root "/home/priezu-m/webserver";
+				root "/home/user/webserver";
 				is_redirect false; # can be ommited false by default
 				methods GET, POST, DELETE; # can be ommited, GET by default, can be left empty for none allowed
 				directory_listing on; # can be ommited off by default

@@ -64,7 +64,7 @@ void Server::server_loop(void)
 	while (true)
 	{
 		//std::cout << "epoll waiting ...\n";
-		if ((nevents = epoll_wait(epollfd, events, sizeof(events), -1)) == -1)
+		if ((nevents = epoll_wait(epollfd, events, sizeof(events) / sizeof(events[0]), -1)) == -1)
 		{
 			perror("Epoll wait");
 			exit(EXIT_FAILURE);
