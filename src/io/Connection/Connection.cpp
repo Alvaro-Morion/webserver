@@ -35,7 +35,7 @@ static std::string get_header_value(std::string name, std::string request) // Ge
 }
 
 Connection::Connection(uint16_t port, t_c_global_config *global_config, ReturnType &resp) : 
-	port(port), response(resp), bytes_sent(0)
+	port(port), response(resp), bytes_sent(0), reaped_child(false)
 {
 	this->global_config = global_config;
 	this->config = NULL;
@@ -231,7 +231,7 @@ bool Connection::request_read(void)
 	size_t content_length = std::atoll(get_header_value("content-length", request_buffer).c_str());
 	size_t body_length = request_buffer.length() - request_buffer.find("\r\n\r\n") - 4;
 	//std::cout << "Content-length:" << content_length << "body_length:" << body_length << std::endl;
-	if (!config) 
+	if (config == nullptr)
 	{
 		// The headers are read -> choose config and check headers.
 		try
@@ -254,15 +254,11 @@ bool Connection::request_read(void)
 		//std::cout << "Not finished: " << request_buffer << std::endl;
 		return(false);
 	}
-	else if (content_length < body_length)
+	if (content_length < body_length)
 	{
 		request_buffer.erase(request_buffer.find("\r\n\r\n") + 4 + content_length);
-		return (true);
 	}
-	else
-	{
-		return (true);
-	}
+	return (true);
 }
 
 bool Connection::response_sent(void) const
