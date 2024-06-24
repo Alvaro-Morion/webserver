@@ -63,13 +63,13 @@ void Server::server_loop(void)
 
 	while (true)
 	{
-		// std::cout << "epoll waiting ...\n";
+		//std::cout << "epoll waiting ...\n";
 		if ((nevents = epoll_wait(epollfd, events, sizeof(events) / sizeof(events[0]), -1)) == -1)
 		{
 			perror("Epoll wait");
 			exit(EXIT_FAILURE);
 		}
-		// std::cout << "epoll returned " << nevents << " events\n";
+		//std::cout << "epoll returned " << nevents << " events\n";
 		for (int n = 0; n < nevents; n++)
 		{
 			sockfd = events[n].data.fd;
@@ -98,7 +98,7 @@ void Server::server_loop(void)
 				else
 				{
 					connection_map[connection->getConFd()] = connection;
-					manage_epoll(connection->getConFd(), EPOLL_CTL_ADD, EPOLLIN | EPOLLOUT);
+					manage_epoll(connection->getConFd(), EPOLL_CTL_ADD, EPOLLIN);
 				}
 			}
 			else if ((connection_response_map.find(sockfd) != connection_response_map.end()) &&
@@ -127,6 +127,10 @@ void Server::server_loop(void)
 				{
 					std::cout << "Request read. Generating response for ";
 					int fd = connection->generate_response();
+					if (connection->response_ready())
+					{
+						manage_epoll(connection->getConFd(), EPOLL_CTL_MOD, EPOLLOUT);
+					}
 					if (fd > 0 && connection->getResponse().is_cgi())
 					{
 						manage_epoll(fd, EPOLL_CTL_ADD, EPOLLIN | EPOLLHUP);
@@ -138,12 +142,11 @@ void Server::server_loop(void)
 					}
 				}
 			}
-			else if (connection_map[sockfd]->response_ready() && (events[n].events & EPOLLOUT) == EPOLLOUT)
+			else if ((events[n].events & EPOLLOUT) == EPOLLOUT)
 			{
-				if (connection_map[sockfd]->send_response() < 0 || connection_map[sockfd]->response_sent())
+				if (connection_map[sockfd]->send_response() < 0)
 				{
-					std::cout << "Response sent:\n";
-					std::cout << connection_map[sockfd]->getResponseBuffer() << std::endl;
+					connection_response_map.erase(connection_map[sockfd]->getResponse().get_fd());
 					delete_connection(sockfd);
 				}
 			}
@@ -155,8 +158,7 @@ void Server::server_loop(void)
 void Server::child_reaper(void)
 {
 	std::map<int, Connection *>::iterator connection;
-
-	for (connection = connection_map.begin(); connection != connection_map.end(); connection++)
+	for (connection = connection_map.begin(); connection != connection_map.end();)
 	{
 		if (!connection->second->is_reaped())
 		{
@@ -168,7 +170,11 @@ void Server::child_reaper(void)
 		}
 		if (connection->second->is_reaped() && connection->second->response_sent())
 		{
-			delete_connection(connection->first);
+			delete_connection((connection++)->first);
+		}
+		else
+		{
+			connection++;
 		}
 	}
 }

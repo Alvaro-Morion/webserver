@@ -148,6 +148,11 @@ int Connection::build_response(void) // For CGI (goes through epoll)
 	{
 		if (nbytes < 0)
 		{
+			if(response.get_child_pid() != NO_CHILD && !reaped_child)
+			{
+				kill(response.get_child_pid(), SIGTERM);
+				reap_cgi();
+			}
 			perror("Response file");
 		}
 		close(response.get_fd());
@@ -168,7 +173,6 @@ int Connection::build_response(int fd)
 	close(fd);
 	if (nbytes == 0)
 	{
-
 		ready_to_send = true;
 	}
 	else
@@ -184,6 +188,11 @@ int Connection::send_response(void)
 	nbytes = send(confd, response_buffer.c_str(), response_buffer.length(), MSG_DONTWAIT);
 	if (nbytes < 0)
 	{
+		if(response.get_child_pid() != NO_CHILD && !reaped_child)
+		{
+			kill(response.get_child_pid(), SIGTERM);
+			reap_cgi();
+		}
 		perror("Send");
 		return (-1);
 	}
