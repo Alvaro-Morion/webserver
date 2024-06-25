@@ -25,6 +25,7 @@ class Server
 		std::map<int, MySocket *>   socket_map;              // Openned sockets with their fds.
 		std::map<int, Connection *> connection_map;          // Relates client fd with connection object.
 		std::map<int, Connection *> connection_response_map; // Relates fd of response and connection object.
+		std::vector<pid_t>			children;
 	public:
 		Server(t_c_global_config *config);
 		Server(std::set<uint16_t> ports); // For testing purposes.

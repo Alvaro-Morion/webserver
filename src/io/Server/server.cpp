@@ -78,7 +78,6 @@ void Server::server_loop(void)
 			if (connection_response_map.find(sockfd) != connection_response_map.end() &&
 				(events[n].events & EPOLLHUP) == EPOLLHUP)
 			{
-				connection_response_map[sockfd]->reap_cgi(); // Here it is OK, the child has exited.
 				delete_connection(connection_response_map[sockfd]->getConFd());
 				connection_response_map.erase(sockfd);
 			}
@@ -133,6 +132,7 @@ void Server::server_loop(void)
 					}
 					if (fd > 0 && connection->getResponse().is_cgi())
 					{
+						children.push_back(connection->getResponse().get_child_pid());
 						manage_epoll(fd, EPOLL_CTL_ADD, EPOLLIN | EPOLLHUP);
 						connection_response_map[fd] = connection;
 					}
@@ -144,7 +144,7 @@ void Server::server_loop(void)
 			}
 			else if ((events[n].events & EPOLLOUT) == EPOLLOUT)
 			{
-				if (connection_map[sockfd]->send_response() < 0)
+				if (connection_map[sockfd]->send_response() < 0 || connection_map[sockfd]->response_sent())
 				{
 					connection_response_map.erase(connection_map[sockfd]->getResponse().get_fd());
 					delete_connection(sockfd);
@@ -157,25 +157,15 @@ void Server::server_loop(void)
 
 void Server::child_reaper(void)
 {
-	std::map<int, Connection *>::iterator connection;
-	for (connection = connection_map.begin(); connection != connection_map.end();)
+	std::vector<pid_t>::iterator child;
+
+	for (child = children.begin(); child != children.end();)
 	{
-		if (!connection->second->is_reaped())
+		if (waitpid(*child, NULL, WNOHANG) > 0)
 		{
-			connection->second->reap_cgi();
-			if (connection->second->is_reaped())
-			{
-				connection_response_map.erase(connection->second->getResponse().get_fd());
-			}
+			children.erase(child);
 		}
-		if (connection->second->is_reaped() && connection->second->response_sent())
-		{
-			delete_connection((connection++)->first);
-		}
-		else
-		{
-			connection++;
-		}
+		child++;
 	}
 }
 
