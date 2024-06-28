@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/12 16:56:16                                            */
-/*   Updated:  2024/06/28 12:21:22                                            */
+/*   Updated:  2024/06/28 13:35:01                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,13 @@
 
 static std::string get_relative_directory_name(std::string const &absolute, std::string const &base)
 {
-	return (absolute.substr(base.size() - 1, absolute.size() - base.size() - 1));
+	std::string res= absolute.substr(base.size() - 1, absolute.size() - base.size() + 1);
+
+	if (res.back() != '/')
+	{
+		res.push_back('/');
+	}
+	return (res);
 }
 
 static std::vector<std::string> get_directory_entries(DIR *dirp)
@@ -62,7 +68,8 @@ static std::string compile_body(std::string const &dir_name, std::vector<std::st
 	res += "<html>\r\n<head><title>" + dir_name + "</title></head>\r\n<body>\r\n<h1>" + dir_name + "</h1><hr><pre>\r\n";
 	for (std::string const &entry : directory_entries)
 	{
-		res += "<a href=\"" + entry + "\">";
+		res += "<a href=\"" + dir_name;
+		res	+= entry + "\">";
 		res += entry + "</a>\r\n";
 	}
 	res += "</pre><hr></body>\r\n</html>\r\n";
@@ -99,7 +106,7 @@ ReturnType handle_dir(std::string &resource, t_c_route const &route, t_c_individ
 					  struct stat statbuf)
 {
 	DIR                     *dirp = opendir(resource.c_str());
-	std::string const        relative_directory_name = get_relative_directory_name(resource, route.get_path());
+	std::string const        relative_directory_name = get_relative_directory_name(resource, route.get_resource().get_root());
 	std::vector<std::string> directory_entries;
 	std::string              body;
 	std::string const        current_time = get_current_time_as_string();
