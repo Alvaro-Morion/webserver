@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/12 16:56:16                                            */
-/*   Updated:  2024/06/27 19:14:40                                            */
+/*   Updated:  2024/06/28 12:21:22                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ static ReturnType handle_dir_internal(std::string const &headers, std::string co
 		close(memfd);
 		return (handle_error(500, config));
 	}
+	lseek(memfd, 0, SEEK_SET);
 	return (ReturnType(memfd, headers, NO_CHILD));
 }
 
@@ -119,7 +120,7 @@ ReturnType handle_dir(std::string &resource, t_c_route const &route, t_c_individ
 	}
 	directory_entries = get_directory_entries(dirp);
 	body = compile_body(relative_directory_name, directory_entries);
-	headers = std::string("HTTP/1.1 200 OK\r\n") + "Server: webserv/0.1\r\n" + "Date: " + +"\r\n" +
+	headers = std::string("HTTP/1.1 200 OK\r\n") + "Server: webserv/0.1\r\n" + "Date: " + current_time + "\r\n" +
 			  "Content-Type: text/html\r\n" + "Content-Length: " + std::to_string(body.size()) + "\r\n" +
 			  "Connection: close" + "\r\n\r\n";
 	closedir(dirp);

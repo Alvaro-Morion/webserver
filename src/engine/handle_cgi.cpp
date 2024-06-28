@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/13 19:35:27                                            */
-/*   Updated:  2024/06/14 17:25:20                                            */
+/*   Updated:  2024/06/28 12:21:01                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ static ReturnType handle_cgi_internal_internal(std::string const &target_file, s
 	c_pid = fork();
 	if (c_pid == -1)
 	{
+		lseek(memfd, 0, SEEK_SET);
 		close(memfd);
 		close(pipefds[WRITE_END]);
 		close(pipefds[READ_END]);
@@ -174,7 +175,7 @@ ReturnType handle_cgi(std::string &resource, t_c_route const &route, t_c_individ
 	}
 	if (S_ISDIR(statbuf.st_mode) != 0)
 	{
-		return (handle_dir(resource, route, config, statbuf));
+		return (handle_dir(target_file, route, config, statbuf));
 	}
 	if (((statbuf.st_mode & S_IXUSR) == 0) && ((statbuf.st_mode & S_IXGRP) == 0))
 	{

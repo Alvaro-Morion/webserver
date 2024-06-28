@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/12 16:12:24                                            */
-/*   Updated:  2024/06/27 17:33:05                                            */
+/*   Updated:  2024/06/28 12:01:32                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ ReturnType handle_normal(std::string &resource, t_c_route const &route, t_c_indi
 	}
 	if (S_ISDIR(statbuf.st_mode) != 0)
 	{
-		return (handle_dir(resource, route, config, statbuf));
+		return (handle_dir(target_file, route, config, statbuf));
 	}
 	if (((statbuf.st_mode & S_IRUSR) == 0) && ((statbuf.st_mode & S_IRGRP) == 0))
 	{
