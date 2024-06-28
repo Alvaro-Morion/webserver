@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/12 16:12:24                                            */
-/*   Updated:  2024/06/13 19:40:58                                            */
+/*   Updated:  2024/06/27 17:33:05                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ ReturnType handle_normal(std::string &resource, t_c_route const &route, t_c_indi
 	{
 		return (handle_error(403, config)); // forbidden
 	}
-	fd = open(resource.c_str(), O_RDONLY);
+	fd = open(target_file.c_str(), O_RDONLY);
 	if (fd == -1 || current_time.empty() == true)
 	{
 		return (handle_error(500, config)); // internal server error

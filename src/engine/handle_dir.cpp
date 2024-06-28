@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/12 16:56:16                                            */
-/*   Updated:  2024/06/13 20:59:45                                            */
+/*   Updated:  2024/06/27 19:14:40                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,8 +110,8 @@ ReturnType handle_dir(std::string &resource, t_c_route const &route, t_c_individ
 	}
 	if (route.get_resource().get_direcory_listing() == false)
 	{
-		handle_error_internal_internal(route.get_resource().get_file_is_a_directory_page(),
-									   "HTTP/1.1 403 Forbidden\r\n");
+		return (handle_error_internal_internal(route.get_resource().get_file_is_a_directory_page(),
+											   "HTTP/1.1 403 Forbidden\r\n"));
 	}
 	if (dirp == nullptr || current_time.empty() == true)
 	{

@@ -63,13 +63,13 @@ void Server::server_loop(void)
 
 	while (true)
 	{
-		//std::cout << "epoll waiting ...\n";
+		// std::cout << "epoll waiting ...\n";
 		if ((nevents = epoll_wait(epollfd, events, sizeof(events) / sizeof(events[0]), -1)) == -1)
 		{
 			perror("Epoll wait");
 			exit(EXIT_FAILURE);
 		}
-		//std::cout << "epoll returned " << nevents << " events\n";
+		// std::cout << "epoll returned " << nevents << " events\n";
 		for (int n = 0; n < nevents; n++)
 		{
 			sockfd = events[n].data.fd;

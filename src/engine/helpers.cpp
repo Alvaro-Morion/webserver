@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/12 16:21:09                                            */
-/*   Updated:  2024/06/22 19:41:32                                            */
+/*   Updated:  2024/06/27 18:51:06                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ std::string get_new_location(std::string resource, t_c_route const &route)
 {
 	remove_query(resource);
 	resource.erase(0, route.get_path().size());
-	resource.insert(0, route.get_resource().get_root(), route.get_resource().get_root().size());
+	resource.insert(0, route.get_resource().get_root().c_str(), route.get_resource().get_root().size());
 	return (resource);
 }
 

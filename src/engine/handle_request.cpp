@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 14:41:43                                            */
-/*   Updated:  2024/06/14 17:28:27                                            */
+/*   Updated:  2024/06/27 18:52:42                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static std::string get_protocol(std::string const &request, size_t &i)
 
 static std::string get_body(std::string const &request, size_t &i)
 {
-	size_t const beginning = request.find("\r\n\r\n", i);
+	size_t const beginning = request.find("\r\n\r\n", i) + 4;
 	size_t const end = request.size();
 
 	return (std::string(request.begin() + static_cast<std::string::difference_type>(beginning),

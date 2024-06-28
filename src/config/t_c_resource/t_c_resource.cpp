@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 18:30:24                                            */
-/*   Updated:  2024/06/03 09:01:27                                            */
+/*   Updated:  2024/06/28 11:49:50                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,9 @@ t_c_resource::t_c_resource(std::string const &root_param, std::string const &fil
 }
 
 t_c_resource::t_c_resource(t_c_resource const &copy)
-	: root(copy.root), is_redirect(copy.is_redirect), post_allowed(copy.post_allowed),
-	  delet_allowed(copy.delet_allowed), get_allowed(copy.get_allowed), is_cgi(copy.is_cgi)
+	: root(copy.root), file_is_a_directory_page(copy.file_is_a_directory_page), is_redirect(copy.is_redirect),
+	  directory_listing(copy.directory_listing), post_allowed(copy.post_allowed), delet_allowed(copy.delet_allowed),
+	  get_allowed(copy.get_allowed), is_cgi(copy.is_cgi)
 {
 }
 
@@ -60,9 +61,11 @@ bool t_c_resource::operator==(t_c_resource const &comparator) const
 	{
 		return (true);
 	}
-	if (delet_allowed != comparator.get_delet_allowed() || get_allowed != comparator.get_get_allowed() ||
-		post_allowed != comparator.get_post_allowed() || is_cgi != comparator.get_is_cgi() ||
-		root != comparator.get_root() || is_redirect != comparator.get_is_redirect())
+
+	if (root != comparator.get_root() || file_is_a_directory_page != comparator.get_file_is_a_directory_page() ||
+		is_redirect != comparator.get_is_redirect() || directory_listing != comparator.get_direcory_listing() ||
+		post_allowed != comparator.get_post_allowed() || delet_allowed != comparator.get_delet_allowed() ||
+		get_allowed != comparator.get_get_allowed() || is_cgi != comparator.get_is_cgi())
 	{
 		return (false);
 	}
@@ -111,9 +114,9 @@ bool t_c_resource::get_is_cgi(void) const
 
 std::string t_c_resource::to_string() const
 {
-	return ("{root: " + root + ", file_is_a_directory_page: " + file_is_a_directory_page + ",\n\t\t\t is_redirect" +
-			((is_redirect == true) ? "true" : "fasle") + ", directory_listing" +
-			((directory_listing == true) ? "true" : "fasle") +
+	return ("{root: " + root + ", file_is_a_directory_page: " + file_is_a_directory_page +
+			",\n\t\t\t is_redirect: " + ((is_redirect == true) ? "true" : "fasle") +
+			", directory_listing: " + ((directory_listing == true) ? "true" : "fasle") +
 			", post allowed: " + ((post_allowed == true) ? "true" : "fasle") +
 			", delet allowed: " + ((delet_allowed == true) ? "true" : "fasle") + ", get allowed: " +
 			((get_allowed == true) ? "true" : "fasle") + ", is cgi: " + ((is_cgi == true) ? "true}" : "fasle}"));
@@ -121,13 +124,14 @@ std::string t_c_resource::to_string() const
 
 t_c_resource const &t_c_resource::operator=(t_c_resource const &copy)
 {
-	root = copy.root;
-	is_redirect = copy.is_redirect;
-	file_is_a_directory_page = copy.file_is_a_directory_page;
-	post_allowed = copy.post_allowed;
-	delet_allowed = copy.delet_allowed;
-	get_allowed = copy.get_allowed;
-	is_cgi = copy.is_cgi;
+	root = copy.get_root();
+	file_is_a_directory_page = copy.get_file_is_a_directory_page();
+	is_redirect = copy.get_is_redirect();
+	directory_listing = copy.get_direcory_listing();
+	post_allowed = copy.get_post_allowed();
+	delet_allowed = copy.get_delet_allowed();
+	get_allowed = copy.get_get_allowed();
+	is_cgi = copy.get_is_cgi();
 	return (*this);
 }
 

@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 03:52:48                                            */
-/*   Updated:  2024/06/07 11:11:48                                            */
+/*   Updated:  2024/06/28 11:43:59                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ class t_c_resource
 		std::string root;
 		std::string file_is_a_directory_page = "default_error_pages/403";
 		bool        is_redirect;
-		bool        directory_listing = false;
+		bool        directory_listing = true;
 		bool        post_allowed = false;
 		bool        delet_allowed = false;
 		bool        get_allowed = true;

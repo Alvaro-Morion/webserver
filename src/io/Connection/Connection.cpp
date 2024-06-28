@@ -45,7 +45,7 @@ Connection::Connection(uint16_t port, t_c_global_config *global_config, ReturnTy
 
 Connection::~Connection()
 {
-	std::cout << "Connection in fd " << confd << "closed\n";
+	std::cout << "Connection in fd " << confd << " closed\n";
 	close(confd);
 }
 
@@ -63,7 +63,7 @@ int Connection::accept_connection(int sockfd)
 	{
 		setsockopt(confd, SOL_SOCKET, SOCK_NONBLOCK, &size, sizeof(int));
 		setsockopt(confd, SOL_SOCKET, SOCK_CLOEXEC, &size, sizeof(int));
-		std::cout << "New connection accepted in port " << port << " fd: " << confd << std::endl;
+		std::cout << "New connection accepted in port " << ntohs(port) << " fd: " << confd << std::endl;
 	}
 	return (confd);
 }
@@ -114,7 +114,7 @@ void Connection::select_config(void)
 
 int Connection::generate_response(void)
 {
-	std::cout << "request:" << request_buffer << std::endl;
+	std::cout << "request:\n\"" << request_buffer << '\"' << std::endl;
 	if (response == ReturnType(-1, "", NO_CHILD))
 	{
 		response = handle_request(request_buffer, *config, ((struct sockaddr_in *)&address)->sin_addr);
