@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/16 16:25:01                                            */
-/*   Updated:  2024/06/08 11:53:19                                            */
+/*   Updated:  2024/06/29 19:00:03                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,15 +58,6 @@ t_c_route const &t_c_route::operator=(t_c_route const &copy)
 	return (*this);
 }
 
-bool t_c_route::operator==(t_c_route const &comparator) const
-{
-	if (path == comparator.path && resource == comparator.get_resource())
-	{
-		return (true);
-	}
-	return (false);
-}
-
 std::string const &t_c_route::get_path(void) const
 {
 	return (path);
@@ -82,6 +73,15 @@ std::string t_c_route::to_string(void) const
 	return (std::string("path: ") + path + ", resource: " + resource.to_string());
 }
 
+bool t_c_route::operator==(t_c_route const &comparator) const
+{
+	if (path == comparator.path && resource == comparator.get_resource())
+	{
+		return (true);
+	}
+	return (false);
+}
+
 bool t_c_route::operator>(t_c_route const &comparator) const
 {
 	return (path > comparator.path);
@@ -89,12 +89,17 @@ bool t_c_route::operator>(t_c_route const &comparator) const
 
 bool t_c_route::operator<(t_c_route const &comparator) const
 {
-	return (path > comparator.path);
+	return (path < comparator.path);
 }
 
 bool operator<(std::string const &comparand, t_c_route const &comparator)
 {
-	return (comparand < comparator.to_string());
+	return (comparand < comparator.get_path());
+}
+
+bool operator<(t_c_route const &comparand, std::string const &comparator)
+{
+	return (comparand.get_path() < comparator);
 }
 
 #pragma GCC diagnostic pop

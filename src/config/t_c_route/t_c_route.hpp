@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/16 16:22:19                                            */
-/*   Updated:  2024/06/07 16:35:58                                            */
+/*   Updated:  2024/06/29 18:45:21                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,5 +53,6 @@ class t_c_route
 };
 
 bool                   operator<(std::string const &comparand, t_c_route const &comparator);
+bool                   operator<(t_c_route const &comparand, std::string const &comparator);
 
 #pragma GCC diagnostic pop
