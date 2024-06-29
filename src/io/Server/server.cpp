@@ -132,7 +132,6 @@ void Server::server_loop(void)
 					}
 					if (fd > 0 && connection->getResponse().is_cgi())
 					{
-						children.push_back(connection->getResponse().get_child_pid());
 						manage_epoll(fd, EPOLL_CTL_ADD, EPOLLIN | EPOLLHUP);
 						connection_response_map[fd] = connection;
 					}
@@ -159,12 +158,16 @@ void Server::server_loop(void)
 void Server::child_reaper(void)
 {
 	std::vector<pid_t>::iterator child;
-
+	if (children.empty())
+	{
+		return ;
+	}
 	for (child = children.begin(); child != children.end();)
 	{
 		if (waitpid(*child, NULL, WNOHANG) > 0)
 		{
 			children.erase(child);
+			break;
 		}
 		child++;
 	}
