@@ -146,6 +146,7 @@ void Server::server_loop(void)
 			{
 				if (connection_map[sockfd]->send_response() < 0 || connection_map[sockfd]->response_sent())
 				{
+					std::cout << "Response sent\n \"" << connection_map[sockfd]->getResponseBuffer() << "\"\n";
 					connection_response_map.erase(connection_map[sockfd]->getResponse().get_fd());
 					delete_connection(sockfd);
 				}

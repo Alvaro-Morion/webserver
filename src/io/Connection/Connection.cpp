@@ -160,10 +160,11 @@ int Connection::build_response(int fd)
 {
 	char    buffer[BUFFER_SIZE];
 	ssize_t nbytes;
-	while ((nbytes = read(fd, buffer, BUFFER_SIZE)) > 0)
+	while ((nbytes = read(fd, buffer, BUFFER_SIZE - 1)) > 0)
 	{
 		buffer[nbytes] = 0;
-		response_buffer.append(buffer);
+		response_buffer.append(std::string(buffer, nbytes));
+		std::cout << nbytes << std::endl;
 	}
 	close(fd);
 	if (nbytes == 0)

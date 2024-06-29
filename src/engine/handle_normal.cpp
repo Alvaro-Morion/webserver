@@ -68,7 +68,7 @@ ReturnType handle_normal(std::string &resource, t_c_route const &route, t_c_indi
 	}
 	file_size = get_file_size(fd);
 	headers = std::string("HTTP/1.1 301 Moved Permanently\r\n") + "Server: webserv/0.1\r\n" + "Date: " + current_time +
-			  "\r\n" + "Content-Type: text/html\r\n" + "Content-Length: " + std::to_string(file_size) + "\r\n" +
+			  "\r\n" + "Content-Length: " + std::to_string(file_size) + "\r\n" +
 			  "Connection: close" + "\r\n\r\n";
 	if (file_size == -1 || current_time.empty() == true)
 	{
