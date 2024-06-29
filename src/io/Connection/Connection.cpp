@@ -139,10 +139,10 @@ int Connection::build_response(void) // For CGI (goes through epoll)
 	char    buffer[BUFFER_SIZE];
 	ssize_t nbytes;
 
-	if ((nbytes = read(response.get_fd(), buffer, BUFFER_SIZE)) > 0)
+	if ((nbytes = read(response.get_fd(), buffer, BUFFER_SIZE - 1)) > 0)
 	{
 		buffer[nbytes] = 0;
-		response_buffer.append(buffer);
+		response_buffer.append(std::string(buffer, nbytes));
 	}
 	else
 	{
