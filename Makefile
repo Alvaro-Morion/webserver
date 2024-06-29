@@ -6,7 +6,7 @@
 #    github:   https://github.com/priezu-m                                     #
 #    Licence:  GPLv3                                                           #
 #    Created:  2023/09/27 18:57:07                                             #
-#    Updated:  2024/06/05 08:12:28                                             #
+#    Updated:  2024/06/29 17:10:36                                             #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,7 @@ DEP_PATH :=			./DEP
 DEP_PATH_MAKE :=	DEP/
 OBJ_PATH :=			./OBJ
 
-EXCLUDE_DIRS :=		$(DEP_PATH) $(OBJ_PATH) ./.git
+EXCLUDE_DIRS :=		$(DEP_PATH) $(OBJ_PATH) ./.git ./example_website
 EXCLUDE_FILES :=	./tags
 
 CPPHDR :=			$(shell find . \
