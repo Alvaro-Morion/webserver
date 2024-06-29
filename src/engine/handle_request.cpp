@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 14:41:43                                            */
-/*   Updated:  2024/06/29 18:35:17                                            */
+/*   Updated:  2024/06/29 21:03:45                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ static ReturnType handle_request_internal(std::string const &request, t_c_indivi
 		return (handle_error(501, config)); // not implemented
 	}
 	resource = get_resource(request, i);
-	normalize_resource(resource);
+	resource = normalize_resource(resource);
 	if (resource[0] != '/')
 	{
 		return (handle_error(400, config)); // bad request

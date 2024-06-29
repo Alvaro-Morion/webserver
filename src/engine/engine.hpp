@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 11:48:31                                            */
-/*   Updated:  2024/06/14 17:27:41                                            */
+/*   Updated:  2024/06/29 21:04:29                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ ReturnType  handle_request(std::string const &request, t_c_individual_server_con
 std::string get_current_time_as_string(void);
 ssize_t     get_file_size(int fd);
 ReturnType  handle_normal(std::string &resource, t_c_route const &route, t_c_individual_server_config const &config);
-void        normalize_resource(std::string resource);
+std::string normalize_resource(std::string resource);
 std::string get_new_location(std::string resource, t_c_route const &route);
 void        remove_query(std::string &uri);
 ReturnType  handle_redirect(std::string const &resource, t_c_route const &route);

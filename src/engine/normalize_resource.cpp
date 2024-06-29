@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                                            */
-/*   Filename: helpers.cpp                                                    */
+/*   Filename: normalize_resource.cpp                                         */
 /*   Author:   Peru Riezu <riezumunozperu@gmail.com>                          */
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/12 16:18:19                                            */
-/*   Updated:  2024/06/12 16:19:36                                            */
+/*   Updated:  2024/06/29 21:10:51                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,17 +102,18 @@ static void decode_uri(std::string &uri)
 	}
 }
 
-void normalize_resource(std::string resource)
+std::string normalize_resource(std::string resource)
 {
 	std::vector<std::string> tokens;
 	size_t                   i;
+	bool const               ends_in_bar = (resource.back() == '/');
 
 	if (resource.find('#') != std::string::npos ||
 		resource.find_first_not_of(
 			"%:/?#[]@!$&'()*+,;=-._~abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456") != std::string::npos)
 	{
 		resource = "";
-		return;
+		return (resource);
 	}
 	tokens = split(resource);
 	i = 0;
@@ -128,7 +129,7 @@ void normalize_resource(std::string resource)
 			if (i == 0)
 			{
 				resource = "";
-				return;
+				return (resource);
 			}
 			tokens.erase(tokens.begin() + static_cast<std::vector<std::string>::difference_type>(i));
 			i--;
@@ -143,12 +144,17 @@ void normalize_resource(std::string resource)
 		resource += s;
 		resource += "/";
 	}
+	if (ends_in_bar == false)
+	{
+		resource.pop_back();
+	}
 	i = resource.find('?');
 	if (i != std::string::npos)
 	{
 		resource[i] = -'?';
 	}
 	decode_uri(resource);
+	return (resource);
 }
 
 #pragma GCC diagnostic pop
