@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <iostream>
 #include "engine.hpp"
 #include <arpa/inet.h>
 #include <cstddef>
@@ -152,6 +153,7 @@ static ReturnType handle_cgi_internal(std::string const &target_file, std::strin
 								   "SERVER_SOFTWARE=webserv/0.1",
 								   nullptr};
 
+	std::cout << "**** this the query string  **** " << query_string_var << std::endl; 
 	return (handle_cgi_internal_internal(target_file, body, config, new_env, new_argv));
 }
 
