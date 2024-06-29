@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <!-- process_form.php -->
 <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

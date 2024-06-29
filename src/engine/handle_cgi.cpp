@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/13 19:35:27                                            */
-/*   Updated:  2024/06/29 17:17:30                                            */
+/*   Updated:  2024/06/29 20:59:11                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,13 +108,14 @@ static ReturnType handle_cgi_internal_internal(std::string const &target_file, s
 	}
 	if (c_pid == 0)
 	{
-		close(pipefds[READ_END]);
 		if ((dup2(pipefds[WRITE_END], STDOUT_FILENO) == -1) || (dup2(memfd, STDIN_FILENO) == -1))
 		{
 			fprintf(stderr, "fatal error when juking output and input of cgi script");
 			exit(EXIT_FAILURE); // NOLINT
 		}
 		close(pipefds[WRITE_END]);
+		close(pipefds[READ_END]);
+		close(memfd);
 		execve(target_file.c_str(), reinterpret_cast<char *const *>(reinterpret_cast<intptr_t>(new_argv)),
 			   reinterpret_cast<char *const *>(reinterpret_cast<intptr_t>(new_env)));
 		fprintf(stderr, "fatal error when launchinng cgi script");
@@ -153,7 +154,7 @@ static ReturnType handle_cgi_internal(std::string const &target_file, std::strin
 								   "SERVER_SOFTWARE=webserv/0.1",
 								   nullptr};
 
-	std::cout << "**** this the query string  **** " << query_string_var << std::endl; 
+	// std::cout << "**** this the query string  **** " << query_string_var << std::endl; 
 	return (handle_cgi_internal_internal(target_file, body, config, new_env, new_argv));
 }
 
