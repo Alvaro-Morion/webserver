@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/12 16:12:24                                            */
-/*   Updated:  2024/06/28 12:01:32                                            */
+/*   Updated:  2024/06/29 18:07:03                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ ReturnType handle_normal(std::string &resource, t_c_route const &route, t_c_indi
 		return (handle_error(500, config)); // internal server error
 	}
 	file_size = get_file_size(fd);
-	headers = std::string("HTTP/1.1 301 Moved Permanently\r\n") + "Server: webserv/0.1\r\n" + "Date: " + current_time +
+	headers = std::string("HTTP/1.1 200 OK\r\n") + "Server: webserv/0.1\r\n" + "Date: " + current_time +
 			  "\r\n" + "Content-Length: " + std::to_string(file_size) + "\r\n" +
 			  "Connection: close" + "\r\n\r\n";
 	if (file_size == -1 || current_time.empty() == true)

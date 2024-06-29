@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/13 19:35:27                                            */
-/*   Updated:  2024/06/28 12:21:01                                            */
+/*   Updated:  2024/06/29 17:17:30                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,11 +108,12 @@ static ReturnType handle_cgi_internal_internal(std::string const &target_file, s
 	if (c_pid == 0)
 	{
 		close(pipefds[READ_END]);
-		if ((dup2(WRITE_END, STDOUT_FILENO) == -1) || (dup2(memfd, STDIN_FILENO) == -1))
+		if ((dup2(pipefds[WRITE_END], STDOUT_FILENO) == -1) || (dup2(memfd, STDIN_FILENO) == -1))
 		{
 			fprintf(stderr, "fatal error when juking output and input of cgi script");
 			exit(EXIT_FAILURE); // NOLINT
 		}
+		close(pipefds[WRITE_END]);
 		execve(target_file.c_str(), reinterpret_cast<char *const *>(reinterpret_cast<intptr_t>(new_argv)),
 			   reinterpret_cast<char *const *>(reinterpret_cast<intptr_t>(new_env)));
 		fprintf(stderr, "fatal error when launchinng cgi script");

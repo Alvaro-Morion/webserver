@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 14:41:43                                            */
-/*   Updated:  2024/06/27 18:52:42                                            */
+/*   Updated:  2024/06/29 18:05:23                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <ctime>
 #include <fcntl.h>
 #include <functional>
+#include <iterator>
 #include <set>
 #include <string>
 #include <sys/mman.h>
@@ -82,34 +83,27 @@ static std::pair<t_c_route, bool> get_resource_rules(std::string                
 	std::set<t_c_route, std::less<>>::const_iterator it;
 	size_t                                           i;
 
-	if (routes.empty() == true)
+	if (resource.back() != '/')
 	{
-		return (std::pair<t_c_route, bool>(t_c_route(), false));
-	}
-	if (resource.end()[-1] != '/')
-	{
-		resource.append("/a/"); // dummy text
+		resource.append("/a");
 	}
 	else
 	{
-		resource.append("a/");
+		resource.push_back('a');
 	}
-	do
+	while (resource.empty() == false)
 	{
-		resource.pop_back();
-		if (resource.empty() == false)
-		{
-			i = resource.find_last_of('/');
-			resource.erase(i + 1, resource.size() - (i + 1));
-		}
+		i = resource.find_last_of('/');
+		resource.erase(i + 1, resource.size() - (i + 1));
 		it = routes.upper_bound(resource);
-		it--;
-	} while (it->get_path() != resource && resource.empty() == false);
-	if (it->get_path() != resource)
-	{
-		return (std::pair<t_c_route, bool>(t_c_route(), false));
+		it = std::next(it);
+		if (it->get_path() == resource)
+		{
+			return (std::pair<t_c_route, bool>(*it, true));
+		}
+		resource.pop_back();
 	}
-	return (std::pair<t_c_route, bool>(*it, true));
+	return (std::pair<t_c_route, bool>(t_c_route(), false));
 }
 
 static bool method_allowed(std::string const &method, t_c_resource const &resource_rules)
