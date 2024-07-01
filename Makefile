@@ -1,12 +1,12 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                                              #
-#    Filename: Makefile                                                        #
+#    Makefile                                           :+:      :+:    :+:    #
 #    Author:   Peru Riezu <riezumunozperu@gmail.com>                           #
 #    github:   https://github.com/priezu-m                                     #
 #    Licence:  GPLv3                                                           #
 #    Created:  2023/09/27 18:57:07                                             #
-#    Updated:  2024/06/29 19:50:17                                             #
+#    Updated: 2024/07/01 19:28:43 by ahammoud         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -70,9 +70,15 @@ CURRENT_DIR :=		$(shell pwd)
 MANPATH_APPEND :=	$(CURRENT_DIR)/manpages
 CURRENT_MANPAHT :=	$(shell man --path)
 
-ifneq ($(MAKECMDGOALS),$(NAME))
+ifeq ($(MAKECMDGOALS),$(NAME))
 -include $(DEP)
 endif
+
+ifeq ($(MAKECMDGOALS),all)
+-include $(DEP)
+endif
+
+
 
 ################################################################################
 
