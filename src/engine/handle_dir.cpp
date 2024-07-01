@@ -36,17 +36,6 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-static std::string get_relative_directory_name(std::string const &absolute, std::string const &base)
-{
-	std::string res= absolute.substr(base.size() - 1, absolute.size() - base.size() + 1);
-
-	if (res.back() != '/')
-	{
-		res.push_back('/');
-	}
-	return (res);
-}
-
 static std::vector<std::string> get_directory_entries(DIR *dirp)
 {
 	struct dirent           *ent;
@@ -106,7 +95,6 @@ ReturnType handle_dir(std::string &resource, t_c_route const &route, t_c_individ
 					  struct stat statbuf)
 {
 	DIR                     *dirp = opendir(resource.c_str());
-	std::string const        relative_directory_name = get_relative_directory_name(resource, route.get_resource().get_root());
 	std::vector<std::string> directory_entries;
 	std::string              body;
 	std::string const        current_time = get_current_time_as_string();
@@ -126,7 +114,7 @@ ReturnType handle_dir(std::string &resource, t_c_route const &route, t_c_individ
 		return (handle_error(500, config)); // internal server error
 	}
 	directory_entries = get_directory_entries(dirp);
-	body = compile_body(relative_directory_name, directory_entries);
+	body = compile_body(route.get_path(), directory_entries);
 	headers = std::string("HTTP/1.1 200 OK\r\n") + "Server: webserv/0.1\r\n" + "Date: " + current_time + "\r\n" +
 			  "Content-Type: text/html\r\n" + "Content-Length: " + std::to_string(body.size()) + "\r\n" +
 			  "Connection: close" + "\r\n\r\n";
