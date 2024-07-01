@@ -75,18 +75,7 @@ void Server::server_loop(void)
 			sockfd = events[n].data.fd;
 			// std::cout << sockfd << std::endl;
 			// std::cout << "event " << events[n].events << " in: " << sockfd << std::endl;
-			if (connection_response_map.find(sockfd) != connection_response_map.end() &&
-				(events[n].events & EPOLLHUP) == EPOLLHUP)
-			{
-				delete_connection(connection_response_map[sockfd]->getConFd());
-				connection_response_map.erase(sockfd);
-			}
-			else if ((events[n].events & EPOLLERR) == EPOLLERR || (events[n].events & EPOLLHUP) == EPOLLHUP ||
-					 (events[n].events & EPOLLRDHUP) == EPOLLRDHUP)
-			{
-				delete_connection(sockfd);
-			}
-			else if (socket_map.find(sockfd) != socket_map.end())
+			if (socket_map.find(sockfd) != socket_map.end())
 			{
 				ReturnType  resp(-1, "", NO_CHILD);
 				Connection *connection = new Connection(socket_map[sockfd]->getPort(), global_config, resp);
@@ -100,10 +89,29 @@ void Server::server_loop(void)
 					manage_epoll(connection->getConFd(), EPOLL_CTL_ADD, EPOLLIN);
 				}
 			}
+			else if (connection_response_map.find(sockfd) != connection_response_map.end() &&
+				(events[n].events & EPOLLHUP) == EPOLLHUP)
+			{
+				std::cout << "CGI Process Hangup\n";
+				close(sockfd);
+				if (connection_response_map[sockfd]->child_error())
+				{
+					//std::cout << "child error\n";
+					delete_connection(connection_response_map[sockfd]->getConFd());
+				}
+				else
+				{
+					//std::cout << "Correct finish\n";
+					connection_response_map[sockfd]->set_ready();
+					manage_epoll(connection_response_map[sockfd]->getConFd(), EPOLL_CTL_MOD, EPOLLOUT);
+				}
+				connection_response_map.erase(sockfd);
+			}
 			else if ((connection_response_map.find(sockfd) != connection_response_map.end()) &&
 					 (events[n].events & EPOLLIN) == EPOLLIN)
 			{
 				// CGI pipe is ready.
+				//std::cout << "Reading from pipe\n";
 				int status = connection_response_map[sockfd]->build_response();
 				if (status <= 0)
 				{
@@ -114,28 +122,36 @@ void Server::server_loop(void)
 					}
 				}
 			}
+			else if ((events[n].events & EPOLLERR) == EPOLLERR || (events[n].events & EPOLLHUP) == EPOLLHUP ||
+					 (events[n].events & EPOLLRDHUP) == EPOLLRDHUP)
+			{
+				//std::cout << "Error event, closing connection in " << sockfd << std::endl;
+				delete_connection(sockfd);
+			}
 			else if ((events[n].events & EPOLLIN) == EPOLLIN)
 			{
+				//std::cout << "Reading event in " << sockfd << std::endl;
 				Connection *connection = connection_map[sockfd];
 				if (connection->read_request() < 0)
 				{
-					// std::cout << "Error while reading\n";
+					//std::cout << "Error while reading\n";
 					delete_connection(sockfd);
 				}
 				if (connection->request_read())
 				{
-					std::cout << "Request read. Generating response for ";
+					//std::cout << "Request read. Generating response for ";
 					int fd = connection->generate_response();
-					if (connection->response_ready())
+					if (fd > 0 && connection->getResponse().is_cgi())
+					{
+						manage_epoll(fd, EPOLL_CTL_ADD, EPOLLIN);
+						connection_response_map[fd] = connection;
+						children.push_back(connection->getResponse().get_child_pid());
+					}
+					else if (connection->response_ready())
 					{
 						manage_epoll(connection->getConFd(), EPOLL_CTL_MOD, EPOLLOUT);
 					}
-					if (fd > 0 && connection->getResponse().is_cgi())
-					{
-						manage_epoll(fd, EPOLL_CTL_ADD, EPOLLIN | EPOLLHUP);
-						connection_response_map[fd] = connection;
-					}
-					else if (fd < 0 && !connection->response_ready())
+					else
 					{
 						delete_connection(sockfd);
 					}
@@ -143,9 +159,11 @@ void Server::server_loop(void)
 			}
 			else if ((events[n].events & EPOLLOUT) == EPOLLOUT)
 			{
+				//std::cout << "write event in" << sockfd << "\n";
 				if (connection_map[sockfd]->send_response() < 0 || connection_map[sockfd]->response_sent())
 				{
-					std::cout << "Response sent\n \"" << connection_map[sockfd]->getResponseBuffer() << "\"\n";
+					std::cout << "Response sent\n\"" << connection_map[sockfd]->getResponseBuffer() << "\"\n";
+					manage_epoll(sockfd, EPOLL_CTL_DEL, 1);
 					connection_response_map.erase(connection_map[sockfd]->getResponse().get_fd());
 					delete_connection(sockfd);
 				}
@@ -158,18 +176,23 @@ void Server::server_loop(void)
 void Server::child_reaper(void)
 {
 	std::vector<pid_t>::iterator child;
+
 	if (children.empty())
 	{
 		return ;
 	}
 	for (child = children.begin(); child != children.end();)
 	{
-		if (waitpid(*child, NULL, WNOHANG) > 0)
+		if (waitpid(*child, NULL, WNOHANG) != 0)
 		{
-			children.erase(child);
-			break;
+			std::cout << *child << " reaped\n";
+			child = children.erase(child);
 		}
-		child++;
+		else
+		{
+			child++;
+		}
+		
 	}
 }
 

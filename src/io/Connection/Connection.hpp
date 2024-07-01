@@ -45,6 +45,7 @@ class Connection
 		bool                                request_read(void);
 		bool                                response_sent(void) const;
 		bool                                is_reaped(void) const;
+		bool								child_error(void) const;
 		int                                 getConFd(void) const;
 		struct sockaddr_in const           &getAddress(void) const;
 		std::string                         getRequestBuffer(void) const;
@@ -52,4 +53,5 @@ class Connection
 		ReturnType const                   &getResponse(void) const;
 		t_c_global_config const            *getGlobalConfig(void) const;
 		t_c_individual_server_config const *getConfig(void) const;
+		void								set_ready(void);
 };

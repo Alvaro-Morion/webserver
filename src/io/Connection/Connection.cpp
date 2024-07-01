@@ -271,6 +271,20 @@ bool Connection::is_reaped(void) const
 	return (reaped_child);
 }
 
+bool Connection::child_error(void) const
+{
+	int status;
+
+	if(waitpid(response.get_child_pid(), &status, WNOHANG) > 0)
+	{
+		if(WIFEXITED(status))
+		{
+			return(WEXITSTATUS(status) == EXIT_FAILURE);
+		}
+	}
+	return (false);
+}
+
 int Connection::getConFd(void) const
 {
 	return (confd);
@@ -309,4 +323,9 @@ t_c_global_config const *Connection::getGlobalConfig(void) const
 t_c_individual_server_config const *Connection::getConfig(void) const
 {
 	return (config);
+}
+
+void Connection::set_ready(void)
+{
+	ready_to_send = true;
 }
