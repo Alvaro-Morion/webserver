@@ -6,7 +6,7 @@
 #    github:   https://github.com/priezu-m                                     #
 #    Licence:  GPLv3                                                           #
 #    Created:  2023/09/27 18:57:07                                             #
-#    Updated: 2024/07/01 19:28:43 by ahammoud         ###   ########.fr        #
+#    Updated: 2024/07/01 19:31:09 by ahammoud         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -78,7 +78,9 @@ ifeq ($(MAKECMDGOALS),all)
 -include $(DEP)
 endif
 
-
+ifeq ($(MAKECMDGOALS),)
+-include $(DEP)
+endif
 
 ################################################################################
 
