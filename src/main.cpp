@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                                            */
-/*   Filename: main.cpp                                                       */
+/*   main.cpp                                           :+:      :+:    :+:   */
 /*   Author:   Peru Riezu <riezumunozperu@gmail.com>                          */
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:18:55                                            */
-/*   Updated: 2024/06/12 18:33:20 by amorion-         ###   ########.fr       */
+/*   Updated: 2024/07/02 19:12:27 by amorion-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,13 +56,21 @@ int main(int argc, char **argv)
 		print_usage();
 		return (EXIT_FAILURE);
 	}
-	if (argc == 2)
-	{
-		config = get_config(argv[1]);
+	try
+	{	
+		if (argc == 2)
+		{
+			config = get_config(argv[1]);
+		}
+		else
+		{
+			config = get_config(DEFAULT_CONFIG);
+		}
 	}
-	else
+	catch (std::exception &e)
 	{
-		config = get_config(DEFAULT_CONFIG);
+		std::cerr << e.what() << std::endl;
+		exit(EXIT_FAILURE);
 	}
 	signal(SIGPIPE, SIG_IGN);
 	std::cout << config->to_string();
