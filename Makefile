@@ -1,12 +1,12 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                                              #
-#    Makefile                                           :+:      :+:    :+:    #
+#    Filename: Makefile                                                        #
 #    Author:   Peru Riezu <riezumunozperu@gmail.com>                           #
 #    github:   https://github.com/priezu-m                                     #
 #    Licence:  GPLv3                                                           #
 #    Created:  2023/09/27 18:57:07                                             #
-#    Updated: 2024/07/01 19:31:09 by ahammoud         ###   ########.fr        #
+#    Updated:  2024/07/02 18:43:18                                             #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ CXX :=				g++
 CFLAGS :=			-O3 -flto -Wall -Wextra
 CXXFLAGS :=			-O3 -flto -Wall -Wextra -std=c++20
 CDEBUG_FLAGS :=		-O0 -g3 -fsanitize=address,undefined,leak
-CXXDEBUG_FLAGS :=	-O0 -g3 -std=c++20 -fsanitize=address,undefined,leak
+CXXDEBUG_FLAGS :=	-O0 -g3 -fsanitize=address,undefined,leak
 LDFLAGS :=			
 
 ################################################################################

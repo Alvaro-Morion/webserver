@@ -33,12 +33,12 @@ server
 			path "/cgi/";
 			resource
 			{
-				root "youtube.com";
-				is_redirect true; # can be ommited false by default
+				root "/home/superuser/webserver/example_website/cgi";
+				is_redirect false; # can be ommited false by default
 				methods GET, POST, DELETE; # can be ommited, GET by default, can be left empty for none allowed
 				directory_listing on; # can be ommited off by default
 				#resource_is_a_directory_error_page "default_error_pages/403"; # can be ommited default exists
-				is_cgi false; # can be ommited false by default
+				is_cgi true; # can be ommited false by default
 			}
 		}
 	}
