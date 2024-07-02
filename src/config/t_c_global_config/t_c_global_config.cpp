@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 19:13:58                                            */
-/*   Updated:  2024/06/06 10:32:34                                            */
+/*   Updated:  2024/07/02 20:00:48                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-t_c_global_config::t_c_global_config(std::set<t_c_individual_server_config, std::less<>> const &servers_param)
+t_c_global_config::t_c_global_config(std::set<t_c_individual_server_config, std::less<> > const &servers_param)
 	: servers(servers_param)
 {
 	if (servers.empty() == true)
@@ -49,18 +49,11 @@ t_c_global_config::t_c_global_config(std::set<t_c_individual_server_config, std:
 	}
 }
 
-t_c_global_config::t_c_global_config(void)
-{
-	std::string host = "localhost";
-	this->ports.insert(8080);
-	this->servers.insert(t_c_individual_server_config("localhost", 8080));
-}
-
 t_c_global_config::~t_c_global_config(void)
 {
 }
 
-std::set<t_c_individual_server_config, std::less<>> const &t_c_global_config::get_servers(void) const
+std::set<t_c_individual_server_config, std::less<> > const &t_c_global_config::get_servers(void) const
 {
 	return (servers);
 }

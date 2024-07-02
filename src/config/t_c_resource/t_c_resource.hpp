@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 03:52:48                                            */
-/*   Updated:  2024/06/28 11:43:59                                            */
+/*   Updated:  2024/07/02 19:26:14                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,13 +34,13 @@ class t_c_resource
 {
 	private:
 		std::string root;
-		std::string file_is_a_directory_page = "default_error_pages/403";
+		std::string file_is_a_directory_page;
 		bool        is_redirect;
-		bool        directory_listing = true;
-		bool        post_allowed = false;
-		bool        delet_allowed = false;
-		bool        get_allowed = true;
-		bool        is_cgi = false;
+		bool        directory_listing;
+		bool        post_allowed;
+		bool        delet_allowed;
+		bool        get_allowed;
+		bool        is_cgi;
 
 	public:
 		explicit t_c_resource(std::string const &root_param, std::string const &file_is_a_directory_page_param,

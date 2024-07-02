@@ -6,14 +6,14 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/08 03:01:06                                            */
-/*   Updated:  2024/06/07 11:12:04                                            */
+/*   Updated:  2024/07/02 19:28:52                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "t_c_individual_server_config.hpp"
 #include "../config.hpp"
 #include <arpa/inet.h>
-#include <cstdint>
+#include <stdint.h>
 #include <stdexcept>
 #include <string>
 
@@ -44,14 +44,6 @@ t_c_individual_server_config::t_c_individual_server_config(std::string const *ho
 	{
 		throw(std::invalid_argument(*host_name + " is not a valid host_name")); // parameters invalid
 	}
-}
-
-t_c_individual_server_config::t_c_individual_server_config(std::string host_name, int port)
-{
-	error_pages = new t_c_error_pages;
-	this->host_name = new std::string(host_name);
-	this->port = port;
-	client_body_size_limit = 0;
 }
 
 t_c_individual_server_config::t_c_individual_server_config(t_c_individual_server_config const &copy)

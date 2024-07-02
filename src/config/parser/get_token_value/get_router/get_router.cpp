@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/03 08:33:11                                            */
-/*   Updated:  2024/06/27 19:18:31                                            */
+/*   Updated:  2024/07/02 19:48:10                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -261,7 +261,7 @@ void get_router(t_c_server_constructor_params &params, std::vector<t_c_token> &t
 		throw(std::invalid_argument(std::string(config_file) + ": error, expected }, to match { at " +
 									opening_key_position.to_string() + ", but found end of file\n"));
 	}
-	params.router = new t_c_router(std::set<t_c_route, std::less<>>(routes.begin(), routes.end()));
+	params.router = new t_c_router(std::set<t_c_route, std::less<> >(routes.begin(), routes.end()));
 }
 
 #pragma GCC diagnostic pop

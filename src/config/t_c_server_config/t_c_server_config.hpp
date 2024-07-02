@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 03:58:30                                            */
-/*   Updated:  2024/06/07 11:11:17                                            */
+/*   Updated:  2024/07/02 19:24:05                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ class t_c_server_config // binds to objects recived in construction
 		std::vector<uint16_t>      ports; // must be in network format (big endian)
 		t_c_router const          *router;
 		t_c_error_pages const     *error_pages;
-		uint64_t                   client_body_size_limit = UINT64_MAX; // UINT64_MAX to disable
+		uint64_t                   client_body_size_limit; // UINT64_MAX to disable
 
 	public:
 		explicit t_c_server_config(std::vector<std::string *> const &host_names_param,

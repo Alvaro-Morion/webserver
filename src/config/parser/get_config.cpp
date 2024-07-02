@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/26 00:53:43                                            */
-/*   Updated:  2024/06/07 11:15:21                                            */
+/*   Updated:  2024/07/02 19:48:09                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ static t_c_server_config_token get_server_config(std::vector<t_c_token> &tokens,
 t_c_global_config *get_config(char const *config_file)
 {
 	std::vector<t_c_token>                                    tokens = get_tokens(config_file);
-	std::set<t_c_individual_server_config_token, std::less<>> individual_server_config_set;
+	std::set<t_c_individual_server_config_token, std::less<> > individual_server_config_set;
 	size_t                                                    i;
 
 	i = 0;
@@ -178,7 +178,7 @@ t_c_global_config *get_config(char const *config_file)
 			i++;
 		}
 	}
-	return (new t_c_global_config(std::set<t_c_individual_server_config, std::less<>>(
+	return (new t_c_global_config(std::set<t_c_individual_server_config, std::less<> >(
 		individual_server_config_set.begin(), individual_server_config_set.end())));
 }
 

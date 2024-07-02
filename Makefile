@@ -6,7 +6,7 @@
 #    github:   https://github.com/priezu-m                                     #
 #    Licence:  GPLv3                                                           #
 #    Created:  2023/09/27 18:57:07                                             #
-#    Updated:  2024/07/02 18:57:16                                             #
+#    Updated:  2024/07/02 19:55:48                                             #
 #                                                                              #
 # **************************************************************************** #
 
@@ -105,11 +105,11 @@ $(DEP_PATH)/%.d: %.c | $(NEW_DIRS)
 
 $(OBJ_PATH)/%.o: %.c
 	@$(CC) $(CFLAGS) -c $< -o $@
-	printf "$(CC) $(CFLAGS) -c $< -o $@\n"
+	@printf "$(CC) $(CFLAGS) -c $< -o $@\n"
 
 $(OBJ_PATH)/%.o: %.cpp
 	@$(CXX) $(CFLAGS) -c $< -o $@
-	printf "$(CXX) $(CXXFLAGS) -c $< -o $@\n"
+	@printf "$(CXX) $(CXXFLAGS) -c $< -o $@\n"
 
 $(NAME): $(OBJ)
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $@ $(LDFLAGS)

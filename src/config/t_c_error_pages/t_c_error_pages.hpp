@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 03:56:06                                            */
-/*   Updated:  2024/06/07 11:13:54                                            */
+/*   Updated:  2024/07/02 19:33:10                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,16 @@
 class t_c_error_pages
 {
 	private:
-		std::string http_version_not_supported = "default_error_pages/505"; // 505
-		std::string not_implemeted = "default_error_pages/501";             // 501
-		std::string internal_server_error = "default_error_pages/500";      // 500
-		std::string uri_too_long = "default_error_pages/414";               // 414
-		std::string content_too_large = "default_error_pages/413";          // 413
-		std::string length_requiered = "default_error_pages/411";           // 411
-		std::string request_timeout = "default_error_pages/408";            // 408
-		std::string not_found = "default_error_pages/404";                  // 404
-		std::string forbidden = "default_error_pages/403";                  // 403
-		std::string bad_request = "default_error_pages/400";                // 400
+		std::string http_version_not_supported; // 505
+		std::string not_implemeted;             // 501
+		std::string internal_server_error;      // 500
+		std::string uri_too_long;               // 414
+		std::string content_too_large;          // 413
+		std::string length_requiered;           // 411
+		std::string request_timeout;            // 408
+		std::string not_found;                  // 404
+		std::string forbidden;                  // 403
+		std::string bad_request;                // 400
 
 	public:
 		explicit t_c_error_pages(std::string const &http_version_not_supported_param,

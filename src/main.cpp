@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:18:55                                            */
-/*   Updated: 2024/07/02 19:12:27 by amorion-         ###   ########.fr       */
+/*   Updated:  2024/07/02 19:44:45                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "engine/engine.hpp"
 #include "io/io.hpp"
 #include <csignal>
-#include <cstdint>
+#include <stdint.h>
 #include <cstdlib>
 #include <iostream>
 #include <string>

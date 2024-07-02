@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 14:41:43                                            */
-/*   Updated:  2024/06/29 21:03:45                                            */
+/*   Updated:  2024/07/02 19:48:16                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,10 +78,10 @@ static std::string get_body(std::string const &request, size_t &i)
 }
 
 static std::pair<t_c_route, bool> get_resource_rules(std::string                             resource,
-													 std::set<t_c_route, std::less<>> const &routes)
+													 std::set<t_c_route, std::less<> > const &routes)
 {
 	size_t                                     i;
-	std::set<t_c_route, std::less<>>::iterator it;
+	std::set<t_c_route, std::less<> >::iterator it;
 
 	if (resource.back() != '/')
 	{

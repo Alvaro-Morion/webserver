@@ -6,14 +6,14 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 04:00:48                                            */
-/*   Updated:  2024/06/07 11:11:59                                            */
+/*   Updated:  2024/07/02 19:28:50                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "../t_c_server_config/t_c_server_config.hpp"
-#include <cstdint>
+#include <stdint.h>
 
 ;
 #pragma GCC diagnostic push
@@ -39,14 +39,13 @@ class t_c_individual_server_config // perfoms no validity checks on construction
 		uint16_t               port;
 		t_c_router const      *router;
 		t_c_error_pages const *error_pages;
-		uint64_t               client_body_size_limit = UINT64_MAX; // UINT64_MAX to disable
+		uint64_t               client_body_size_limit; // UINT64_MAX to disable
 
 	public:
 		class t_c_light_key;
 		explicit t_c_individual_server_config(std::string const *host_name_param, uint16_t port_param,
 											  t_c_router const *router_param, t_c_error_pages const *error_pages_param,
 											  uint64_t client_body_size_limit_param);
-		t_c_individual_server_config(std::string const host_nname, int port); // NOLINT For test only
 		t_c_individual_server_config(t_c_individual_server_config const &copy);
 		~t_c_individual_server_config(void);
 		t_c_individual_server_config const &operator=(t_c_individual_server_config const &copy);

@@ -6,12 +6,13 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/24 18:43:50                                            */
-/*   Updated:  2024/06/07 11:15:46                                            */
+/*   Updated:  2024/07/02 19:44:18                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../t_c_global_config/t_c_global_config.hpp"
-#include <cstddef>
+#include <stdint.h>
+#include <stddef.h>
 #include <string>
 
 ;
@@ -145,39 +146,59 @@ class t_c_token
 struct t_c_error_pages_constructor_params
 {
 		t_c_position router_position;
-		std::string  http_version_not_supported = "default_error_pages/505";
+		std::string  http_version_not_supported;
 		t_c_position http_version_not_supported_position;
-		std::string  not_implemeted = "default_error_pages/501";
+		std::string  not_implemeted;
 		t_c_position not_implemeted_position;
-		std::string  internal_server_error = "default_error_pages/500";
+		std::string  internal_server_error;
 		t_c_position internal_server_error_position;
-		std::string  uri_too_long = "default_error_pages/414";
+		std::string  uri_too_long;
 		t_c_position uri_too_long_position;
-		std::string  content_too_large = "default_error_pages/413";
+		std::string  content_too_large;
 		t_c_position content_too_large_position;
-		std::string  length_requiered = "default_error_pages/411";
+		std::string  length_requiered;
 		t_c_position length_requiered_position;
-		std::string  request_timeout = "default_error_pages/408";
+		std::string  request_timeout;
 		t_c_position request_timeout_position;
-		std::string  not_found = "default_error_pages/404";
+		std::string  not_found;
 		t_c_position not_found_position;
-		std::string  forbidden = "default_error_pages/403";
+		std::string  forbidden;
 		t_c_position forbidden_position;
-		std::string  bad_request = "default_error_pages/400";
+		std::string  bad_request;
 		t_c_position bad_request_position;
+
+		t_c_error_pages_constructor_params(void) : http_version_not_supported("default_error_pages/505"),
+		not_implemeted("default_error_pages/501"),
+		internal_server_error("default_error_pages/500"),
+		uri_too_long("default_error_pages/414"),
+		content_too_large("default_error_pages/413"),
+		length_requiered("default_error_pages/411"),
+		request_timeout("default_error_pages/408"),
+		not_found("default_error_pages/404"),
+		forbidden("default_error_pages/403"),
+		bad_request("default_error_pages/400")
+		{
+
+		}
 };
 
 struct t_c_server_constructor_params
 {
-		std::vector<std::string *>         host_names;
-		t_c_position                       host_names_position;
-		std::vector<uint16_t>              ports; // must be in network format (big endian)
-		t_c_position                       ports_position;
-		t_c_error_pages_constructor_params error_params;
-		uint64_t                           client_body_size_limit = UINT64_MAX; // UINT64_MAX to disable
-		t_c_position                       client_body_size_limit_position;
-		t_c_router                        *router = nullptr;
-		t_c_position                       router_position;
+	std::vector<std::string *>         host_names;
+	t_c_position                       host_names_position;
+	std::vector<uint16_t>              ports; // must be in network format (big endian)
+	t_c_position                       ports_position;
+	t_c_error_pages_constructor_params error_params;
+	uint64_t                           client_body_size_limit; // UINT64_MAX to disable
+	t_c_position                       client_body_size_limit_position;
+	t_c_router                        *router;
+	t_c_position                       router_position;
+
+	t_c_server_constructor_params(void) :
+	client_body_size_limit(UINT64_MAX), router(NULL)
+	{
+
+	}
 };
 
 class t_c_route_token : public t_c_route

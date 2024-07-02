@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/14 03:53:52                                            */
-/*   Updated:  2024/06/07 16:23:18                                            */
+/*   Updated:  2024/07/02 19:48:16                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 #include "../t_c_route/t_c_route.hpp"
 
-#include <cstdint>
+#include <stdint.h>
 #include <functional>
 #include <set>
 #include <string>
@@ -38,15 +38,15 @@
 class t_c_router
 {
 	private:
-		std::set<t_c_route, std::less<>> routes;
+		std::set<t_c_route, std::less<> > routes;
 
 	public:
-		explicit t_c_router(std::set<t_c_route, std::less<>> const &routes_param);
+		explicit t_c_router(std::set<t_c_route, std::less<> > const &routes_param);
 		t_c_router(t_c_router const &copy);
 		~t_c_router(void);
 		bool                                    operator==(t_c_router const &comparator) const;
 
-		std::set<t_c_route, std::less<>> const &get_routes(void) const;
+		std::set<t_c_route, std::less<> > const &get_routes(void) const;
 		std::string                             to_string(void) const;
 };
 

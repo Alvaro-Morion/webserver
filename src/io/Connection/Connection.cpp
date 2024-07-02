@@ -98,7 +98,7 @@ void Connection::select_config(void)
 	try
 	{
 		t_c_individual_server_config::t_c_light_key                   key(&hostname, port);
-		std::set<t_c_individual_server_config, std::less<>>::iterator config_it =
+		std::set<t_c_individual_server_config, std::less<> >::iterator config_it =
 			global_config->get_servers().find(key);
 		if (config_it == global_config->get_servers().end())
 		{
