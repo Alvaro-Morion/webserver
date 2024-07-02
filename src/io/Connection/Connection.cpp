@@ -264,11 +264,11 @@ bool Connection::child_error(void) const
 {
 	int status;
 
-	if(waitpid(response.get_child_pid(), &status, WNOHANG) > 0)
+	if (waitpid(response.get_child_pid(), &status, WNOHANG) > 0)
 	{
-		if(WIFEXITED(status))
+		if (WIFEXITED(status))
 		{
-			return(WEXITSTATUS(status) == EXIT_FAILURE);
+			return (WEXITSTATUS(status) == EXIT_FAILURE);
 		}
 	}
 	return (false);

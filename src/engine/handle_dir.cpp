@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/12 16:56:16                                            */
-/*   Updated:  2024/06/28 13:35:01                                            */
+/*   Updated:  2024/07/02 18:08:04                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,17 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
+static std::string get_relative_directory_name(std::string const &absolute, std::string const &base)
+{
+	std::string res = absolute.substr(base.size() - 1, absolute.size() - base.size() + 1);
+
+	if (res.back() != '/')
+	{
+		res.push_back('/');
+	}
+	return (res);
+}
+
 static std::vector<std::string> get_directory_entries(DIR *dirp)
 {
 	struct dirent           *ent;
@@ -50,15 +61,22 @@ static std::vector<std::string> get_directory_entries(DIR *dirp)
 	return (directory_entries);
 }
 
-static std::string compile_body(std::string const &dir_name, std::vector<std::string> const &directory_entries)
+static std::string compile_body(std::string const &dir_name_base, std::string const &dir_name_rest,
+								std::vector<std::string> const &directory_entries)
 {
 	std::string res;
 
-	res += "<html>\r\n<head><title>" + dir_name + "</title></head>\r\n<body>\r\n<h1>" + dir_name + "</h1><hr><pre>\r\n";
+	res += "<html>\r\n<head><title>" + dir_name_base;
+	res.pop_back();
+	res += dir_name_rest + "</title></head>\r\n<body>\r\n<h1>" + dir_name_base;
+	res.pop_back();
+	res += dir_name_rest + "</h1><hr><pre>\r\n";
 	for (std::string const &entry : directory_entries)
 	{
-		res += "<a href=\"" + dir_name;
-		res	+= entry + "\">";
+		res += "<a href=\"" + dir_name_base;
+		res.pop_back();
+		res += dir_name_rest;
+		res += entry + "\">";
 		res += entry + "</a>\r\n";
 	}
 	res += "</pre><hr></body>\r\n</html>\r\n";
@@ -94,7 +112,8 @@ static ReturnType handle_dir_internal(std::string const &headers, std::string co
 ReturnType handle_dir(std::string &resource, t_c_route const &route, t_c_individual_server_config const &config,
 					  struct stat statbuf)
 {
-	DIR                     *dirp = opendir(resource.c_str());
+	DIR              *dirp = opendir(resource.c_str());
+	std::string const relative_directory_name = get_relative_directory_name(resource, route.get_resource().get_root());
 	std::vector<std::string> directory_entries;
 	std::string              body;
 	std::string const        current_time = get_current_time_as_string();
@@ -114,7 +133,7 @@ ReturnType handle_dir(std::string &resource, t_c_route const &route, t_c_individ
 		return (handle_error(500, config)); // internal server error
 	}
 	directory_entries = get_directory_entries(dirp);
-	body = compile_body(route.get_path(), directory_entries);
+	body = compile_body(route.get_path(), relative_directory_name, directory_entries);
 	headers = std::string("HTTP/1.1 200 OK\r\n") + "Server: webserv/0.1\r\n" + "Date: " + current_time + "\r\n" +
 			  "Content-Type: text/html\r\n" + "Content-Length: " + std::to_string(body.size()) + "\r\n" +
 			  "Connection: close" + "\r\n\r\n";

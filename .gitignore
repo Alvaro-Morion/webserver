@@ -4,3 +4,4 @@
 *.out
 test.cpp
 example_configs/config1
+./example_configs/config1

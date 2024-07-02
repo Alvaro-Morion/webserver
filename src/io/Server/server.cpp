@@ -90,18 +90,18 @@ void Server::server_loop(void)
 				}
 			}
 			else if (connection_response_map.find(sockfd) != connection_response_map.end() &&
-				(events[n].events & EPOLLHUP) == EPOLLHUP)
+					 (events[n].events & EPOLLHUP) == EPOLLHUP)
 			{
 				std::cout << "CGI Process Hangup\n";
 				close(sockfd);
 				if (connection_response_map[sockfd]->child_error())
 				{
-					//std::cout << "child error\n";
+					// std::cout << "child error\n";
 					delete_connection(connection_response_map[sockfd]->getConFd());
 				}
 				else
 				{
-					//std::cout << "Correct finish\n";
+					// std::cout << "Correct finish\n";
 					connection_response_map[sockfd]->set_ready();
 					manage_epoll(connection_response_map[sockfd]->getConFd(), EPOLL_CTL_MOD, EPOLLOUT);
 				}
@@ -111,7 +111,7 @@ void Server::server_loop(void)
 					 (events[n].events & EPOLLIN) == EPOLLIN)
 			{
 				// CGI pipe is ready.
-				//std::cout << "Reading from pipe\n";
+				// std::cout << "Reading from pipe\n";
 				int status = connection_response_map[sockfd]->build_response();
 				if (status <= 0)
 				{
@@ -125,21 +125,21 @@ void Server::server_loop(void)
 			else if ((events[n].events & EPOLLERR) == EPOLLERR || (events[n].events & EPOLLHUP) == EPOLLHUP ||
 					 (events[n].events & EPOLLRDHUP) == EPOLLRDHUP)
 			{
-				//std::cout << "Error event, closing connection in " << sockfd << std::endl;
+				// std::cout << "Error event, closing connection in " << sockfd << std::endl;
 				delete_connection(sockfd);
 			}
 			else if ((events[n].events & EPOLLIN) == EPOLLIN)
 			{
-				//std::cout << "Reading event in " << sockfd << std::endl;
+				// std::cout << "Reading event in " << sockfd << std::endl;
 				Connection *connection = connection_map[sockfd];
 				if (connection->read_request() < 0)
 				{
-					//std::cout << "Error while reading\n";
+					// std::cout << "Error while reading\n";
 					delete_connection(sockfd);
 				}
 				if (connection->request_read())
 				{
-					//std::cout << "Request read. Generating response for ";
+					// std::cout << "Request read. Generating response for ";
 					int fd = connection->generate_response();
 					if (fd > 0 && connection->getResponse().is_cgi())
 					{
@@ -159,7 +159,7 @@ void Server::server_loop(void)
 			}
 			else if ((events[n].events & EPOLLOUT) == EPOLLOUT)
 			{
-				//std::cout << "write event in" << sockfd << "\n";
+				// std::cout << "write event in" << sockfd << "\n";
 				if (connection_map[sockfd]->send_response() < 0 || connection_map[sockfd]->response_sent())
 				{
 					std::cout << "Response sent\n\"" << connection_map[sockfd]->getResponseBuffer() << "\"\n";
@@ -179,7 +179,7 @@ void Server::child_reaper(void)
 
 	if (children.empty())
 	{
-		return ;
+		return;
 	}
 	for (child = children.begin(); child != children.end();)
 	{
@@ -192,7 +192,6 @@ void Server::child_reaper(void)
 		{
 			child++;
 		}
-		
 	}
 }
 
