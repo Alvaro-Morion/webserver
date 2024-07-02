@@ -3,3 +3,4 @@
 .vscode
 *.out
 test.cpp
+example_configs/config1
