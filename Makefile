@@ -6,7 +6,7 @@
 #    github:   https://github.com/priezu-m                                     #
 #    Licence:  GPLv3                                                           #
 #    Created:  2023/09/27 18:57:07                                             #
-#    Updated:  2024/07/02 18:43:18                                             #
+#    Updated:  2024/07/02 18:57:16                                             #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ SHELL :=			bash
 CC :=				gcc
 CXX :=				g++
 CFLAGS :=			-O3 -flto -Wall -Wextra
-CXXFLAGS :=			-O3 -flto -Wall -Wextra -std=c++20
+CXXFLAGS :=			-O3 -flto -Wall -Wextra -std=c++98
 CDEBUG_FLAGS :=		-O0 -g3 -fsanitize=address,undefined,leak
 CXXDEBUG_FLAGS :=	-O0 -g3 -fsanitize=address,undefined,leak
 LDFLAGS :=			
@@ -89,15 +89,9 @@ endif
 $(NEW_DIRS):
 	@mkdir -p $@
 
-$(OBJ_PATH)/%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(OBJ_PATH)/%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
 $(DEP_PATH)/%.d: %.cpp | $(NEW_DIRS)
 	@rm -f $(DEP_PATH)/$@; \
-		$(CXX) $(CXXFLAGS) -M $< > $@.tmp; \
+		$(CXX) $(CFLAGS) -M $< > $@.tmp; \
 		sed 's,$(notdir $*).o[ :]*,$(OBJ_PATH)/$(subst $(DEP_PATH_MAKE),,$(basename $@).o) $@ : ,g' \
 	   	< $@.tmp > $@; \
 		rm -f $@.tmp
@@ -108,6 +102,14 @@ $(DEP_PATH)/%.d: %.c | $(NEW_DIRS)
 		sed 's,$(notdir $*).o[ :]*,$(OBJ_PATH)/$(subst $(DEP_PATH_MAKE),,$(basename $@).o) $@ : ,g' \
 	   	< $@.tmp > $@; \
 		rm -f $@.tmp
+
+$(OBJ_PATH)/%.o: %.c
+	@$(CC) $(CFLAGS) -c $< -o $@
+	printf "$(CC) $(CFLAGS) -c $< -o $@\n"
+
+$(OBJ_PATH)/%.o: %.cpp
+	@$(CXX) $(CFLAGS) -c $< -o $@
+	printf "$(CXX) $(CXXFLAGS) -c $< -o $@\n"
 
 $(NAME): $(OBJ)
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $@ $(LDFLAGS)
