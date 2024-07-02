@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/13 19:35:27                                            */
-/*   Updated:  2024/06/29 21:13:34                                            */
+/*   Updated:  2024/07/02 17:39:48                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,6 @@ static ReturnType handle_cgi_internal_internal(std::string const &target_file, s
 	c_pid = fork();
 	if (c_pid == -1)
 	{
-		lseek(memfd, 0, SEEK_SET);
 		close(memfd);
 		close(pipefds[WRITE_END]);
 		close(pipefds[READ_END]);
@@ -108,6 +107,7 @@ static ReturnType handle_cgi_internal_internal(std::string const &target_file, s
 	}
 	if (c_pid == 0)
 	{
+		lseek(memfd, 0, SEEK_SET);
 		if ((dup2(pipefds[WRITE_END], STDOUT_FILENO) == -1) || (dup2(memfd, STDIN_FILENO) == -1))
 		{
 			fprintf(stderr, "fatal error when juking output and input of cgi script");
