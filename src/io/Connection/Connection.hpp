@@ -22,7 +22,6 @@ class Connection
 		size_t                              bytes_sent;
 		bool                                ready_to_send;
 		bool                                sent_response;
-		bool                                reaped_child;
 		t_c_global_config const            *global_config;
 		t_c_individual_server_config const *config;
 
@@ -36,7 +35,6 @@ class Connection
 		int                                 generate_response(void);
 		int                                 build_response(void);   // For CGI (designed to pass though epoll)
 		int                                 build_response(int fd); // For regular files.
-		void                                reap_cgi(void);
 		int                                 send_response(void);
 		void                                check_body_length(void) const;
 		void                                check_not_chunked(void) const;
@@ -44,7 +42,6 @@ class Connection
 		bool                                response_ready(void) const;
 		bool                                request_read(void);
 		bool                                response_sent(void) const;
-		bool                                is_reaped(void) const;
 		bool								child_error(void) const;
 		int                                 getConFd(void) const;
 		struct sockaddr_in const           &getAddress(void) const;

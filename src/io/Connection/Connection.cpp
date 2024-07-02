@@ -35,7 +35,7 @@ static std::string get_header_value(std::string name, std::string request) // Ge
 }
 
 Connection::Connection(uint16_t port, t_c_global_config *global_config, ReturnType &resp)
-	: port(port), response(resp), bytes_sent(0), reaped_child(false)
+	: port(port), response(resp), bytes_sent(0)
 {
 	this->global_config = global_config;
 	this->config = NULL;
@@ -120,18 +120,12 @@ int Connection::generate_response(void)
 		response = handle_request(request_buffer, *config, ((struct sockaddr_in *)&address)->sin_addr);
 	}
 	ready_to_send = response.get_fd() < 0;
-	reaped_child = !response.is_cgi();
 	response_buffer = response.get_headers();
 	if (!ready_to_send && !response.is_cgi())
 	{
 		return (build_response(response.get_fd()));
 	}
 	return (response.get_fd());
-}
-
-void Connection::reap_cgi(void)
-{
-	reaped_child = (waitpid(response.get_child_pid(), NULL, WNOHANG) == response.get_child_pid());
 }
 
 int Connection::build_response(void) // For CGI (goes through epoll)
@@ -264,11 +258,6 @@ bool Connection::request_read(void)
 bool Connection::response_sent(void) const
 {
 	return (sent_response);
-}
-
-bool Connection::is_reaped(void) const
-{
-	return (reaped_child);
 }
 
 bool Connection::child_error(void) const

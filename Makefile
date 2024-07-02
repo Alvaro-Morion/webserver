@@ -19,8 +19,8 @@ CC :=				gcc
 CXX :=				g++
 CFLAGS :=			-O3 -flto -Wall -Wextra
 CXXFLAGS :=			-O3 -flto -Wall -Wextra -std=c++20
-CDEBUG_FLAGS :=		-O0 -g3 #-fsanitize=address,undefined,leak
-CXXDEBUG_FLAGS :=	-O0 -g3 #-std=c++20 -fsanitize=address,undefined,leak
+CDEBUG_FLAGS :=		-O0 -g3 -fsanitize=address,undefined,leak
+CXXDEBUG_FLAGS :=	-O0 -g3 -std=c++20 -fsanitize=address,undefined,leak
 LDFLAGS :=			
 
 ################################################################################
