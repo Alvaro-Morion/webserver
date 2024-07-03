@@ -152,24 +152,26 @@ int Connection::build_response(void) // For CGI (goes through epoll)
 
 int Connection::build_response(int fd)
 {
-	char    buffer[BUFFER_SIZE];
-	ssize_t nbytes;
-	while ((nbytes = read(fd, buffer, BUFFER_SIZE - 1)) > 0)
+	ssize_t size = get_file_size(fd);
+	if (size == -1)
 	{
-		buffer[nbytes] = 0;
-		response_buffer.append(std::string(buffer, nbytes));
-		std::cout << nbytes << std::endl;
+		perror("Response file size");
+		return(-1);
+	}
+	void *file_ptr = mmap(NULL, size, PROT_READ,  MAP_PRIVATE, fd, 0);
+	if (file_ptr == MAP_FAILED)
+	{
+		perror("Response file map");
+		return(-1);
+	}
+	response_buffer.append(std::string(static_cast<char *>(file_ptr), size));
+	ready_to_send = true;
+	if (munmap(file_ptr, size) == -1)
+	{
+		perror("Unmap response file");
 	}
 	close(fd);
-	if (nbytes == 0)
-	{
-		ready_to_send = true;
-	}
-	else
-	{
-		perror("Response file");
-	}
-	return (nbytes);
+	return(size);
 }
 
 int Connection::send_response(void)

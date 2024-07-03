@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/mman.h>
 
 #define BUFFER_SIZE 10000
 
