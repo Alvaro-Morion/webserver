@@ -64,12 +64,12 @@ void Server::server_loop(void)
 	while (true)
 	{
 		// std::cout << "epoll waiting ...\n";
-		if ((nevents = epoll_wait(epollfd, events, sizeof(events) / sizeof(events[0]), -1)) == -1)
+		if ((nevents = epoll_wait(epollfd, events, sizeof(events) / sizeof(events[0]), INACTIVE_TIME*100)) == -1)
 		{
 			perror("Epoll wait");
 			exit(EXIT_FAILURE);
 		}
-		// std::cout << "epoll returned " << nevents << " events\n";
+		//std::cout << "epoll returned " << nevents << " events\n";
 		for (int n = 0; n < nevents; n++)
 		{
 			sockfd = events[n].data.fd;
@@ -92,7 +92,7 @@ void Server::server_loop(void)
 			else if (connection_response_map.find(sockfd) != connection_response_map.end() &&
 					 (events[n].events & EPOLLHUP) == EPOLLHUP)
 			{
-				std::cout << "CGI Process Hangup\n";
+				//std::cout << "CGI Process Hangup\n";
 				close(sockfd);
 				if (connection_response_map[sockfd]->child_error())
 				{
@@ -169,6 +169,7 @@ void Server::server_loop(void)
 				}
 			}
 		}
+		inactive_client();
 		child_reaper();
 	}
 }
@@ -191,6 +192,47 @@ void Server::child_reaper(void)
 		else
 		{
 			child++;
+		}
+	}
+}
+
+void Server::inactive_client(void)
+{
+	std::map<int, Connection *>::iterator conn;
+	time_t c_time;
+	if (connection_map.empty())
+	{
+		return;
+	}
+	time(&c_time);
+	for (conn = connection_map.begin(); conn != connection_map.end();)
+	{
+		if(difftime(c_time, conn->second->getLastActivity()) > INACTIVE_TIME)
+		{
+			if(!(conn->second->getResponse() == ReturnType(-1, "", NO_CHILD)) && !conn->second->response_ready())
+			{
+				if (conn->second->getResponse().is_cgi())
+				{
+					manage_epoll(conn->second->getResponse().get_fd(), EPOLL_CTL_DEL, 1);
+				}
+				if(conn->second->generate_timeout_response())
+				{
+					manage_epoll(conn->second->getConFd(), EPOLL_CTL_MOD, EPOLLOUT);
+					conn++;
+				}
+				else
+				{
+					delete_connection((conn++)->first);
+				}
+			}
+			else
+			{
+				delete_connection((conn++)->first);
+			}
+		}
+		else
+		{
+			conn++;
 		}
 	}
 }

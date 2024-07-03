@@ -65,6 +65,7 @@ int Connection::accept_connection(int sockfd)
 		setsockopt(confd, SOL_SOCKET, SOCK_CLOEXEC, &size, sizeof(int));
 		std::cout << "New connection accepted in port " << ntohs(port) << " fd: " << confd << std::endl;
 	}
+	time(&last_activity);
 	return (confd);
 }
 
@@ -82,6 +83,7 @@ int Connection::read_request(void)
 	{
 		return (-1);
 	}
+	time(&last_activity);
 	// std::cout << nbytes << "bytes read\n";
 	// std::cout << "Current buffer: " << request_buffer << std::endl;
 	return (0);
@@ -126,6 +128,20 @@ int Connection::generate_response(void)
 		return (build_response(response.get_fd()));
 	}
 	return (response.get_fd());
+}
+
+int Connection::generate_timeout_response(void)
+{
+	kill(response.get_child_pid(), SIGTERM);
+	response = handle_error(408, *config);
+	ready_to_send = response.get_fd() < 0;
+	response_buffer = response.get_headers();
+	if (!ready_to_send)
+	{
+		build_response(response.get_fd());
+	}
+	time(&last_activity);
+	return(response.get_fd());
 }
 
 int Connection::build_response(void) // For CGI (goes through epoll)
@@ -188,6 +204,7 @@ int Connection::send_response(void)
 	{
 		sent_response = true;
 	}
+	time(&last_activity);
 	return (0);
 }
 
@@ -314,6 +331,11 @@ t_c_global_config const *Connection::getGlobalConfig(void) const
 t_c_individual_server_config const *Connection::getConfig(void) const
 {
 	return (config);
+}
+
+time_t Connection::getLastActivity(void) const
+{
+	return(last_activity);
 }
 
 void Connection::set_ready(void)

@@ -25,6 +25,7 @@ class Connection
 		bool                                sent_response;
 		t_c_global_config const            *global_config;
 		t_c_individual_server_config const *config;
+		time_t								last_activity;
 
 	public:
 		Connection(uint16_t port, t_c_global_config *global_config, ReturnType &resp);
@@ -34,6 +35,7 @@ class Connection
 		int                                 read_request(void);
 		void                                select_config(void);
 		int                                 generate_response(void);
+		int									generate_timeout_response(void);
 		int                                 build_response(void);   // For CGI (designed to pass though epoll)
 		int                                 build_response(int fd); // For regular files.
 		int                                 send_response(void);
@@ -51,5 +53,6 @@ class Connection
 		ReturnType const                   &getResponse(void) const;
 		t_c_global_config const            *getGlobalConfig(void) const;
 		t_c_individual_server_config const *getConfig(void) const;
+		time_t								getLastActivity(void) const;
 		void                                set_ready(void);
 };

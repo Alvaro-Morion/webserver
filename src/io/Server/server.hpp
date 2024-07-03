@@ -16,6 +16,7 @@
 #include <vector>
 
 #define MAX_EVENTS 10000
+#define INACTIVE_TIME  30
 
 class Server
 {
@@ -42,4 +43,5 @@ class Server
 		std::map<int, Connection *> &getConnectionMap(void);
 		void                         delete_connection(int fd);
 		void                         child_reaper(void);
+		void						 inactive_client(void);
 };
