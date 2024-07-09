@@ -133,6 +133,7 @@ int Connection::generate_response(void)
 int Connection::generate_timeout_response(void)
 {
 	kill(response.get_child_pid(), SIGTERM);
+	close(response.get_fd());
 	response = handle_error(408, *config);
 	ready_to_send = response.get_fd() < 0;
 	response_buffer = response.get_headers();
