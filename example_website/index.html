@@ -71,7 +71,7 @@
 						<!-- Contact -->
 							<article id="contact">
 								<h2 class="major">Contact</h2>
-								<form method="post" action="/cgi/test">
+								<form method="post" action="/cgi/print">
 									<div class="field half first">
 										<label for="name">Name</label>
 										<input type="text" name="name" id="name" />
@@ -96,7 +96,6 @@
 									<li><a href="#" class="icon fa-github"><span class="label">GitHub</span></a></li>
 								</ul>
 								<!--Here we insert the message from form submit -->
-								<iframe> type="text/html" data="/cgi/table.hml" </iframe>
 							</article>
 
 						<!-- comments -->
@@ -104,7 +103,10 @@
 								<h2 class="major">comments</h2>
 								<p> comments should be inserted here: </p>
 								<div id="insert-comments-here">
-								<object type="text/html" data="./cgi/data.html" width="100%" height="400"></object>
+								<object type="text/html" data="/assets/data.html" width="100%" height="400"></object>
+								<a href="/cgi/remove">
+									  <button>Delete</button>
+									  </a>
 								</div>
 							</article>
 
