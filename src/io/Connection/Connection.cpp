@@ -175,6 +175,11 @@ int Connection::build_response(int fd)
 		perror("Response file size");
 		return(-1);
 	}
+	if (!size)
+	{
+		ready_to_send = true;
+		return(size);
+	}
 	void *file_ptr = mmap(NULL, size, PROT_READ,  MAP_PRIVATE, fd, 0);
 	if (file_ptr == MAP_FAILED)
 	{
