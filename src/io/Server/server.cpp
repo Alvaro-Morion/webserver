@@ -94,15 +94,12 @@ void Server::server_loop(void)
 			{
 				//std::cout << "CGI Process Hangup\n";
 				close(sockfd);
-				if (connection_response_map[sockfd]->child_error())
+				if (connection_response_map[sockfd]->child_error() < 0)
 				{
-					// std::cout << "child error\n";
 					delete_connection(connection_response_map[sockfd]->getConFd());
 				}
 				else
 				{
-					// std::cout << "Correct finish\n";
-					connection_response_map[sockfd]->set_ready();
 					manage_epoll(connection_response_map[sockfd]->getConFd(), EPOLL_CTL_MOD, EPOLLOUT);
 				}
 				connection_response_map.erase(sockfd);
@@ -118,8 +115,9 @@ void Server::server_loop(void)
 					if (status < 0) // Error, cierre de conexión
 					{
 						delete_connection(connection_response_map[sockfd]->getConFd());
-						connection_response_map.erase(sockfd);
 					}
+					connection_response_map.erase(sockfd);
+					close(sockfd);
 				}
 			}
 			else if ((events[n].events & EPOLLERR) == EPOLLERR || (events[n].events & EPOLLHUP) == EPOLLHUP ||

@@ -286,7 +286,7 @@ bool Connection::response_sent(void) const
 	return (sent_response);
 }
 
-bool Connection::child_error(void) const
+int Connection::child_error(void)
 {
 	int status;
 
@@ -294,10 +294,17 @@ bool Connection::child_error(void) const
 	{
 		if (WIFEXITED(status))
 		{
-			return (WEXITSTATUS(status) == EXIT_FAILURE);
+			response = handle_error(500, *config);
+			ready_to_send = response.get_fd() < 0;
+			response_buffer = response.get_headers();
+			if (!ready_to_send)
+			{
+				return(build_response(response.get_fd()));
+			}
+			return (0);
 		}
 	}
-	return (false);
+	return (0);
 }
 
 int Connection::getConFd(void) const

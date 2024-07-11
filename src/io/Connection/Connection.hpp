@@ -45,7 +45,7 @@ class Connection
 		bool                                response_ready(void) const;
 		bool                                request_read(void);
 		bool                                response_sent(void) const;
-		bool                                child_error(void) const;
+		int                                child_error(void);
 		int                                 getConFd(void) const;
 		struct sockaddr_in const           &getAddress(void) const;
 		std::string                         getRequestBuffer(void) const;
