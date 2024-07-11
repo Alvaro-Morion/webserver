@@ -77,7 +77,7 @@ int Connection::read_request(void)
 	if ((nbytes = recv(confd, buffer, BUFFER_SIZE - 1, MSG_DONTWAIT)) > 0)
 	{
 		buffer[nbytes] = 0;
-		request_buffer += buffer;
+		request_buffer += std::string(buffer, nbytes);
 	}
 	if (nbytes < 0)
 	{
@@ -172,6 +172,7 @@ int Connection::build_response(int fd)
 	ssize_t size = get_file_size(fd);
 	if (size == -1)
 	{
+		close(fd);
 		perror("Response file size");
 		return(-1);
 	}
