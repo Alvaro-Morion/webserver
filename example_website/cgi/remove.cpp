@@ -11,7 +11,7 @@
 int main()
 {
     
-    std::ifstream fileIn("/home/ahammoud/github/webserver/example_website/assets/data.html");
+    std::ifstream fileIn("./example_website/assets/data.html");
     if (!fileIn.is_open()) {
         std::cerr << "Error opening file for reading." << std::endl;
         return 0;
@@ -30,7 +30,7 @@ int main()
     	fileContent.erase(lastPtagPos, lastPtagEndPos - lastPtagPos);
     }
 
-    std::ofstream fileOut("/home/ahammoud/github/webserver/example_website/assets/data.html");
+    std::ofstream fileOut("./example_website/assets/data.html");
     if (!fileOut.is_open()) {
         std::cerr << "Error opening file for writing." << std::endl;
         return 0;

@@ -31,7 +31,7 @@ std::string urlDecode(const std::string& str) {
 }
 
 void insertComment(const std::string& body) {
-    std::ifstream fileIn("/home/ahammoud/github/webserver/example_website/assets/data.html");
+    std::ifstream fileIn("./example_website/assets/data.html");
     if (!fileIn.is_open()) {
         std::cerr << "Error opening file for reading." << std::endl;
         return;
@@ -53,7 +53,7 @@ void insertComment(const std::string& body) {
         fileContent.insert(bodyPos - 2 , "<p>" + body + "</p>"); // Insert the new body object
     }
 
-    std::ofstream fileOut("/home/ahammoud/github/webserver/example_website/assets/data.html");
+    std::ofstream fileOut("./example_website/assets/data.html");
     if (!fileOut.is_open()) {
         std::cerr << "Error opening file for writing." << std::endl;
         return;
