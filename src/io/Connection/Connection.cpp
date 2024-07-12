@@ -116,7 +116,7 @@ void Connection::select_config(void)
 
 int Connection::generate_response(void)
 {
-	std::cout << "request:\n\"" << request_buffer << '\"' << std::endl;
+	//std::cout << "request:\n\"" << request_buffer << '\"' << std::endl;
 	if (response == ReturnType(-1, "", NO_CHILD))
 	{
 		response = handle_request(request_buffer, *config, ((struct sockaddr_in *)&address)->sin_addr);
@@ -179,6 +179,7 @@ int Connection::build_response(int fd)
 	if (!size)
 	{
 		ready_to_send = true;
+		close(fd);
 		return(size);
 	}
 	void *file_ptr = mmap(NULL, size, PROT_READ,  MAP_PRIVATE, fd, 0);

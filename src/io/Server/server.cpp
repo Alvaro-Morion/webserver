@@ -123,7 +123,7 @@ void Server::server_loop(void)
 			else if ((events[n].events & EPOLLERR) == EPOLLERR || (events[n].events & EPOLLHUP) == EPOLLHUP ||
 					 (events[n].events & EPOLLRDHUP) == EPOLLRDHUP)
 			{
-				// std::cout << "Error event, closing connection in " << sockfd << std::endl;
+				std::cout << "Error event, closing connection in " << sockfd << std::endl;
 				delete_connection(sockfd);
 			}
 			else if ((events[n].events & EPOLLIN) == EPOLLIN)
@@ -137,7 +137,7 @@ void Server::server_loop(void)
 				}
 				if (connection->request_read())
 				{
-					// std::cout << "Request read. Generating response for ";
+					std::cout << "Request read. Generating response for " << sockfd << std::endl;
 					int fd = connection->generate_response();
 					if (fd > 0 && connection->getResponse().is_cgi())
 					{
@@ -160,7 +160,8 @@ void Server::server_loop(void)
 				// std::cout << "write event in" << sockfd << "\n";
 				if (connection_map[sockfd]->send_response() < 0 || connection_map[sockfd]->response_sent())
 				{
-					std::cout << "Response sent\n\"" << connection_map[sockfd]->getResponseBuffer() << "\"\n";
+					std::cout << "Response sent in:" << sockfd << std::endl;
+					//std::cout << "Response sent\n\"" << connection_map[sockfd]->getResponseBuffer() << "\"\n";
 					manage_epoll(sockfd, EPOLL_CTL_DEL, 1);
 					connection_response_map.erase(connection_map[sockfd]->getResponse().get_fd());
 					delete_connection(sockfd);
@@ -175,6 +176,7 @@ void Server::server_loop(void)
 void Server::child_reaper(void)
 {
 	std::vector<pid_t>::iterator child;
+	//std::cout << "Number of children: " << children.size() << std::endl;
 
 	if (children.empty())
 	{
@@ -198,6 +200,7 @@ void Server::inactive_client(void)
 {
 	std::map<int, Connection *>::iterator conn;
 	time_t c_time;
+	//std::cout << "Number of clients: " << connection_map.size() << std::endl;
 	if (connection_map.empty())
 	{
 		return;
