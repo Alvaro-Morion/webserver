@@ -294,13 +294,17 @@ int Connection::child_error(void)
 	{
 		if (WIFEXITED(status))
 		{
-			response = handle_error(500, *config);
-			ready_to_send = response.get_fd() < 0;
-			response_buffer = response.get_headers();
-			if (!ready_to_send)
+			if (WEXITSTATUS(status) == EXIT_FAILURE)
 			{
-				return(build_response(response.get_fd()));
+				response = handle_error(500, *config);
+				ready_to_send = response.get_fd() < 0;
+				response_buffer = response.get_headers();
+				if (!ready_to_send)
+				{
+					return(build_response(response.get_fd()));
+				}
 			}
+			ready_to_send = true;
 			return (0);
 		}
 	}
