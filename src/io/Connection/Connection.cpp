@@ -51,7 +51,7 @@ Connection::~Connection()
 
 int Connection::accept_connection(int sockfd)
 {
-	int       size = 1;
+	//int       size = 1;
 	socklen_t addrlen = sizeof(address);
 
 	confd = accept(sockfd, (struct sockaddr *)&address, &addrlen);
@@ -61,10 +61,19 @@ int Connection::accept_connection(int sockfd)
 	}
 	else
 	{
-		setsockopt(confd, SOL_SOCKET, SOCK_NONBLOCK, &size, sizeof(int));
-		setsockopt(confd, SOL_SOCKET, SOCK_CLOEXEC, &size, sizeof(int));
+		if(fcntl(confd, F_SETFL, fcntl(confd, F_GETFL, 0) | O_NONBLOCK) == -1)
+		{
+			perror("fcntl O_NONBLOCK");
+			return(-1);
+		}
+		if(fcntl(confd, F_SETFD, fcntl(confd, F_GETFD, 0) | FD_CLOEXEC) == -1)
+		{
+			perror("fcntl FD_EXEC");
+			return(-1);
+		}
 		std::cout << "New connection accepted in port " << ntohs(port) << " fd: " << confd << std::endl;
 	}
+	std::cout << "End of accept " << fcntl(confd, F_GETFL, 0) << "\n";
 	time(&last_activity);
 	return (confd);
 }

@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/mman.h>
+#include <fcntl.h>
 
 #define BUFFER_SIZE 10000
 

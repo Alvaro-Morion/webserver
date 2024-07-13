@@ -112,12 +112,12 @@ void Server::server_loop(void)
 				int status = connection_response_map[sockfd]->build_response();
 				if (status <= 0)
 				{
+					close(sockfd);
 					if (status < 0) // Error, cierre de conexión
 					{
 						delete_connection(connection_response_map[sockfd]->getConFd());
 					}
 					connection_response_map.erase(sockfd);
-					close(sockfd);
 				}
 			}
 			else if ((events[n].events & EPOLLERR) == EPOLLERR || (events[n].events & EPOLLHUP) == EPOLLHUP ||
@@ -161,7 +161,7 @@ void Server::server_loop(void)
 				{
 					std::cout << "Response sent in:" << sockfd << std::endl;
 					//std::cout << "Response sent\n\"" << connection_map[sockfd]->getResponseBuffer() << "\"\n";
-					manage_epoll(sockfd, EPOLL_CTL_DEL, 1);
+					//manage_epoll(sockfd, EPOLL_CTL_DEL, 1);
 					connection_response_map.erase(connection_map[sockfd]->getResponse().get_fd());
 					delete_connection(sockfd);
 				}
