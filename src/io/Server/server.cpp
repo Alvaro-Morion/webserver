@@ -74,7 +74,7 @@ void Server::server_loop(void)
 		{
 			sockfd = events[n].data.fd;
 			// std::cout << sockfd << std::endl;
-			// std::cout << "event " << events[n].events << " in: " << sockfd << std::endl;
+			std::cout << "event " << events[n].events << " in: " << sockfd << std::endl;
 			if (socket_map.find(sockfd) != socket_map.end())
 			{
 				ReturnType  resp(-1, "", NO_CHILD);
@@ -86,7 +86,7 @@ void Server::server_loop(void)
 				else
 				{
 					connection_map[connection->getConFd()] = connection;
-					manage_epoll(connection->getConFd(), EPOLL_CTL_ADD, EPOLLIN);
+					manage_epoll(connection->getConFd(), EPOLL_CTL_ADD, EPOLLIN | EPOLLRDHUP);
 				}
 			}
 			else if (connection_response_map.find(sockfd) != connection_response_map.end() &&
@@ -123,7 +123,6 @@ void Server::server_loop(void)
 			else if ((events[n].events & EPOLLERR) == EPOLLERR || (events[n].events & EPOLLHUP) == EPOLLHUP ||
 					 (events[n].events & EPOLLRDHUP) == EPOLLRDHUP)
 			{
-				std::cout << "Error event, closing connection in " << sockfd << std::endl;
 				delete_connection(sockfd);
 			}
 			else if ((events[n].events & EPOLLIN) == EPOLLIN)
