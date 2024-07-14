@@ -1,12 +1,12 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                                              #
-#    Filename: Makefile                                                        #
+#    Makefile                                           :+:      :+:    :+:    #
 #    Author:   Peru Riezu <riezumunozperu@gmail.com>                           #
 #    github:   https://github.com/priezu-m                                     #
 #    Licence:  GPLv3                                                           #
 #    Created:  2023/09/27 18:57:07                                             #
-#    Updated:  2024/07/03 01:12:04                                             #
+#    Updated: 2024/07/14 12:29:11 by ahammoud         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -113,6 +113,7 @@ $(OBJ_PATH)/%.o: %.cpp
 
 $(NAME): $(OBJ)
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $@ $(LDFLAGS)
+	make -C ./example_website/cgi/
 
 .PHONY: all clean fclean re push update_manpath tags debug format
 
