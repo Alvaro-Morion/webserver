@@ -34,15 +34,12 @@ void Server::config_epoll(std::set<uint16_t> ports)
 	{
 		MySocket *socket = new MySocket(*iter);
 		std::cout << "Socket for port: " << ntohs(*iter) << " created with fd " << socket->getSockfd() << std::endl;
-		if (manage_epoll(socket->getSockfd(), EPOLL_CTL_ADD, EPOLLIN) == -1)
-		{
-			exit(EXIT_FAILURE);
-		}
+		manage_epoll(socket->getSockfd(), EPOLL_CTL_ADD, EPOLLIN);
 		socket_map[socket->getSockfd()] = socket;
 	}
 }
 
-int Server::manage_epoll(int fd, int op, uint32_t mask)
+void Server::manage_epoll(int fd, int op, uint32_t mask)
 {
 	struct epoll_event event;
 
@@ -54,9 +51,7 @@ int Server::manage_epoll(int fd, int op, uint32_t mask)
 	{
 		perror("Epoll_ctl");
 		close(fd);
-		return(-1);
 	}
-	return(0);
 	// std::cout << fd << " to poll" << std::endl;
 }
 
@@ -91,10 +86,7 @@ void Server::server_loop(void)
 				else
 				{
 					connection_map[connection->getConFd()] = connection;
-					if (manage_epoll(connection->getConFd(), EPOLL_CTL_ADD, EPOLLIN | EPOLLRDHUP) == -1)
-					{
-						connection->set_inactive();
-					}
+					manage_epoll(connection->getConFd(), EPOLL_CTL_ADD, EPOLLIN | EPOLLRDHUP);
 				}
 			}
 			else if (connection_response_map.find(sockfd) != connection_response_map.end() &&
@@ -102,12 +94,13 @@ void Server::server_loop(void)
 			{
 				//std::cout << "CGI Process Hangup\n";
 				close(sockfd);
-				if (connection_response_map[sockfd]->child_error() >= 0)
+				if (connection_response_map[sockfd]->child_error() < 0)
 				{
-					if(manage_epoll(connection_response_map[sockfd]->getConFd(), EPOLL_CTL_MOD, EPOLLOUT) == -1)
-					{
-						connection_response_map[sockfd]->set_inactive();
-					}
+					delete_connection(connection_response_map[sockfd]->getConFd());
+				}
+				else
+				{
+					manage_epoll(connection_response_map[sockfd]->getConFd(), EPOLL_CTL_MOD, EPOLLOUT);
 				}
 				connection_response_map.erase(sockfd);
 			}
@@ -116,45 +109,48 @@ void Server::server_loop(void)
 			{
 				// CGI pipe is ready.
 				// std::cout << "Reading from pipe\n";
-				if (connection_response_map[sockfd]->build_response() <= 0)
+				int status = connection_response_map[sockfd]->build_response();
+				if (status <= 0)
 				{
 					close(sockfd);
+					if (status < 0) // Error, cierre de conexión
+					{
+						delete_connection(connection_response_map[sockfd]->getConFd());
+					}
 					connection_response_map.erase(sockfd);
 				}
 			}
 			else if ((events[n].events & EPOLLERR) == EPOLLERR || (events[n].events & EPOLLHUP) == EPOLLHUP ||
 					 (events[n].events & EPOLLRDHUP) == EPOLLRDHUP)
 			{
-				connection_map[sockfd]->set_inactive();
+				delete_connection(sockfd);
 			}
 			else if ((events[n].events & EPOLLIN) == EPOLLIN)
 			{
 				// std::cout << "Reading event in " << sockfd << std::endl;
 				Connection *connection = connection_map[sockfd];
-				connection->read_request();
+				if (connection->read_request() < 0)
+				{
+					// std::cout << "Error while reading\n";
+					delete_connection(sockfd);
+				}
 				if (connection->request_read())
 				{
 					std::cout << "Request read. Generating response for " << sockfd << std::endl;
 					int fd = connection->generate_response();
 					if (fd > 0 && connection->getResponse().is_cgi())
 					{
-						if (manage_epoll(fd, EPOLL_CTL_ADD, EPOLLIN) == -1)
-						{
-							connection->set_inactive();
-						}
+						manage_epoll(fd, EPOLL_CTL_ADD, EPOLLIN);
 						connection_response_map[fd] = connection;
 						children.push_back(connection->getResponse().get_child_pid());
 					}
 					else if (connection->response_ready())
 					{
-						if (manage_epoll(connection->getConFd(), EPOLL_CTL_MOD, EPOLLOUT) == -1)
-						{
-							connection->set_inactive();
-						}
+						manage_epoll(connection->getConFd(), EPOLL_CTL_MOD, EPOLLOUT);
 					}
 					else
 					{
-						connection_map[sockfd]->set_inactive();
+						delete_connection(sockfd);
 					}
 				}
 			}
@@ -165,7 +161,9 @@ void Server::server_loop(void)
 				{
 					std::cout << "Response sent in:" << sockfd << std::endl;
 					//std::cout << "Response sent\n\"" << connection_map[sockfd]->getResponseBuffer() << "\"\n";
+					//manage_epoll(sockfd, EPOLL_CTL_DEL, 1);
 					connection_response_map.erase(connection_map[sockfd]->getResponse().get_fd());
+					delete_connection(sockfd);
 				}
 			}
 		}
@@ -215,35 +213,22 @@ void Server::inactive_client(void)
 			{
 				if (conn->second->getResponse().is_cgi())
 				{
-					conn->second->stop_child();
-					connection_response_map.erase(conn->second->getResponse().get_fd());
+					manage_epoll(conn->second->getResponse().get_fd(), EPOLL_CTL_DEL, 1);
 				}
 				if(conn->second->generate_timeout_response())
 				{
-					if(manage_epoll(conn->second->getConFd(), EPOLL_CTL_MOD, EPOLLOUT) == -1)
-					{
-						conn->second->set_inactive();
-					}
+					manage_epoll(conn->second->getConFd(), EPOLL_CTL_MOD, EPOLLOUT);
 					conn++;
 				}
 				else
 				{
-					delete_connection((conn++)->second);
+					delete_connection((conn++)->first);
 				}
 			}
 			else
 			{
-				delete_connection((conn++)->second);
+				delete_connection((conn++)->first);
 			}
-		}
-		else if (conn->second->is_inactive())
-		{
-			if (conn->second->getResponse().is_cgi())
-			{
-				conn->second->stop_child();
-				connection_response_map.erase(conn->second->getResponse().get_fd());
-			}
-			delete_connection((conn++)->second);
 		}
 		else
 		{
@@ -252,11 +237,10 @@ void Server::inactive_client(void)
 	}
 }
 
-void Server::delete_connection(Connection *connection)
+void Server::delete_connection(int fd)
 {
-	connection_response_map.erase(connection->getResponse().get_fd());
-	connection_map.erase(connection->getConFd());
-	delete connection;
+	delete connection_map[fd];
+	connection_map.erase(fd);
 }
 
 t_c_global_config *Server::getGlobalConfig(void)

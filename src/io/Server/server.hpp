@@ -34,14 +34,14 @@ class Server
 		~Server();
 
 		void                         config_epoll(std::set<uint16_t> ports);
-		int                          manage_epoll(int fd, int op, uint32_t mask);
+		void                         manage_epoll(int fd, int op, uint32_t mask);
 		void                         server_loop(void);
 
 		t_c_global_config           *getGlobalConfig(void);
 		int                          getEpoll(void);
 		std::map<int, MySocket *>   &getSocket_Map(void);
 		std::map<int, Connection *> &getConnectionMap(void);
-		void                         delete_connection(Connection *connection);
+		void                         delete_connection(int fd);
 		void                         child_reaper(void);
-		void			     inactive_client(void);
+		void						 inactive_client(void);
 };

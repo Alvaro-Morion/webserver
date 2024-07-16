@@ -41,16 +41,11 @@ Connection::Connection(uint16_t port, t_c_global_config *global_config, ReturnTy
 	this->config = NULL;
 	ready_to_send = false;
 	sent_response = false;
-	inactive_connection = false;
 }
 
 Connection::~Connection()
 {
 	std::cout << "Connection in fd " << confd << " closed\n";
-	if (response.get_fd() > 0)
-	{
-		close(response.get_fd());
-	}
 	close(confd);
 }
 
@@ -78,6 +73,7 @@ int Connection::accept_connection(int sockfd)
 		}
 		std::cout << "New connection accepted in port " << ntohs(port) << " fd: " << confd << std::endl;
 	}
+	std::cout << "End of accept " << fcntl(confd, F_GETFL, 0) << "\n";
 	time(&last_activity);
 	return (confd);
 }
@@ -94,7 +90,6 @@ int Connection::read_request(void)
 	}
 	if (nbytes < 0)
 	{
-		inactive_connection = true;
 		return (-1);
 	}
 	time(&last_activity);
@@ -146,6 +141,7 @@ int Connection::generate_response(void)
 
 int Connection::generate_timeout_response(void)
 {
+	kill(response.get_child_pid(), SIGTERM);
 	close(response.get_fd());
 	response = handle_error(408, *config);
 	ready_to_send = response.get_fd() < 0;
@@ -173,7 +169,6 @@ int Connection::build_response(void) // For CGI (goes through epoll)
 		if (nbytes < 0)
 		{
 			perror("Response file");
-			inactive_connection = true;
 		}
 		close(response.get_fd());
 		ready_to_send = !nbytes;
@@ -188,7 +183,6 @@ int Connection::build_response(int fd)
 	{
 		close(fd);
 		perror("Response file size");
-		inactive_connection = true;
 		return(-1);
 	}
 	if (!size)
@@ -201,7 +195,6 @@ int Connection::build_response(int fd)
 	if (file_ptr == MAP_FAILED)
 	{
 		perror("Response file map");
-		inactive_connection = true;
 		return(-1);
 	}
 	response_buffer.append(std::string(static_cast<char *>(file_ptr), size));
@@ -221,13 +214,11 @@ int Connection::send_response(void)
 	if (nbytes < 0)
 	{
 		perror("Send");
-		inactive_connection = true;
 		return (-1);
 	}
 	bytes_sent += nbytes;
 	if (bytes_sent == response_buffer.length())
 	{
-		inactive_connection = true;
 		sent_response = true;
 	}
 	time(&last_activity);
@@ -305,11 +296,6 @@ bool Connection::response_sent(void) const
 	return (sent_response);
 }
 
-bool Connection::is_inactive(void) const
-{
-	return(inactive_connection);
-}
-
 int Connection::child_error(void)
 {
 	int status;
@@ -333,12 +319,6 @@ int Connection::child_error(void)
 		}
 	}
 	return (0);
-}
-
-void Connection::stop_child(void)
-{
-	close(response.get_fd());
-	kill(response.get_child_pid(), SIGTERM);
 }
 
 int Connection::getConFd(void) const
@@ -389,9 +369,4 @@ time_t Connection::getLastActivity(void) const
 void Connection::set_ready(void)
 {
 	ready_to_send = true;
-}
-
-void Connection::set_inactive(void)
-{
-	inactive_connection = true;
 }

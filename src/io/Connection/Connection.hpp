@@ -24,7 +24,6 @@ class Connection
 		size_t                              bytes_sent;
 		bool                                ready_to_send;
 		bool                                sent_response;
-		bool				    inactive_connection;
 		t_c_global_config const            *global_config;
 		t_c_individual_server_config const *config;
 		time_t								last_activity;
@@ -37,7 +36,7 @@ class Connection
 		int                                 read_request(void);
 		void                                select_config(void);
 		int                                 generate_response(void);
-		int				    generate_timeout_response(void);
+		int									generate_timeout_response(void);
 		int                                 build_response(void);   // For CGI (designed to pass though epoll)
 		int                                 build_response(int fd); // For regular files.
 		int                                 send_response(void);
@@ -47,9 +46,7 @@ class Connection
 		bool                                response_ready(void) const;
 		bool                                request_read(void);
 		bool                                response_sent(void) const;
-		bool				    is_inactive(void) const;
-		int                                 child_error(void);
-		void				    stop_child(void);
+		int                                child_error(void);
 		int                                 getConFd(void) const;
 		struct sockaddr_in const           &getAddress(void) const;
 		std::string                         getRequestBuffer(void) const;
@@ -57,7 +54,6 @@ class Connection
 		ReturnType const                   &getResponse(void) const;
 		t_c_global_config const            *getGlobalConfig(void) const;
 		t_c_individual_server_config const *getConfig(void) const;
-		time_t				    getLastActivity(void) const;
+		time_t								getLastActivity(void) const;
 		void                                set_ready(void);
-		void				    set_inactive(void);
 };
