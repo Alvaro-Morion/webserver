@@ -104,20 +104,21 @@ int Connection::read_request(void)
 
 void Connection::select_config(void)
 {
-	std::string hostname = get_header_value("host", request_buffer);
-	if (hostname == "")
-	{
-		throw handle_invalid_request();
-	}
-	hostname = hostname.substr(0, hostname.find(":"));
 	try
 	{
+		std::string hostname = get_header_value("host", request_buffer);
+		if (hostname == "")
+		{
+			throw 400;
+		}
+		hostname = hostname.substr(0, hostname.find(":"));
+	
 		t_c_individual_server_config::t_c_light_key                   key(&hostname, port);
 		std::set<t_c_individual_server_config, std::less<> >::iterator config_it =
 			global_config->get_servers().find(key);
 		if (config_it == global_config->get_servers().end())
 		{
-			throw handle_invalid_request();
+			throw 400;
 		}
 		config = &(*config_it);
 	}
