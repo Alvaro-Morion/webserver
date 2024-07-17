@@ -45,8 +45,12 @@ Connection::Connection(uint16_t port, t_c_global_config *global_config, ReturnTy
 
 Connection::~Connection()
 {
-	std::cout << "Connection in fd " << confd << " closed\n";
+	if (response.get_fd() != -1)
+	{
+		close(response.get_fd());
+	}
 	close(confd);
+	std::cout << "Connection in fd " << confd << " closed\n";
 }
 
 int Connection::accept_connection(int sockfd)
@@ -73,7 +77,7 @@ int Connection::accept_connection(int sockfd)
 		}
 		std::cout << "New connection accepted in port " << ntohs(port) << " fd: " << confd << std::endl;
 	}
-	std::cout << "End of accept " << fcntl(confd, F_GETFL, 0) << "\n";
+	//std::cout << "End of accept " << fcntl(confd, F_GETFL, 0) << "\n";
 	time(&last_activity);
 	return (confd);
 }
@@ -141,14 +145,14 @@ int Connection::generate_response(void)
 
 int Connection::generate_timeout_response(void)
 {
-	kill(response.get_child_pid(), SIGTERM);
 	close(response.get_fd());
+	kill(response.get_child_pid(), SIGTERM);
 	response = handle_error(408, *config);
 	ready_to_send = response.get_fd() < 0;
 	response_buffer = response.get_headers();
 	if (!ready_to_send)
 	{
-		build_response(response.get_fd());
+		return(build_response(response.get_fd()));
 	}
 	time(&last_activity);
 	return(response.get_fd());
@@ -170,7 +174,6 @@ int Connection::build_response(void) // For CGI (goes through epoll)
 		{
 			perror("Response file");
 		}
-		close(response.get_fd());
 		ready_to_send = !nbytes;
 	}
 	return (nbytes);
@@ -181,14 +184,12 @@ int Connection::build_response(int fd)
 	ssize_t size = get_file_size(fd);
 	if (size == -1)
 	{
-		close(fd);
 		perror("Response file size");
 		return(-1);
 	}
 	if (!size)
 	{
 		ready_to_send = true;
-		close(fd);
 		return(size);
 	}
 	void *file_ptr = mmap(NULL, size, PROT_READ,  MAP_PRIVATE, fd, 0);
@@ -203,7 +204,6 @@ int Connection::build_response(int fd)
 	{
 		perror("Unmap response file");
 	}
-	close(fd);
 	return(size);
 }
 
@@ -306,6 +306,7 @@ int Connection::child_error(void)
 		{
 			if (WEXITSTATUS(status) == EXIT_FAILURE)
 			{
+				close(response.get_fd());
 				response = handle_error(500, *config);
 				ready_to_send = response.get_fd() < 0;
 				response_buffer = response.get_headers();

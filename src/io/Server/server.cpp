@@ -93,16 +93,15 @@ void Server::server_loop(void)
 					 (events[n].events & EPOLLHUP) == EPOLLHUP)
 			{
 				//std::cout << "CGI Process Hangup\n";
-				close(sockfd);
+				manage_epoll(sockfd, EPOLL_CTL_DEL, 1);
 				if (connection_response_map[sockfd]->child_error() < 0)
 				{
-					delete_connection(connection_response_map[sockfd]->getConFd());
+					delete_connection(connection_response_map[sockfd]);
 				}
 				else
 				{
 					manage_epoll(connection_response_map[sockfd]->getConFd(), EPOLL_CTL_MOD, EPOLLOUT);
 				}
-				connection_response_map.erase(sockfd);
 			}
 			else if ((connection_response_map.find(sockfd) != connection_response_map.end()) &&
 					 (events[n].events & EPOLLIN) == EPOLLIN)
@@ -112,27 +111,26 @@ void Server::server_loop(void)
 				int status = connection_response_map[sockfd]->build_response();
 				if (status <= 0)
 				{
-					close(sockfd);
 					if (status < 0) // Error, cierre de conexión
 					{
-						delete_connection(connection_response_map[sockfd]->getConFd());
+						delete_connection(connection_response_map[sockfd]);
 					}
-					connection_response_map.erase(sockfd);
 				}
 			}
-			else if ((events[n].events & EPOLLERR) == EPOLLERR || (events[n].events & EPOLLHUP) == EPOLLHUP ||
-					 (events[n].events & EPOLLRDHUP) == EPOLLRDHUP)
+			else if (connection_map.find(sockfd) != connection_map.end() && ((events[n].events & EPOLLERR) == EPOLLERR || 
+				(events[n].events & EPOLLHUP) == EPOLLHUP || (events[n].events & EPOLLRDHUP) == EPOLLRDHUP))
 			{
-				delete_connection(sockfd);
+				manage_epoll(sockfd, EPOLL_CTL_DEL, 1);
+				delete_connection(connection_map[sockfd]);
 			}
-			else if ((events[n].events & EPOLLIN) == EPOLLIN)
+			else if (connection_map.find(sockfd) != connection_map.end() && (events[n].events & EPOLLIN) == EPOLLIN)
 			{
 				// std::cout << "Reading event in " << sockfd << std::endl;
 				Connection *connection = connection_map[sockfd];
 				if (connection->read_request() < 0)
 				{
 					// std::cout << "Error while reading\n";
-					delete_connection(sockfd);
+					delete_connection(connection_map[sockfd]);
 				}
 				if (connection->request_read())
 				{
@@ -150,20 +148,19 @@ void Server::server_loop(void)
 					}
 					else
 					{
-						delete_connection(sockfd);
+						delete_connection(connection);
 					}
 				}
 			}
-			else if ((events[n].events & EPOLLOUT) == EPOLLOUT)
+			else if (connection_map.find(sockfd) != connection_map.end() && (events[n].events & EPOLLOUT) == EPOLLOUT)
 			{
 				// std::cout << "write event in" << sockfd << "\n";
 				if (connection_map[sockfd]->send_response() < 0 || connection_map[sockfd]->response_sent())
 				{
 					std::cout << "Response sent in:" << sockfd << std::endl;
 					//std::cout << "Response sent\n\"" << connection_map[sockfd]->getResponseBuffer() << "\"\n";
-					//manage_epoll(sockfd, EPOLL_CTL_DEL, 1);
-					connection_response_map.erase(connection_map[sockfd]->getResponse().get_fd());
-					delete_connection(sockfd);
+					manage_epoll(sockfd, EPOLL_CTL_DEL, 1);
+					delete_connection(connection_map[sockfd]);
 				}
 			}
 		}
@@ -211,23 +208,19 @@ void Server::inactive_client(void)
 		{
 			if(!(conn->second->getResponse() == ReturnType(-1, "", NO_CHILD)) && !conn->second->response_ready())
 			{
-				if (conn->second->getResponse().is_cgi())
-				{
-					manage_epoll(conn->second->getResponse().get_fd(), EPOLL_CTL_DEL, 1);
-				}
-				if(conn->second->generate_timeout_response())
+				if(conn->second->generate_timeout_response() != -1 || conn->second->response_ready())
 				{
 					manage_epoll(conn->second->getConFd(), EPOLL_CTL_MOD, EPOLLOUT);
 					conn++;
 				}
 				else
 				{
-					delete_connection((conn++)->first);
+					delete_connection((conn++)->second);
 				}
 			}
 			else
 			{
-				delete_connection((conn++)->first);
+				delete_connection((conn++)->second);
 			}
 		}
 		else
@@ -237,10 +230,11 @@ void Server::inactive_client(void)
 	}
 }
 
-void Server::delete_connection(int fd)
+void Server::delete_connection(Connection *connection)
 {
-	delete connection_map[fd];
-	connection_map.erase(fd);
+		connection_map.erase(connection->getConFd());
+		connection_response_map.erase(connection->getResponse().get_fd());
+		delete connection;
 }
 
 t_c_global_config *Server::getGlobalConfig(void)
