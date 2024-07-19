@@ -58,7 +58,7 @@ server
 				root "/home/amorion-/webserver/upload";
 				methods GET, DELETE;
 				directory_listing on;
-				is_redirect false; #is_redirect should be false when commenting this line but it is true
+				# is_redirect false; #is_redirect should be false when commenting this line but it is true
 			}
 		}
 
