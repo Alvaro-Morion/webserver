@@ -64,6 +64,7 @@ ReturnType handle_normal(std::string &resource, t_c_route const &route, t_c_indi
 	fd = open(target_file.c_str(), O_RDONLY);
 	if (fd == -1 || current_time.empty() == true)
 	{
+		close(fd);
 		return (handle_error(500, config)); // internal server error
 	}
 	file_size = get_file_size(fd);
@@ -71,6 +72,7 @@ ReturnType handle_normal(std::string &resource, t_c_route const &route, t_c_indi
 			  "Content-Length: " + std::to_string(file_size) + "\r\n" + "Connection: close" + "\r\n\r\n";
 	if (file_size == -1 || current_time.empty() == true)
 	{
+		close(fd);
 		return (ReturnType(-1, std::string(""), NO_CHILD));
 	}
 	return (ReturnType(fd, headers, NO_CHILD));

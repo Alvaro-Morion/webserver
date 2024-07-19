@@ -46,6 +46,7 @@ ReturnType handle_redirect(std::string const &resource, t_c_route const &route)
 	}
 	if (file_size == -1 || current_time.empty() == true)
 	{
+		close(fd);
 		return (ReturnType(-1, std::string(""), NO_CHILD));
 	}
 	return (ReturnType(fd, headers, NO_CHILD));

@@ -121,15 +121,18 @@ ReturnType handle_dir(std::string &resource, t_c_route const &route, t_c_individ
 
 	if (((statbuf.st_mode & S_IRUSR) == 0) && ((statbuf.st_mode & S_IRGRP) == 0))
 	{
+		closedir(dirp);
 		return (handle_error(403, config)); // forbidden
 	}
 	if (route.get_resource().get_direcory_listing() == false)
 	{
+		closedir(dirp);
 		return (handle_error_internal_internal(route.get_resource().get_file_is_a_directory_page(),
 											   "HTTP/1.1 403 Forbidden\r\n"));
 	}
 	if (dirp == nullptr || current_time.empty() == true)
 	{
+		closedir(dirp);
 		return (handle_error(500, config)); // internal server error
 	}
 	directory_entries = get_directory_entries(dirp);
