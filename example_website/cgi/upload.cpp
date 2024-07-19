@@ -57,12 +57,15 @@ int main() {
     image_file.close();
 
     // Print a simple HTTP response to indicate the upload was successful
-	std::cout << std::string("HTTP/1.1 200\r\n") + "Server: webserv/0.1\r\n" + "\r\n" + "Connection: close" + "\r\n\r\n";
-    std::cout << "<html><body>";
-    std::cout << "<h1>Image Upload Successful</h1>";
-    std::cout << "<p>The image has been saved as: " << upload_dir << "uploaded_image.jpg</p>";
-    std::cout << "</body></html>";
+//	std::cout << std::string("HTTP/1.1 200\r\n") + "Server: webserv/0.1\r\n" + "\r\n" + "Connection: close" + "\r\n\r\n";
+//    std::cout << "<html><body>";
+//    std::cout << "<h1>Image Upload Successful</h1>";
+//    std::cout << "<p>The image has been saved as: " << upload_dir << "uploaded_image.jpg</p>";
+//    std::cout << "</body></html>";
     deleteLastLine("./upload/uploaded_image.png");
+	std::cout << std::string("HTTP/1.1 301 Moved Permanently\r\n") + "Server: webserv/0.1\r\n" +
+		"Location: " + "/index.html" + "\r\n" + "Connection: close" + "\r\n\r\n";
+
 
     return 0;
 }
