@@ -90,17 +90,12 @@ t_c_error_pages::t_c_error_pages(t_c_error_pages const &copy)
 {
 }
 
-t_c_error_pages::t_c_error_pages(void):
-		http_version_not_supported("default_error_pages/505"),
-		not_implemeted("default_error_pages/501"),
-		internal_server_error("default_error_pages/500"),
-		uri_too_long("default_error_pages/414"),
-		content_too_large("default_error_pages/413"),
-		length_requiered("default_error_pages/411"),
-		request_timeout("default_error_pages/408"),
-		not_found("default_error_pages/404"),
-		forbidden("default_error_pages/403"),
-		bad_request("default_error_pages/400")
+t_c_error_pages::t_c_error_pages(void)
+	: http_version_not_supported("default_error_pages/505"), not_implemeted("default_error_pages/501"),
+	  internal_server_error("default_error_pages/500"), uri_too_long("default_error_pages/414"),
+	  content_too_large("default_error_pages/413"), length_requiered("default_error_pages/411"),
+	  request_timeout("default_error_pages/408"), not_found("default_error_pages/404"),
+	  forbidden("default_error_pages/403"), bad_request("default_error_pages/400")
 {
 	if (access(http_version_not_supported.c_str(), R_OK) == -1)
 	{

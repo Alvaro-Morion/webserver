@@ -50,7 +50,7 @@ void remove_quotes_if_present(std::vector<t_c_token> &tokens, size_t &i, char co
 	}
 }
 
-static void get_error_page_internal(std::pair<std::string, std::pair<std::string *, t_c_position *> > &elem,
+static void get_error_page_internal(std::pair<std::string, std::pair<std::string *, t_c_position *>> &elem,
 									std::vector<t_c_token> &tokens, size_t &i, char const *config_file,
 									t_c_position const &position)
 {
@@ -92,7 +92,7 @@ void get_error_page(t_c_server_constructor_params &params, std::vector<t_c_token
 					char const *config_file)
 {
 	t_c_position                                                     position = tokens[i].get_position();
-	std::pair<std::string, std::pair<std::string *, t_c_position *> > table[] = {
+	std::pair<std::string, std::pair<std::string *, t_c_position *>> table[] = {
 		{"http_version_not_supported",
 		 {&params.error_params.http_version_not_supported, &params.error_params.http_version_not_supported_position}          },
 		{			"not_implemeted",     {&params.error_params.not_implemeted, &params.error_params.not_implemeted_position}},
@@ -108,7 +108,7 @@ void get_error_page(t_c_server_constructor_params &params, std::vector<t_c_token
 		{			   "bad_request",           {&params.error_params.bad_request, &params.error_params.bad_request_position}}
     };
 
-	for (std::pair<std::string, std::pair<std::string *, t_c_position *> > &elem : table)
+	for (std::pair<std::string, std::pair<std::string *, t_c_position *>> &elem : table)
 	{
 		if (elem.first == tokens[i].get_token())
 		{

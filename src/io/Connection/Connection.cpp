@@ -55,7 +55,7 @@ Connection::~Connection()
 
 int Connection::accept_connection(int sockfd)
 {
-	//int       size = 1;
+	// int       size = 1;
 	socklen_t addrlen = sizeof(address);
 
 	confd = accept(sockfd, (struct sockaddr *)&address, &addrlen);
@@ -65,19 +65,19 @@ int Connection::accept_connection(int sockfd)
 	}
 	else
 	{
-		if(fcntl(confd, F_SETFL, fcntl(confd, F_GETFL, 0) | O_NONBLOCK) == -1)
+		if (fcntl(confd, F_SETFL, fcntl(confd, F_GETFL, 0) | O_NONBLOCK) == -1)
 		{
 			perror("fcntl O_NONBLOCK");
-			return(-1);
+			return (-1);
 		}
-		if(fcntl(confd, F_SETFD, fcntl(confd, F_GETFD, 0) | FD_CLOEXEC) == -1)
+		if (fcntl(confd, F_SETFD, fcntl(confd, F_GETFD, 0) | FD_CLOEXEC) == -1)
 		{
 			perror("fcntl FD_EXEC");
-			return(-1);
+			return (-1);
 		}
 		std::cout << "New connection accepted in port " << ntohs(port) << " fd: " << confd << std::endl;
 	}
-	//std::cout << "End of accept " << fcntl(confd, F_GETFL, 0) << "\n";
+	// std::cout << "End of accept " << fcntl(confd, F_GETFL, 0) << "\n";
 	time(&last_activity);
 	return (confd);
 }
@@ -112,9 +112,9 @@ void Connection::select_config(void)
 			throw 400;
 		}
 		hostname = hostname.substr(0, hostname.find(":"));
-	
+
 		t_c_individual_server_config::t_c_light_key                   key(&hostname, port);
-		std::set<t_c_individual_server_config, std::less<> >::iterator config_it =
+		std::set<t_c_individual_server_config, std::less<>>::iterator config_it =
 			global_config->get_servers().find(key);
 		if (config_it == global_config->get_servers().end())
 		{
@@ -130,7 +130,7 @@ void Connection::select_config(void)
 
 int Connection::generate_response(void)
 {
-	//std::cout << "request:\n\"" << request_buffer << '\"' << std::endl;
+	// std::cout << "request:\n\"" << request_buffer << '\"' << std::endl;
 	if (response == ReturnType(-1, "", NO_CHILD))
 	{
 		response = handle_request(request_buffer, *config, ((struct sockaddr_in *)&address)->sin_addr);
@@ -153,10 +153,10 @@ int Connection::generate_timeout_response(void)
 	response_buffer = response.get_headers();
 	if (!ready_to_send)
 	{
-		return(build_response(response.get_fd()));
+		return (build_response(response.get_fd()));
 	}
 	time(&last_activity);
-	return(response.get_fd());
+	return (response.get_fd());
 }
 
 int Connection::build_response(void) // For CGI (goes through epoll)
@@ -186,18 +186,18 @@ int Connection::build_response(int fd)
 	if (size == -1)
 	{
 		perror("Response file size");
-		return(-1);
+		return (-1);
 	}
 	if (!size)
 	{
 		ready_to_send = true;
-		return(size);
+		return (size);
 	}
-	void *file_ptr = mmap(NULL, size, PROT_READ,  MAP_PRIVATE, fd, 0);
+	void *file_ptr = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
 	if (file_ptr == MAP_FAILED)
 	{
 		perror("Response file map");
-		return(-1);
+		return (-1);
 	}
 	response_buffer.append(std::string(static_cast<char *>(file_ptr), size));
 	ready_to_send = true;
@@ -205,7 +205,7 @@ int Connection::build_response(int fd)
 	{
 		perror("Unmap response file");
 	}
-	return(size);
+	return (size);
 }
 
 int Connection::send_response(void)
@@ -313,7 +313,7 @@ int Connection::child_error(void)
 				response_buffer = response.get_headers();
 				if (!ready_to_send)
 				{
-					return(build_response(response.get_fd()));
+					return (build_response(response.get_fd()));
 				}
 			}
 			ready_to_send = true;
@@ -365,7 +365,7 @@ t_c_individual_server_config const *Connection::getConfig(void) const
 
 time_t Connection::getLastActivity(void) const
 {
-	return(last_activity);
+	return (last_activity);
 }
 
 void Connection::set_ready(void)

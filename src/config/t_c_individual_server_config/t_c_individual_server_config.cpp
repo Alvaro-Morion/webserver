@@ -13,8 +13,8 @@
 #include "t_c_individual_server_config.hpp"
 #include "../config.hpp"
 #include <arpa/inet.h>
-#include <stdint.h>
 #include <stdexcept>
+#include <stdint.h>
 #include <string>
 
 ;

@@ -14,9 +14,9 @@
 #include "engine/engine.hpp"
 #include "io/io.hpp"
 #include <csignal>
-#include <stdint.h>
 #include <cstdlib>
 #include <iostream>
+#include <stdint.h>
 #include <string>
 #include <unistd.h>
 #include <vector>
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 		return (EXIT_FAILURE);
 	}
 	try
-	{	
+	{
 		if (argc == 2)
 		{
 			config = get_config(argv[1]);

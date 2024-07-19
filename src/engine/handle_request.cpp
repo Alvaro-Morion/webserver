@@ -78,10 +78,10 @@ static std::string get_body(std::string const &request, size_t &i)
 }
 
 static std::pair<t_c_route, bool> get_resource_rules(std::string                             resource,
-													 std::set<t_c_route, std::less<> > const &routes)
+													 std::set<t_c_route, std::less<>> const &routes)
 {
 	size_t                                     i;
-	std::set<t_c_route, std::less<> >::iterator it;
+	std::set<t_c_route, std::less<>>::iterator it;
 
 	if (resource.back() != '/')
 	{

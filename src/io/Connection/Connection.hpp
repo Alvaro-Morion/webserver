@@ -3,12 +3,12 @@
 #include "../../config/config.hpp"
 #include "../../engine/engine.hpp"
 #include <cstring>
+#include <fcntl.h>
 #include <iostream>
+#include <sys/mman.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/mman.h>
-#include <fcntl.h>
 
 #define BUFFER_SIZE 10000
 
@@ -26,7 +26,7 @@ class Connection
 		bool                                sent_response;
 		t_c_global_config const            *global_config;
 		t_c_individual_server_config const *config;
-		time_t								last_activity;
+		time_t                              last_activity;
 
 	public:
 		Connection(uint16_t port, t_c_global_config *global_config, ReturnType &resp);
@@ -36,7 +36,7 @@ class Connection
 		int                                 read_request(void);
 		void                                select_config(void);
 		int                                 generate_response(void);
-		int									generate_timeout_response(void);
+		int                                 generate_timeout_response(void);
 		int                                 build_response(void);   // For CGI (designed to pass though epoll)
 		int                                 build_response(int fd); // For regular files.
 		int                                 send_response(void);
@@ -46,7 +46,7 @@ class Connection
 		bool                                response_ready(void) const;
 		bool                                request_read(void);
 		bool                                response_sent(void) const;
-		int                                child_error(void);
+		int                                 child_error(void);
 		int                                 getConFd(void) const;
 		struct sockaddr_in const           &getAddress(void) const;
 		std::string                         getRequestBuffer(void) const;
@@ -54,6 +54,6 @@ class Connection
 		ReturnType const                   &getResponse(void) const;
 		t_c_global_config const            *getGlobalConfig(void) const;
 		t_c_individual_server_config const *getConfig(void) const;
-		time_t								getLastActivity(void) const;
+		time_t                              getLastActivity(void) const;
 		void                                set_ready(void);
 };

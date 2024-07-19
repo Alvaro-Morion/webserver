@@ -12,8 +12,8 @@
 
 #include "t_c_router.hpp"
 #include "../config.hpp"
-#include <stddef.h>
 #include <functional>
+#include <stddef.h>
 #include <stdexcept>
 #include <string>
 
@@ -33,7 +33,7 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-t_c_router::t_c_router(std::set<t_c_route, std::less<> > const &routes_param) : routes(routes_param)
+t_c_router::t_c_router(std::set<t_c_route, std::less<>> const &routes_param) : routes(routes_param)
 {
 }
 
@@ -58,7 +58,7 @@ bool t_c_router::operator==(t_c_router const &comparator) const
 	return (true);
 }
 
-std::set<t_c_route, std::less<> > const &t_c_router::get_routes(void) const
+std::set<t_c_route, std::less<>> const &t_c_router::get_routes(void) const
 {
 	return (routes);
 }

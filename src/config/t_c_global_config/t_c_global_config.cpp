@@ -36,7 +36,7 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-t_c_global_config::t_c_global_config(std::set<t_c_individual_server_config, std::less<> > const &servers_param)
+t_c_global_config::t_c_global_config(std::set<t_c_individual_server_config, std::less<>> const &servers_param)
 	: servers(servers_param)
 {
 	if (servers.empty() == true)
@@ -53,7 +53,7 @@ t_c_global_config::~t_c_global_config(void)
 {
 }
 
-std::set<t_c_individual_server_config, std::less<> > const &t_c_global_config::get_servers(void) const
+std::set<t_c_individual_server_config, std::less<>> const &t_c_global_config::get_servers(void) const
 {
 	return (servers);
 }

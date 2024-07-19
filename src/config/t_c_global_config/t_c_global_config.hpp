@@ -13,9 +13,9 @@
 #pragma once
 
 #include "../t_c_individual_server_config/t_c_individual_server_config.hpp"
-#include <stdint.h>
 #include <functional>
 #include <set>
+#include <stdint.h>
 
 ;
 #pragma GCC diagnostic push
@@ -36,15 +36,15 @@
 class t_c_global_config
 {
 	private:
-		std::set<t_c_individual_server_config, std::less<> > servers; // alfabetically sorted whit reagrds to the host
+		std::set<t_c_individual_server_config, std::less<>> servers; // alfabetically sorted whit reagrds to the host
 																	 // names no duplicated responsabilityes are allowed
 		std::set<uint16_t> ports;
 
 	public:
-		explicit t_c_global_config(std::set<t_c_individual_server_config, std::less<> > const &servers_param);
+		explicit t_c_global_config(std::set<t_c_individual_server_config, std::less<>> const &servers_param);
 		~t_c_global_config(void);
 
-		std::set<t_c_individual_server_config, std::less<> > const &get_servers(void) const;
+		std::set<t_c_individual_server_config, std::less<>> const &get_servers(void) const;
 		std::set<uint16_t> const                                  &get_ports(void) const;
 		std::string                                                to_string(void) const;
 };

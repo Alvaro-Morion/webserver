@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/30 20:50:46                                            */
-/*   Updated:  2024/07/02 19:39:19                                            */
+/*   Updated:  2024/07/19 14:00:41                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,15 +47,10 @@ struct t_c_resource_constructor_params
 		bool         is_cgi = false;
 		t_c_position is_cgi_position;
 
-		t_c_resource_constructor_params(void) :
-		file_is_a_directory_page ( "default_error_pages/403"),
-		directory_listing ( false),
-		post_allowed ( false),
-		delet_allowed ( false),
-		get_allowed ( false),
-		is_cgi ( false)
+		t_c_resource_constructor_params(void)
+			: file_is_a_directory_page("default_error_pages/403"), is_redirect(false), directory_listing(false),
+			  post_allowed(false), delet_allowed(false), get_allowed(false), is_cgi(false)
 		{
-
 		}
 };
 

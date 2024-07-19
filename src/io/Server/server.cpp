@@ -64,12 +64,12 @@ void Server::server_loop(void)
 	while (true)
 	{
 		// std::cout << "epoll waiting ...\n";
-		if ((nevents = epoll_wait(epollfd, events, sizeof(events) / sizeof(events[0]), INACTIVE_TIME*100)) == -1)
+		if ((nevents = epoll_wait(epollfd, events, sizeof(events) / sizeof(events[0]), INACTIVE_TIME * 100)) == -1)
 		{
 			perror("Epoll wait");
 			exit(EXIT_FAILURE);
 		}
-		//std::cout << "epoll returned " << nevents << " events\n";
+		// std::cout << "epoll returned " << nevents << " events\n";
 		for (int n = 0; n < nevents; n++)
 		{
 			sockfd = events[n].data.fd;
@@ -92,7 +92,7 @@ void Server::server_loop(void)
 			else if (connection_response_map.find(sockfd) != connection_response_map.end() &&
 					 (events[n].events & EPOLLHUP) == EPOLLHUP)
 			{
-				//std::cout << "CGI Process Hangup\n";
+				// std::cout << "CGI Process Hangup\n";
 				manage_epoll(sockfd, EPOLL_CTL_DEL, 1);
 				if (connection_response_map[sockfd]->child_error() < 0)
 				{
@@ -117,8 +117,9 @@ void Server::server_loop(void)
 					}
 				}
 			}
-			else if (connection_map.find(sockfd) != connection_map.end() && ((events[n].events & EPOLLERR) == EPOLLERR || 
-				(events[n].events & EPOLLHUP) == EPOLLHUP || (events[n].events & EPOLLRDHUP) == EPOLLRDHUP))
+			else if (connection_map.find(sockfd) != connection_map.end() &&
+					 ((events[n].events & EPOLLERR) == EPOLLERR || (events[n].events & EPOLLHUP) == EPOLLHUP ||
+					  (events[n].events & EPOLLRDHUP) == EPOLLRDHUP))
 			{
 				manage_epoll(sockfd, EPOLL_CTL_DEL, 1);
 				delete_connection(connection_map[sockfd]);
@@ -158,7 +159,7 @@ void Server::server_loop(void)
 				if (connection_map[sockfd]->send_response() < 0 || connection_map[sockfd]->response_sent())
 				{
 					std::cout << "Response sent in:" << sockfd << std::endl;
-					//std::cout << "Response sent\n\"" << connection_map[sockfd]->getResponseBuffer() << "\"\n";
+					// std::cout << "Response sent\n\"" << connection_map[sockfd]->getResponseBuffer() << "\"\n";
 					manage_epoll(sockfd, EPOLL_CTL_DEL, 1);
 					delete_connection(connection_map[sockfd]);
 				}
@@ -172,7 +173,7 @@ void Server::server_loop(void)
 void Server::child_reaper(void)
 {
 	std::vector<pid_t>::iterator child;
-	//std::cout << "Number of children: " << children.size() << std::endl;
+	// std::cout << "Number of children: " << children.size() << std::endl;
 
 	if (children.empty())
 	{
@@ -195,8 +196,8 @@ void Server::child_reaper(void)
 void Server::inactive_client(void)
 {
 	std::map<int, Connection *>::iterator conn;
-	time_t c_time;
-	//std::cout << "Number of clients: " << connection_map.size() << std::endl;
+	time_t                                c_time;
+	// std::cout << "Number of clients: " << connection_map.size() << std::endl;
 	if (connection_map.empty())
 	{
 		return;
@@ -204,11 +205,11 @@ void Server::inactive_client(void)
 	time(&c_time);
 	for (conn = connection_map.begin(); conn != connection_map.end();)
 	{
-		if(difftime(c_time, conn->second->getLastActivity()) > INACTIVE_TIME)
+		if (difftime(c_time, conn->second->getLastActivity()) > INACTIVE_TIME)
 		{
-			if(!(conn->second->getResponse() == ReturnType(-1, "", NO_CHILD)) && !conn->second->response_ready())
+			if (!(conn->second->getResponse() == ReturnType(-1, "", NO_CHILD)) && !conn->second->response_ready())
 			{
-				if(conn->second->generate_timeout_response() != -1 || conn->second->response_ready())
+				if (conn->second->generate_timeout_response() != -1 || conn->second->response_ready())
 				{
 					manage_epoll(conn->second->getConFd(), EPOLL_CTL_MOD, EPOLLOUT);
 					conn++;
@@ -232,9 +233,9 @@ void Server::inactive_client(void)
 
 void Server::delete_connection(Connection *connection)
 {
-		connection_map.erase(connection->getConFd());
-		connection_response_map.erase(connection->getResponse().get_fd());
-		delete connection;
+	connection_map.erase(connection->getConFd());
+	connection_response_map.erase(connection->getResponse().get_fd());
+	delete connection;
 }
 
 t_c_global_config *Server::getGlobalConfig(void)

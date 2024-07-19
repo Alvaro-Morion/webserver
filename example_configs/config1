@@ -24,7 +24,7 @@ server
 				is_redirect false; # can be ommited false by default
 				methods GET, POST, DELETE; # can be ommited, GET by default, can be left empty for none allowed
 				directory_listing off; # can be ommited off by default
-				resource_is_a_directory_error_page "/home/amorion-/webserver/example_website/index.html"; # can be ommited default exists
+				resource_is_a_directory_error_page "/home/superuser/webserver/example_website/index.html"; # can be ommited default exists
 				is_cgi false; # can be ommited false by default
 			}
 		}
@@ -33,7 +33,7 @@ server
 			path "/cgi/";
 			resource
 			{
-				root "/home/amorion-/webserver/example_website/cgi";
+				root "/home/superuser/webserver/example_website/cgi";
 				is_redirect false; # can be ommited false by default
 				methods GET, POST, DELETE; # can be ommited, GET by default, can be left empty for none allowed
 				directory_listing off; # can be ommited off by default
@@ -55,7 +55,7 @@ server
 			path "/upload";
 			resource
 			{
-				root "/home/amorion-/webserver/upload";
+				root "/home/superuser/webserver/upload";
 				methods GET, DELETE;
 				directory_listing on;
 				# is_redirect false; #is_redirect should be false when commenting this line but it is true
