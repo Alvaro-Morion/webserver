@@ -211,7 +211,7 @@ int Connection::build_response(int fd)
 int Connection::send_response(void)
 {
 	ssize_t nbytes;
-	nbytes = send(confd, response_buffer.c_str(), response_buffer.length(), MSG_DONTWAIT);
+	nbytes = send(confd, response_buffer.c_str() + bytes_sent, response_buffer.length(), MSG_DONTWAIT);
 	if (nbytes < 0)
 	{
 		perror("Send");
