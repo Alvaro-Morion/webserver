@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/12 16:18:19                                            */
-/*   Updated:  2024/06/29 21:10:51                                            */
+/*   Updated:  2024/07/20 15:22:21                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ std::string normalize_resource(std::string resource)
 
 	if (resource.find('#') != std::string::npos ||
 		resource.find_first_not_of(
-			"%:/?#[]@!$&'()*+,;=-._~abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456") != std::string::npos)
+			"%:/?#[]@!$&'()*+,;=-._~abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") != std::string::npos)
 	{
 		resource = "";
 		return (resource);
