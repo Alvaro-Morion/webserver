@@ -1,12 +1,12 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                                              #
-#    Makefile                                           :+:      :+:    :+:    #
+#    Filename: Makefile                                                        #
 #    Author:   Peru Riezu <riezumunozperu@gmail.com>                           #
 #    github:   https://github.com/priezu-m                                     #
 #    Licence:  GPLv3                                                           #
 #    Created:  2023/09/27 18:57:07                                             #
-#    Updated: 2024/07/14 12:29:11 by ahammoud         ###   ########.fr        #
+#    Updated:  2024/07/20 15:26:23                                             #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,8 +31,8 @@ DEP_PATH :=			./DEP
 DEP_PATH_MAKE :=	DEP/
 OBJ_PATH :=			./OBJ
 
-EXCLUDE_DIRS :=		$(DEP_PATH) $(OBJ_PATH) ./.git ./example_website
-EXCLUDE_FILES :=	./tags
+EXCLUDE_DIRS :=		$(DEP_PATH) $(OBJ_PATH) ./.git ./example_website 
+EXCLUDE_FILES :=	./tags ./example_configs/config1
 
 CPPHDR :=			$(shell find . \
 						$(foreach PATH, $(EXCLUDE_DIRS), -path "$(PATH)" -prune -o)\
