@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:18:55                                            */
-/*   Updated:  2024/07/20 15:00:41                                            */
+/*   Updated:  2024/07/20 17:10:37                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,14 +58,7 @@ int main(int argc, char **argv)
 	}
 	try
 	{
-		if (argc == 2)
-		{
-			config = get_config(argv[1]);
-		}
-		else
-		{
-			config = get_config(DEFAULT_CONFIG);
-		}
+		config = get_config(argv[1]);
 	}
 	catch (std::exception &e)
 	{

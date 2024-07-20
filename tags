@@ -526,7 +526,7 @@ dirp	src/engine/handle_dir.cpp	/^	DIR              *dirp = opendir(resource.c_st
 dirp	src/engine/handle_dir.cpp	/^static std::vector<std::string> get_directory_entries(DIR *dirp)$/;"	kind:parameter	line:50	language:C++	scope:function:get_directory_entries	typeref:typename:DIR *	file:	roles:def	extras:fileScope	nth:0
 dot_pos	src/config/t_c_server_config/t_c_server_config.cpp	/^	size_t dot_pos;$/;"	kind:local	line:44	language:C++	scope:function:is_valid_hostname	typeref:typename:size_t	file:	roles:def	extras:fileScope	end:44
 dst	src/engine/handle_cgi.cpp	/^	char              dst[16];$/;"	kind:local	line:133	language:C++	scope:function:handle_cgi_internal	typeref:typename:char[16]	file:	roles:def	extras:fileScope	end:133
-e	src/main.cpp	/^	catch (std::exception &e)$/;"	kind:local	line:70	language:C++	scope:function:main	typeref:typename:std::exception &	file:	roles:def	extras:fileScope	end:70
+e	src/main.cpp	/^	catch (std::exception &e)$/;"	kind:local	line:63	language:C++	scope:function:main	typeref:typename:std::exception &	file:	roles:def	extras:fileScope	end:63
 e_token_type	src/config/parser/get_tokens/get_tokens.hpp	/^enum class e_token_type$/;"	kind:enum	line:32	language:C++	roles:def	end:39	properties:scopedenum
 elem	src/config/parser/get_token_value/get_error_page.cpp	/^static void get_error_page_internal(std::pair<std::string, std::pair<std::string *, t_c_position/;"	kind:parameter	line:53	language:C++	scope:function:get_error_page_internal	typeref:typename:std::pair<std::string,std::pair<std::string *,t_c_position * >> &	file:	roles:def	extras:fileScope	nth:0
 end	src/engine/handle_request.cpp	/^	size_t const end = request.size();$/;"	kind:local	line:74	language:C++	scope:function:get_body	typeref:typename:size_t const	file:	roles:def	extras:fileScope	end:74
@@ -1016,8 +1016,8 @@ length_requiered	src/config/t_c_error_pages/t_c_error_pages.hpp	/^		std::string 
 length_requiered_param	src/config/t_c_error_pages/t_c_error_pages.cpp	/^								 std::string const &content_too_large_param, std::string const &length_requiered_param,$/;"	kind:parameter	line:38	language:C++	scope:function:t_c_error_pages::t_c_error_pages	typeref:typename:std::string const &	file:	roles:def	extras:fileScope	nth:5
 length_requiered_param	src/config/t_c_error_pages/t_c_error_pages.hpp	/^								 std::string const &content_too_large_param, std::string const &length_requiered_param,$/;"	kind:parameter	line:51	language:C++	scope:prototype:t_c_error_pages::t_c_error_pages	typeref:typename:std::string const &	file:	roles:def	extras:fileScope	nth:5
 length_requiered_position	src/config/parser/parser.hpp	/^		t_c_position length_requiered_position;$/;"	kind:member	line:160	language:C++	scope:struct:t_c_error_pages_constructor_params	typeref:typename:t_c_position	access:public	roles:def	end:160
-main	src/main.cpp	/^int main(int argc, char **argv)$/;"	kind:function	line:50	language:C++	typeref:typename:int	signature:(int argc,char ** argv)	roles:def	end:79
-main.cpp	src/main.cpp	1;"	kind:file	line:1	language:C++	roles:def	extras:inputFile	end:81	epoch:1721481701
+main	src/main.cpp	/^int main(int argc, char **argv)$/;"	kind:function	line:50	language:C++	typeref:typename:int	signature:(int argc,char ** argv)	roles:def	end:72
+main.cpp	src/main.cpp	1;"	kind:file	line:1	language:C++	roles:def	extras:inputFile	end:74	epoch:1721488246
 manage_epoll	src/io/Server/server.cpp	/^void Server::manage_epoll(int fd, int op, uint32_t mask)$/;"	kind:function	line:42	language:C++	scope:class:Server	typeref:typename:void	signature:(int fd,int op,uint32_t mask)	roles:def	end:56
 manage_epoll	src/io/Server/server.hpp	/^		void                         manage_epoll(int fd, int op, uint32_t mask);$/;"	kind:prototype	line:37	language:C++	scope:class:Server	typeref:typename:void	access:public	signature:(int fd,int op,uint32_t mask)	roles:def	end:37
 map	src/io/Server/server.hpp	/^#include <map>/;"	kind:header	line:10	language:C++	roles:system	extras:reference
@@ -1354,7 +1354,7 @@ send_response	src/io/Connection/Connection.cpp	/^int Connection::send_response(v
 send_response	src/io/Connection/Connection.hpp	/^		int                                 send_response(void);$/;"	kind:prototype	line:42	language:C++	scope:class:Connection	typeref:typename:int	access:public	signature:(void)	roles:def	end:42
 sent_response	src/io/Connection/Connection.hpp	/^		bool                                sent_response;$/;"	kind:member	line:26	language:C++	scope:class:Connection	typeref:typename:bool	access:private	roles:def	end:26
 separator	src/config/parser/get_tokens/get_tokens.hpp	/^	separator,$/;"	kind:enumerator	line:37	language:C++	scope:enum:e_token_type	access:public	roles:def
-server	src/main.cpp	/^	Server server(config);$/;"	kind:local	line:77	language:C++	scope:function:main	typeref:typename:Server	file:	roles:def	extras:fileScope	end:77
+server	src/main.cpp	/^	Server server(config);$/;"	kind:local	line:70	language:C++	scope:function:main	typeref:typename:Server	file:	roles:def	extras:fileScope	end:70
 server.cpp	src/io/Server/server.cpp	1;"	kind:file	line:1	language:C++	roles:def	extras:inputFile	end:259	epoch:1721484481
 server.hpp	src/io/Server/server.hpp	1;"	kind:file	line:1	language:C++	roles:def	extras:inputFile	end:47	epoch:1721481701
 server_config	src/config/parser/get_config.cpp	/^static std::vector<t_c_individual_server_config_token> decuple(t_c_server_config_token const &se/;"	kind:parameter	line:41	language:C++	scope:function:decuple	typeref:typename:t_c_server_config_token const &	file:	roles:def	extras:fileScope	nth:0
