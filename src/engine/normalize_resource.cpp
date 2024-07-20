@@ -110,7 +110,8 @@ std::string normalize_resource(std::string resource)
 
 	if (resource.find('#') != std::string::npos ||
 		resource.find_first_not_of(
-			"%:/?#[]@!$&'()*+,;=-._~abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") != std::string::npos)
+			"%:/?#[]@!$&'()*+,;=-._~abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") !=
+			std::string::npos)
 	{
 		resource = "";
 		return (resource);

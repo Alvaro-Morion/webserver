@@ -160,7 +160,8 @@ std::vector<t_c_token> get_tokens(char const *config_file)
 		read_ret -= static_cast<ssize_t>(token_end);
 		if (read_buffer[0] == '\0') // same as read_ret == 0
 		{
-			if (token_type == e_token_type::separator || (token_type == e_token_type::quoted && current_token[current_token.size() - 1] == '\"'))
+			if (token_type == e_token_type::separator ||
+				(token_type == e_token_type::quoted && current_token[current_token.size() - 1] == '\"'))
 			{
 				insert_token_if_needed(token_type, tokens, current_token, beginning_column, beginning_row, column, row);
 			}
