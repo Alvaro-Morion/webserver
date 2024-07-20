@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/27 07:58:56                                            */
-/*   Updated:  2024/06/14 17:46:31                                            */
+/*   Updated:  2024/07/20 17:08:38                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,7 @@ std::vector<t_c_token> get_tokens(char const *config_file)
 {
 	std::vector<t_c_token> tokens;
 	std::string            current_token;
-	constexpr int          read_buffer_size = 1000;
+	constexpr int          read_buffer_size = 1000; // must be atleast 2
 	char                   read_buffer[read_buffer_size + 1];
 	int                    config_file_fd = open_throw_if_fail(config_file, O_RDONLY);
 	ssize_t                read_ret;
@@ -156,10 +156,14 @@ std::vector<t_c_token> get_tokens(char const *config_file)
 		{
 			current_token.append(&read_buffer[0], token_end);
 		}
-		memmove(read_buffer, read_buffer + token_end, read_buffer_size - token_end + 1);
+		memmove(read_buffer, read_buffer + token_end, read_buffer_size - std::max(token_end, 1UL) + 1);
 		read_ret -= static_cast<ssize_t>(token_end);
 		if (read_buffer[0] == '\0') // same as read_ret == 0
 		{
+			if (token_type == e_token_type::separator || (token_type == e_token_type::quoted && current_token[current_token.size() - 1] == '\"'))
+			{
+				insert_token_if_needed(token_type, tokens, current_token, beginning_column, beginning_row, column, row);
+			}
 			read_ret = read_throw_if_fail(config_file_fd, read_buffer, read_buffer_size);
 			read_buffer[read_ret] = '\0';
 		}
