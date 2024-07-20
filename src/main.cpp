@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                                            */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Filename: main.cpp                                                       */
 /*   Author:   Peru Riezu <riezumunozperu@gmail.com>                          */
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:18:55                                            */
-/*   Updated:  2024/07/02 19:44:45                                            */
+/*   Updated:  2024/07/20 15:00:41                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,13 +70,11 @@ int main(int argc, char **argv)
 	catch (std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
-		exit(EXIT_FAILURE);
+		_exit(EXIT_FAILURE);
 	}
 	signal(SIGPIPE, SIG_IGN);
 	std::cout << config->to_string();
-	//	pause();
 	Server server(config);
-	//	Server server(&config); //For test
 	return (EXIT_FAILURE);
 }
 
