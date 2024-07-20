@@ -30,8 +30,6 @@ void deleteLastLine(const std::string& filePath) {
     }
 
     inputFile.close();
-    std::cout << "hello " << lines[1] << std::endl;
-
     // Reopen the file in write mode to overwrite its contents
     std::ofstream outputFile("./upload/" + extractFilename(lines[1]), std::ios::trunc);
 	size_t i = 4;
