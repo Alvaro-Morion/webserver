@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:18:55                                            */
-/*   Updated:  2024/07/20 17:10:37                                            */
+/*   Updated:  2024/07/20 17:17:20                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 {
 	t_c_global_config *config; // NOLINT
 
-	if (argc > 2)
+	if (argc != 2)
 	{
 		print_usage();
 		return (EXIT_FAILURE);

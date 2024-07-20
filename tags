@@ -822,9 +822,9 @@ get_token_non_const	src/config/parser/parser.hpp	/^		std::string &get_token_non_
 get_token_type	src/config/parser/get_tokens/get_tokens.hpp	/^e_token_type           get_token_type(char *buffer);$/;"	kind:prototype	line:41	language:C++	typeref:typename:e_token_type	signature:(char * buffer)	roles:def	end:41
 get_token_type	src/config/parser/get_tokens/get_tokens_helpers.cpp	/^e_token_type           get_token_type(char *buffer)$/;"	kind:function	line:214	language:C++	typeref:typename:e_token_type	signature:(char * buffer)	roles:def	end:234
 get_token_value	src/config/parser/get_token_value/get_router/get_router.cpp	/^static void get_token_value(std::vector<t_c_token> &tokens, size_t &i, t_c_resource_constructor_/;"	kind:function	line:64	language:C++	typeref:typename:void	file:	signature:(std::vector<t_c_token> & tokens,size_t & i,t_c_resource_constructor_params & params,char const * config_file)	roles:def	extras:fileScope	end:100	properties:static
-get_tokens	src/config/parser/get_tokens/get_tokens.cpp	/^std::vector<t_c_token> get_tokens(char const *config_file)$/;"	kind:function	line:126	language:C++	typeref:typename:std::vector<t_c_token>	signature:(char const * config_file)	roles:def	end:183
+get_tokens	src/config/parser/get_tokens/get_tokens.cpp	/^std::vector<t_c_token> get_tokens(char const *config_file)$/;"	kind:function	line:126	language:C++	typeref:typename:std::vector<t_c_token>	signature:(char const * config_file)	roles:def	end:184
 get_tokens	src/config/parser/parser.hpp	/^std::vector<t_c_token> get_tokens(char const *config_file);$/;"	kind:prototype	line:269	language:C++	typeref:typename:std::vector<t_c_token>	signature:(char const * config_file)	roles:def	end:269
-get_tokens.cpp	src/config/parser/get_tokens/get_tokens.cpp	1;"	kind:file	line:1	language:C++	roles:def	extras:inputFile	end:185	epoch:1721488126
+get_tokens.cpp	src/config/parser/get_tokens/get_tokens.cpp	1;"	kind:file	line:1	language:C++	roles:def	extras:inputFile	end:186	epoch:1721488549
 get_tokens.hpp	src/config/parser/get_tokens/get_tokens.cpp	/^#include "get_tokens.hpp"/;"	kind:header	line:13	language:C++	roles:local	extras:reference
 get_tokens.hpp	src/config/parser/get_tokens/get_tokens.hpp	1;"	kind:file	line:1	language:C++	roles:def	extras:inputFile	end:48	epoch:1721481701
 get_tokens.hpp	src/config/parser/get_tokens/get_tokens_helpers.cpp	/^#include "get_tokens.hpp"/;"	kind:header	line:13	language:C++	roles:local	extras:reference
@@ -1017,7 +1017,7 @@ length_requiered_param	src/config/t_c_error_pages/t_c_error_pages.cpp	/^								
 length_requiered_param	src/config/t_c_error_pages/t_c_error_pages.hpp	/^								 std::string const &content_too_large_param, std::string const &length_requiered_param,$/;"	kind:parameter	line:51	language:C++	scope:prototype:t_c_error_pages::t_c_error_pages	typeref:typename:std::string const &	file:	roles:def	extras:fileScope	nth:5
 length_requiered_position	src/config/parser/parser.hpp	/^		t_c_position length_requiered_position;$/;"	kind:member	line:160	language:C++	scope:struct:t_c_error_pages_constructor_params	typeref:typename:t_c_position	access:public	roles:def	end:160
 main	src/main.cpp	/^int main(int argc, char **argv)$/;"	kind:function	line:50	language:C++	typeref:typename:int	signature:(int argc,char ** argv)	roles:def	end:72
-main.cpp	src/main.cpp	1;"	kind:file	line:1	language:C++	roles:def	extras:inputFile	end:74	epoch:1721488246
+main.cpp	src/main.cpp	1;"	kind:file	line:1	language:C++	roles:def	extras:inputFile	end:74	epoch:1721488641
 manage_epoll	src/io/Server/server.cpp	/^void Server::manage_epoll(int fd, int op, uint32_t mask)$/;"	kind:function	line:42	language:C++	scope:class:Server	typeref:typename:void	signature:(int fd,int op,uint32_t mask)	roles:def	end:56
 manage_epoll	src/io/Server/server.hpp	/^		void                         manage_epoll(int fd, int op, uint32_t mask);$/;"	kind:prototype	line:37	language:C++	scope:class:Server	typeref:typename:void	access:public	signature:(int fd,int op,uint32_t mask)	roles:def	end:37
 map	src/io/Server/server.hpp	/^#include <map>/;"	kind:header	line:10	language:C++	roles:system	extras:reference
@@ -1052,8 +1052,8 @@ new_env	src/engine/handle_cgi.cpp	/^	char const       *new_env[] = {content_leng
 none	src/config/parser/get_tokens/get_tokens.hpp	/^	none$/;"	kind:enumerator	line:38	language:C++	scope:enum:e_token_type	access:public	roles:def
 normal	src/config/parser/get_tokens/get_tokens.hpp	/^	normal,$/;"	kind:enumerator	line:36	language:C++	scope:enum:e_token_type	access:public	roles:def
 normalize_resource	src/engine/engine.hpp	/^std::string normalize_resource(std::string resource);$/;"	kind:prototype	line:67	language:C++	typeref:typename:std::string	signature:(std::string resource)	roles:def	end:67
-normalize_resource	src/engine/normalize_resource.cpp	/^std::string normalize_resource(std::string resource)$/;"	kind:function	line:105	language:C++	typeref:typename:std::string	signature:(std::string resource)	roles:def	end:158
-normalize_resource.cpp	src/engine/normalize_resource.cpp	1;"	kind:file	line:1	language:C++	roles:def	extras:inputFile	end:160	epoch:1721481741
+normalize_resource	src/engine/normalize_resource.cpp	/^std::string normalize_resource(std::string resource)$/;"	kind:function	line:105	language:C++	typeref:typename:std::string	signature:(std::string resource)	roles:def	end:159
+normalize_resource.cpp	src/engine/normalize_resource.cpp	1;"	kind:file	line:1	language:C++	roles:def	extras:inputFile	end:161	epoch:1721488549
 not_found	src/config/parser/parser.hpp	/^		std::string  not_found;$/;"	kind:member	line:163	language:C++	scope:struct:t_c_error_pages_constructor_params	typeref:typename:std::string	access:public	roles:def	end:163
 not_found	src/config/t_c_error_pages/t_c_error_pages.hpp	/^		std::string not_found;                  \/\/ 404$/;"	kind:member	line:43	language:C++	scope:class:t_c_error_pages	typeref:typename:std::string	access:private	roles:def	end:43
 not_found_param	src/config/t_c_error_pages/t_c_error_pages.cpp	/^								 std::string const &request_timeout_param, std::string const &not_found_param,$/;"	kind:parameter	line:39	language:C++	scope:function:t_c_error_pages::t_c_error_pages	typeref:typename:std::string const &	file:	roles:def	extras:fileScope	nth:7
