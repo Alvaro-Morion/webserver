@@ -1,4 +1,5 @@
 #include <iostream>
+#include "unistd.h"
 #include <fstream>
 #include <vector>
 
@@ -64,6 +65,7 @@ int main() {
 	std::cout << std::string("HTTP/1.1 301 Moved Permanently\r\n") + "Server: webserv/0.1\r\n" +
 		"Location: " + "/index.html" + "\r\n" + "Connection: close" + "\r\n\r\n";
 
+    unlink("./upload/uploaded_image.png");
 
     return 0;
 }

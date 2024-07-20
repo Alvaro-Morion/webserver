@@ -1,7 +1,7 @@
 server
 {
 	ports 8000; # can be ommited 80 by default
-	hosts localhost;
+	hosts ahammoud.com;
 	http_version_not_supported "default_error_pages/505"; # can be ommited defaults exist
 	not_implemeted "default_error_pages/501";
 	internal_server_error "default_error_pages/500";
