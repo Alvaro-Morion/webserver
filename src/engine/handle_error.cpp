@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 13:33:33                                            */
-/*   Updated:  2024/06/12 17:42:35                                            */
+/*   Updated:  2024/07/20 23:49:26                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ ReturnType handle_error_internal_internal(std::string const &error_file, std::st
 	ssize_t const     file_size = get_file_size(fd);
 	std::string const current_time = get_current_time_as_string();
 	std::string const headers = status_line + "Server: webserv/0.1\r\n" + "Date: " + current_time + "\r\n" +
-								"Content-Type: text/html\r\n" + "Content-Length: " + std::to_string(file_size) +
+								"Content-Type: text/html\r\n" + "Content-Length: " + to_string(file_size) +
 								"\r\n" + "Connection: close" + "\r\n\r\n";
 
 	if (fd == -1)

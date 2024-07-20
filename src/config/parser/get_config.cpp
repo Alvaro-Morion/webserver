@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/26 00:53:43                                            */
-/*   Updated:  2024/07/02 19:48:09                                            */
+/*   Updated:  2024/07/21 00:51:06                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,13 @@ static std::vector<t_c_individual_server_config_token> decuple(t_c_server_config
 {
 	std::vector<t_c_individual_server_config_token> individual_server_configs;
 
-	for (std::string const *host_name : server_config.get_host_names())
+	for (size_t i = 0; i < server_config.get_host_names().size(); i++)
 	{
-		for (uint16_t port_num : server_config.get_ports())
+		for (size_t j = 0; j < server_config.get_ports().size(); j++)
 		{
 			individual_server_configs.push_back(t_c_individual_server_config_token(
-				t_c_individual_server_config(host_name, port_num, server_config.get_router(),
-											 server_config.get_error_pages(),
+				t_c_individual_server_config(server_config.get_host_names()[i], server_config.get_ports()[j],
+											 server_config.get_router(), server_config.get_error_pages(),
 											 server_config.get_client_body_size_limit()),
 				server_config.get_position()));
 		}
@@ -136,7 +136,7 @@ static t_c_server_config_token get_server_config(std::vector<t_c_token> &tokens,
 t_c_global_config *get_config(char const *config_file)
 {
 	std::vector<t_c_token>                                    tokens = get_tokens(config_file);
-	std::set<t_c_individual_server_config_token, std::less<>> individual_server_config_set;
+	std::set<t_c_individual_server_config_token, std::less<> > individual_server_config_set;
 	size_t                                                    i;
 
 	i = 0;
@@ -158,18 +158,18 @@ t_c_global_config *get_config(char const *config_file)
 			throw(std::invalid_argument(std::string(config_file) + ":" + tokens[i + 1].get_position().to_string() +
 										" : error: expected '{', found: " + tokens[i + 1].get_token() + '\n'));
 		}
-		for (t_c_individual_server_config_token const &indvidual_config_token :
-			 decuple(get_server_config(tokens, i, config_file))) // will update i to refer to the closing }
+		std::vector<t_c_individual_server_config_token> individuals = decuple(get_server_config(tokens, i, config_file));
+		for (size_t j = 0; j < individuals.size(); j++)
 		{
-			if (individual_server_config_set.insert(indvidual_config_token).second == false)
+			if (individual_server_config_set.insert(individuals[j]).second == false)
 			{
 				throw(std::invalid_argument(
-					std::string(config_file) + ":" + indvidual_config_token.get_position().to_string() +
+					std::string(config_file) + ":" + individuals[j].get_position().to_string() +
 					": error: redefinition of handler for: " +
-					*indvidual_config_token.get_server_config().get_host_name() + ":" +
-					std::to_string(ntohs(indvidual_config_token.get_server_config().get_port())) +
+					*individuals[j].get_server_config().get_host_name() + ":" +
+					to_string(ntohs(individuals[j].get_server_config().get_port())) +
 					" was already defined by server at: " +
-					individual_server_config_set.insert(indvidual_config_token).first->get_position().to_string() +
+					individual_server_config_set.insert(individuals[j]).first->get_position().to_string() +
 					'\n'));
 			}
 		}
@@ -178,7 +178,7 @@ t_c_global_config *get_config(char const *config_file)
 			i++;
 		}
 	}
-	return (new t_c_global_config(std::set<t_c_individual_server_config, std::less<>>(
+	return (new t_c_global_config(std::set<t_c_individual_server_config, std::less<> >(
 		individual_server_config_set.begin(), individual_server_config_set.end())));
 }
 

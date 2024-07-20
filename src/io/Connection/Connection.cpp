@@ -1,4 +1,6 @@
 #include "./Connection.hpp"
+#include <cerrno>
+#include <cstdlib>
 
 static std::string tolower_str(std::string input)
 {
@@ -22,11 +24,11 @@ static std::string get_header_value(std::string name, std::string request) // Ge
 	start += std::string(name).length() + 1;
 	end = request.find("\r\n", start);
 	value = request.substr(start, end - start);
-	while (isspace(value.front()))
+	while (isspace(value[0]))
 	{
 		value.erase(0, 1);
 	}
-	while (isspace(value.back()))
+	while (isspace(value[value.size() - 1]))
 	{
 		value.erase(value.length() - 1, 1);
 	}
@@ -114,7 +116,7 @@ void Connection::select_config(void)
 		hostname = hostname.substr(0, hostname.find(":"));
 
 		t_c_individual_server_config::t_c_light_key                   key(&hostname, port);
-		std::set<t_c_individual_server_config, std::less<>>::iterator config_it =
+		std::set<t_c_individual_server_config, std::less<> >::iterator config_it =
 			global_config->get_servers().find(key);
 		if (config_it == global_config->get_servers().end())
 		{
@@ -263,7 +265,7 @@ bool Connection::request_read(void)
 	size_t content_length = std::atoll(get_header_value("content-length", request_buffer).c_str());
 	size_t body_length = request_buffer.length() - request_buffer.find("\r\n\r\n") - 4;
 	// std::cout << "Content-length:" << content_length << "body_length:" << body_length << std::endl;
-	if (config == nullptr)
+	if (config == NULL)
 	{
 		// The headers are read -> choose config and check headers.
 		try

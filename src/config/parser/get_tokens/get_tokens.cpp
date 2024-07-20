@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/27 07:58:56                                            */
-/*   Updated:  2024/07/20 17:08:38                                            */
+/*   Updated:  2024/07/21 01:01:35                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,8 +107,8 @@ static void remove_comments_and_normalize(std::vector<t_c_token> &tokens, char c
 					(tokens[i].get_token()[j] != '\\' && tokens[i].get_token()[j] != '\"'))
 				{
 					throw(std::invalid_argument(
-						std::string(config_file) + ":" + std::to_string(tokens[i].get_position().get_row()) + ":" +
-						std::to_string(tokens[i].get_position().get_colum() + j) +
+						std::string(config_file) + ":" + to_string(tokens[i].get_position().get_row()) + ":" +
+						to_string(tokens[i].get_position().get_colum() + j) +
 						": error: \\ munst be always followed by \\ of \" or preceded by a \\ that is not itself"
 						"preceded by a \\ recursively\n"));
 				}
@@ -127,7 +127,7 @@ std::vector<t_c_token> get_tokens(char const *config_file)
 {
 	std::vector<t_c_token> tokens;
 	std::string            current_token;
-	constexpr int          read_buffer_size = 1000; // must be atleast 2
+	const int              read_buffer_size = 1000; // must be atleast 2
 	char                   read_buffer[read_buffer_size + 1];
 	int                    config_file_fd = open_throw_if_fail(config_file, O_RDONLY);
 	ssize_t                read_ret;

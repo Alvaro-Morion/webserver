@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/13 19:35:27                                            */
-/*   Updated:  2024/07/02 17:39:48                                            */
+/*   Updated:  2024/07/20 23:49:26                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,15 +131,15 @@ static ReturnType handle_cgi_internal(std::string const &target_file, std::strin
 									  t_c_individual_server_config const &config, struct in_addr ip)
 {
 	char              dst[16];
-	std::string const content_length_var = std::string("CONTENT_LENGTH=") + std::to_string(body.size());
+	std::string const content_length_var = std::string("CONTENT_LENGTH=") + to_string(body.size());
 	std::string const path_translated_var = std::string("PATH_TRANSLATED=") + remove_filename(target_file);
 	std::string const query_string_var = std::string("QUERY_STRING=") + get_query_string(resource);
 	std::string const remote_addr_var = std::string("REMOTE_ADDR=") + inet_ntop(AF_INET, &ip, dst, sizeof(dst));
 	std::string const method_var = std::string("REQUEST_METHOD=") + method;
 	std::string const script_name_var = std::string("SCRIPT_NAME=") + get_filename(target_file);
 	std::string const server_name_var = std::string("SERVER_NAME=") + *config.get_host_name();
-	std::string const server_port_var = std::string("SERVER_PORT=") + std::to_string(config.get_port());
-	char const       *new_argv[] = {target_file.c_str(), nullptr};
+	std::string const server_port_var = std::string("SERVER_PORT=") + to_string(config.get_port());
+	char const       *new_argv[] = {target_file.c_str(), NULL};
 	char const       *new_env[] = {content_length_var.c_str(),
 								   "GATEWAY_INTERFACE=1.1",
 								   "PATH_INFO=/",
@@ -152,7 +152,7 @@ static ReturnType handle_cgi_internal(std::string const &target_file, std::strin
 								   server_port_var.c_str(),
 								   "SERVER_PROTOCOL=HTTP/1.1",
 								   "SERVER_SOFTWARE=webserv/0.1",
-								   nullptr};
+								   NULL};
 
 	// std::cout << "**** this the query string  **** " << query_string_var << std::endl;
 	return (handle_cgi_internal_internal(target_file, body, config, new_env, new_argv));

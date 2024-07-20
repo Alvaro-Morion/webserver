@@ -6,11 +6,12 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/12 16:18:19                                            */
-/*   Updated:  2024/07/20 15:22:21                                            */
+/*   Updated:  2024/07/21 00:40:32                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
+#include <cstddef>
 
 ;
 #pragma GCC diagnostic push
@@ -106,7 +107,7 @@ std::string normalize_resource(std::string resource)
 {
 	std::vector<std::string> tokens;
 	size_t                   i;
-	bool const               ends_in_bar = (resource.back() == '/');
+	bool const               ends_in_bar = (resource[resource.size() - 1] == '/');
 
 	if (resource.find('#') != std::string::npos ||
 		resource.find_first_not_of(
@@ -140,14 +141,15 @@ std::string normalize_resource(std::string resource)
 		i++;
 	}
 	resource = "/";
-	for (std::string const &s : tokens)
+//	for (std::string const &s : tokens)
+	for (size_t j = 0; j < tokens.size(); j++)
 	{
-		resource += s;
+		resource += tokens[j];
 		resource += "/";
 	}
 	if (ends_in_bar == false)
 	{
-		resource.pop_back();
+		resource.erase(resource.end() - 1);
 	}
 	i = resource.find('?');
 	if (i != std::string::npos)

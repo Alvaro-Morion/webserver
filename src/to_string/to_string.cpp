@@ -1,23 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                                            */
-/*   Filename: t_c_router.cpp                                                 */
+/*   Filename: to_string.cpp                                                  */
 /*   Author:   Peru Riezu <riezumunozperu@gmail.com>                          */
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
-/*   Created:  2024/05/07 18:17:27                                            */
-/*   Updated:  2024/07/21 01:08:47                                            */
+/*   Created:  2024/07/20 23:59:36                                            */
+/*   Updated:  2024/07/21 00:18:03                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "t_c_router.hpp"
-#include "../config.hpp"
-#include <cstddef>
-#include <functional>
-#include <stddef.h>
-#include <stdexcept>
+#include <cstdint>
 #include <string>
-
 ;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpragmas"
@@ -34,48 +28,48 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-t_c_router::t_c_router(std::set<t_c_route, std::less<> > const &routes_param) : routes(routes_param)
+static uintmax_t get_magnitude(uintmax_t n)
 {
-}
+	uintmax_t m = 1;
 
-t_c_router::t_c_router(t_c_router const &copy) : routes(copy.routes)
-{
-}
-
-t_c_router::~t_c_router(void)
-{
-}
-
-bool t_c_router::operator==(t_c_router const &comparator) const
-{
-	if (this == &comparator)
+	while (n > 9)
 	{
-		return (true);
+		n /= 10;
+		m *= 10;
 	}
-	if (routes != comparator.get_routes())
-	{
-		return (false);
-	}
-	return (true);
+	return (m);
 }
 
-std::set<t_c_route, std::less<> > const &t_c_router::get_routes(void) const
+std::string to_string(uintmax_t n);
+std::string to_string(uintmax_t n)
 {
-	return (routes);
+	std::string res;
+	uintmax_t   magnitude = get_magnitude(n);
+
+	while (magnitude != 0)
+	{
+		res += static_cast<char>(((n / magnitude) % 10) + '0');
+		magnitude /= 10;
+	}
+	return (res);
 }
 
-std::string t_c_router::to_string(void) const
+std::string to_string(intmax_t n);
+std::string to_string(intmax_t n)
 {
-	std::string string;
-	size_t      i;
+	std::string res;
 
-	i = 1;
-	for (std::set<t_c_route, std::less<> >::iterator it = routes.begin(); it != routes.end(); it++)
+	if (n < 0)
 	{
-		string += "\n\t\t[" + ::to_string(i) + "]: {" + it->to_string() + "} ";
-		i++;
+		return ('-' + to_string(static_cast<uintmax_t>(-n)));
 	}
-	return (string);
+	return (to_string(static_cast<uintmax_t>(n)));
+}
+
+std::string to_string(uint16_t n);
+std::string to_string(uint16_t n)
+{
+	return (to_string(static_cast<uintmax_t>(n)));
 }
 
 #pragma GCC diagnostic pop

@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/30 20:50:46                                            */
-/*   Updated:  2024/07/19 14:00:41                                            */
+/*   Updated:  2024/07/21 00:56:45                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,17 +34,17 @@ struct t_c_resource_constructor_params
 {
 		std::string  root;
 		t_c_position root_position;
-		std::string  file_is_a_directory_page = "default_error_pages/403";
+		std::string  file_is_a_directory_page;
 		t_c_position file_is_a_directory_page_position;
 		bool         is_redirect;
 		t_c_position is_redirect_position;
-		bool         directory_listing = false;
+		bool         directory_listing;
 		t_c_position directory_listing_position;
-		bool         post_allowed = false;
-		bool         delet_allowed = false;
-		bool         get_allowed = false;
+		bool         post_allowed;
+		bool         delet_allowed;
+		bool         get_allowed;
 		t_c_position methods_position;
-		bool         is_cgi = false;
+		bool         is_cgi;
 		t_c_position is_cgi_position;
 
 		t_c_resource_constructor_params(void)

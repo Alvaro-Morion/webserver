@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 11:53:58                                            */
-/*   Updated:  2024/06/09 12:47:45                                            */
+/*   Updated:  2024/07/20 23:49:26                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static ReturnType handle_invalid_request_internal(void)
 	std::string const current_time = get_current_time_as_string();
 	std::string const headers = std::string("HTTP/1.1 400 Bad Request\r\n") + "Server: webserv/0.1\r\n" +
 								"Date: " + current_time + "\r\n" + "Content-Type: text/html\r\n" +
-								"Content-Length: " + std::to_string(file_size) + "\r\n" + "Connection: close" +
+								"Content-Length: " + to_string(file_size) + "\r\n" + "Connection: close" +
 								"\r\n\r\n";
 
 	if (fd == -1)

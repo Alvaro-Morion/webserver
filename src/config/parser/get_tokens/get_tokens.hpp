@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/27 08:00:02                                            */
-/*   Updated:  2024/06/06 15:53:24                                            */
+/*   Updated:  2024/07/21 01:02:06                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 #pragma GCC diagnostic ignored "-Wc++20-designator"
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
+
 enum class e_token_type
 {
 	quoted,

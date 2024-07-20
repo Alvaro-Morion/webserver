@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/07 11:48:31                                            */
-/*   Updated:  2024/06/29 21:04:29                                            */
+/*   Updated:  2024/07/21 00:33:53                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <string>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cerrno>
 
 ;
 #pragma GCC diagnostic push
@@ -73,5 +74,9 @@ ReturnType  handle_dir(std::string &resource, t_c_route const &route, t_c_indivi
 ReturnType  handle_error_internal_internal(std::string const &error_file, std::string const &status_line);
 ReturnType  handle_cgi(std::string &resource, t_c_route const &route, t_c_individual_server_config const &config,
 					   std::string const &body, std::string const &method, struct in_addr ip);
+
+std::string to_string(uintmax_t n);
+std::string to_string(intmax_t n);
+std::string to_string(uint16_t n);
 
 #pragma GCC diagnostic pop

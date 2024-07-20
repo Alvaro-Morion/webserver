@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/12 16:50:32                                            */
-/*   Updated:  2024/06/29 18:07:45                                            */
+/*   Updated:  2024/07/20 23:49:26                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ ReturnType handle_redirect(std::string const &resource, t_c_route const &route)
 	std::string const current_time = get_current_time_as_string();
 	std::string const headers =
 		std::string("HTTP/1.1 301 Moved Permanently\r\n") + "Server: webserv/0.1\r\n" + "Date: " + current_time +
-		"\r\n" + "Content-Type: text/html\r\n" + "Content-Length: " + std::to_string(file_size) + "\r\n" +
+		"\r\n" + "Content-Type: text/html\r\n" + "Content-Length: " + to_string(file_size) + "\r\n" +
 		"Location: " + get_new_location(resource, route) + "\r\n" + "Connection: close" + "\r\n\r\n";
 
 	if (fd == -1)

@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/07 19:13:58                                            */
-/*   Updated:  2024/07/02 20:00:48                                            */
+/*   Updated:  2024/07/21 01:06:41                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,16 +36,16 @@
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
 
-t_c_global_config::t_c_global_config(std::set<t_c_individual_server_config, std::less<>> const &servers_param)
+t_c_global_config::t_c_global_config(std::set<t_c_individual_server_config, std::less<> > const &servers_param)
 	: servers(servers_param)
 {
 	if (servers.empty() == true)
 	{
 		throw(std::invalid_argument("set of configured servers may not be empty"));
 	}
-	for (t_c_individual_server_config const &config : servers)
+	for (std::set<t_c_individual_server_config, std::less<> >::iterator it = servers.begin(); it != servers.end(); it++)
 	{
-		ports.insert(config.get_port());
+		ports.insert(it->get_port());
 	}
 }
 
@@ -53,7 +53,7 @@ t_c_global_config::~t_c_global_config(void)
 {
 }
 
-std::set<t_c_individual_server_config, std::less<>> const &t_c_global_config::get_servers(void) const
+std::set<t_c_individual_server_config, std::less<> > const &t_c_global_config::get_servers(void) const
 {
 	return (servers);
 }
@@ -69,9 +69,9 @@ std::string t_c_global_config::to_string() const
 	size_t      i;
 
 	i = 1;
-	for (t_c_individual_server_config const &server : servers)
+	for (std::set<t_c_individual_server_config, std::less<> >::iterator it = servers.begin(); it != servers.end(); it++)
 	{
-		string += '[' + std::to_string(i) + "]:\n" + server.to_string() + '\n';
+		string += '[' + ::to_string(i) + "]:\n" + it->to_string() + '\n';
 		i++;
 	}
 	return (string);

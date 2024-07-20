@@ -6,11 +6,14 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/24 18:43:50                                            */
-/*   Updated:  2024/07/02 19:44:18                                            */
+/*   Updated:  2024/07/21 01:00:38                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../t_c_global_config/t_c_global_config.hpp"
+#include <cstddef>
+#include <cerrno>
+#include <cstdint>
 #include <stddef.h>
 #include <stdint.h>
 #include <string>
@@ -30,6 +33,8 @@
 #pragma GCC diagnostic ignored "-Wc++20-designator"
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 ;
+
+std::string to_string(uintmax_t n);
 
 class t_c_position
 {
@@ -86,7 +91,7 @@ class t_c_position
 
 		std::string to_string(void) const
 		{
-			return (std::to_string(row) + ":" + std::to_string(colum));
+			return (::to_string(row) + ":" + ::to_string(colum));
 		}
 };
 

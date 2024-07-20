@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/08 03:01:06                                            */
-/*   Updated:  2024/07/02 19:28:52                                            */
+/*   Updated:  2024/07/20 23:56:41                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,9 +97,9 @@ uint64_t t_c_individual_server_config::get_client_body_size_limit(void) const
 
 std::string t_c_individual_server_config::to_string(void) const
 {
-	return ("\thost name: " + *host_name + "\n\tport: " + std::to_string(ntohs(port)) + "\n\trouter: " +
+	return ("\thost name: " + *host_name + "\n\tport: " + ::to_string(ntohs(port)) + "\n\trouter: " +
 			router->to_string() + "\n\terror pages:\n" + error_pages->to_string() + "\n\tclient body size limit: " +
-			((client_body_size_limit == UINT64_MAX) ? "no limit" : std::to_string(client_body_size_limit)) + '\n');
+			((client_body_size_limit == UINT64_MAX) ? "no limit" : ::to_string(client_body_size_limit)) + '\n');
 }
 
 bool t_c_individual_server_config::operator==(t_c_individual_server_config const &comparator) const

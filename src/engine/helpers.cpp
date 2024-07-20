@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/06/12 16:21:09                                            */
-/*   Updated:  2024/06/27 18:51:06                                            */
+/*   Updated:  2024/07/20 19:32:36                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ std::string get_current_time_as_string(void)
 	size_t const buffer_size = 200;
 	char         buff[buffer_size];
 
-	if ((t == -1) || (gmtime_r(&t, &tm) == nullptr))
+	if ((t == -1) || (gmtime_r(&t, &tm) == NULL))
 	{
 		return ("");
 	}

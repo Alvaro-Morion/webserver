@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/06 19:19:46                                            */
-/*   Updated:  2024/06/07 11:11:19                                            */
+/*   Updated:  2024/07/21 01:15:16                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,14 @@ bool is_valid_hostname(std::string const &host_name)
 	return (true);
 }
 
+static void string_to_lower(std::string &string)
+{
+	for (size_t i = 0; i < string.size(); i++)
+	{
+		string[i] = static_cast<char>(tolower(string[i]));
+	}
+}
+
 t_c_server_config::t_c_server_config(std::vector<std::string *> const &host_names_param,
 									 std::vector<uint16_t> const &ports_param, t_c_router const *router_param,
 									 t_c_error_pages const *error_pages_param, uint64_t client_body_size_limit_param)
@@ -83,16 +91,12 @@ t_c_server_config::t_c_server_config(std::vector<std::string *> const &host_name
 		throw(
 			std::invalid_argument("atleast a host name and port musts be provided for a server")); // parameters invalid
 	}
-	for (std::string *host_name : host_names)
+	for (size_t i = 0; i < host_names.size(); i++)
 	{
-		std::transform(host_name->begin(), host_name->end(), host_name->begin(),
-					   [](unsigned char c)
-					   {
-						   return std::tolower(c);
-					   });
-		if (is_valid_hostname(*host_name) == false)
+		string_to_lower(*host_names[i]);
+		if (is_valid_hostname(*host_names[i]) == false)
 		{
-			throw(std::invalid_argument(*host_name + " is not a valid host_name")); // parameters invalid
+			throw(std::invalid_argument(*host_names[i] + " is not a valid host_name")); // parameters invalid
 		}
 	}
 }

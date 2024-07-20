@@ -6,7 +6,7 @@
 /*   github:   https://github.com/priezu-m                                    */
 /*   Licence:  GPLv3                                                          */
 /*   Created:  2024/05/28 17:58:15                                            */
-/*   Updated:  2024/07/02 19:48:11                                            */
+/*   Updated:  2024/07/21 00:54:53                                            */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void remove_quotes_if_present(std::vector<t_c_token> &tokens, size_t &i, char co
 	}
 }
 
-static void get_error_page_internal(std::pair<std::string, std::pair<std::string *, t_c_position *>> &elem,
+static void get_error_page_internal(std::pair<std::string, std::pair<std::string *, t_c_position *> > &elem,
 									std::vector<t_c_token> &tokens, size_t &i, char const *config_file,
 									t_c_position const &position)
 {
@@ -92,7 +92,7 @@ void get_error_page(t_c_server_constructor_params &params, std::vector<t_c_token
 					char const *config_file)
 {
 	t_c_position                                                     position = tokens[i].get_position();
-	std::pair<std::string, std::pair<std::string *, t_c_position *>> table[] = {
+	std::pair<std::string, std::pair<std::string *, t_c_position *> > table[] = {
 		{"http_version_not_supported",
 		 {&params.error_params.http_version_not_supported, &params.error_params.http_version_not_supported_position}          },
 		{			"not_implemeted",     {&params.error_params.not_implemeted, &params.error_params.not_implemeted_position}},
@@ -108,12 +108,13 @@ void get_error_page(t_c_server_constructor_params &params, std::vector<t_c_token
 		{			   "bad_request",           {&params.error_params.bad_request, &params.error_params.bad_request_position}}
     };
 
-	for (std::pair<std::string, std::pair<std::string *, t_c_position *>> &elem : table)
+//	for (std::pair<std::string, std::pair<std::string *, t_c_position *> > &elem : table)
+	for (size_t j = 0; j < (sizeof(table) / sizeof(table[0])); j++)
 	{
-		if (elem.first == tokens[i].get_token())
+		if (table[j].first == tokens[i].get_token())
 		{
 			i++;
-			get_error_page_internal(elem, tokens, i, config_file, position);
+			get_error_page_internal(table[j], tokens, i, config_file, position);
 			return;
 		}
 	}
