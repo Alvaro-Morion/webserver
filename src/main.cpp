@@ -51,14 +51,21 @@ int main(int argc, char **argv)
 {
 	t_c_global_config *config; // NOLINT
 
-	if (argc != 2)
+	if (argc > 2)
 	{
 		print_usage();
 		return (EXIT_FAILURE);
 	}
 	try
 	{
-		config = get_config(argv[1]);
+		if (argc == 2)
+		{
+			config = get_config(argv[1]);
+		}
+		else
+		{
+			config = get_config(DEFAULT_CONFIG);
+		}
 	}
 	catch (std::exception &e)
 	{
